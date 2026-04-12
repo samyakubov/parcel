@@ -3,6 +3,7 @@ import 'package:shimmer/shimmer.dart';
 
 import '../../../core/constants.dart';
 import '../../../domain/entities/address_suggestion.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../viewmodels/autocomplete_viewmodel.dart';
 
 class SearchSuggestionList extends StatelessWidget {
@@ -125,10 +126,10 @@ class SearchSuggestionTile extends StatelessWidget {
               Container(
                 width: 36, height: 36,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primaryContainer,
+                  color: theme.colorScheme.goldAccent.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(Icons.location_on, size: 18, color: theme.colorScheme.primary),
+                child: Icon(Icons.location_on, size: 18, color: theme.colorScheme.goldAccent),
               ),
               const SizedBox(width: 12),
               Expanded(
