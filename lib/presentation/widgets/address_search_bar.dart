@@ -39,18 +39,7 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
           prefixIcon: const Icon(Icons.search),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-          suffixIcon: state.isLoading 
-            ? const Padding(
-                padding: EdgeInsets.all(12),
-                child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
-              )
-            : IconButton(
-                icon: const Icon(Icons.clear),
-                onPressed: () {
-                  _controller.clear();
-                  ref.read(propertySearchViewModelProvider.notifier).clearSearch();
-                },
-              ),
+          suffixIcon: null,
         ),
       ),
     );

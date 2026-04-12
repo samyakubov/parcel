@@ -85,7 +85,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             ),
           ),
           // Sheet anchored to bottom — map above remains tappable
-          if (searchState.value != null && !searchState.isLoading)
+          if (searchState.value != null || searchState.isLoading)
             const Align(
               alignment: Alignment.bottomCenter,
               child: PropertyDetailsSheet(),
