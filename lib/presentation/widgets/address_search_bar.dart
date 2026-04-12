@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../core/constants.dart';
 import '../../domain/entities/address_suggestion.dart';
@@ -20,64 +21,23 @@ class AddressSearchBar extends ConsumerStatefulWidget {
 class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
-  final LayerLink _layerLink = LayerLink();
-  OverlayEntry? _overlayEntry;
 
   @override
   void initState() {
     super.initState();
-    _focusNode.addListener(_onFocusChanged);
   }
 
   @override
   void dispose() {
-    _removeOverlay();
-    _focusNode.removeListener(_onFocusChanged);
     _focusNode.dispose();
     _controller.dispose();
     super.dispose();
   }
 
-  void _onFocusChanged() {
-    if (!_focusNode.hasFocus) {
-      _removeOverlay();
-    }
-  }
-
-  void _insertOverlay(AutocompleteState state) {
-    _removeOverlay();
-    final overlay = Overlay.of(context);
-    _overlayEntry = OverlayEntry(
-      builder: (context) => CompositedTransformFollower(
-        link: _layerLink,
-        showWhenUnlinked: false,
-        offset: const Offset(0, 56), // below the search bar
-        child: Align(
-          alignment: Alignment.topLeft,
-          child: TapRegion(
-            onTapOutside: (_) {
-              ref.read(autocompleteViewModelProvider.notifier).dismiss();
-            },
-            child: _SuggestionList(
-              state: state,
-              onSuggestionTap: _onSuggestionTap,
-            ),
-          ),
-        ),
-      ),
-    );
-    overlay.insert(_overlayEntry!);
-  }
-
-  void _removeOverlay() {
-    _overlayEntry?.remove();
-    _overlayEntry = null;
-  }
-
   void _onSuggestionTap(AddressSuggestion suggestion) {
     _controller.text = suggestion.fullName;
+    _focusNode.unfocus();
     ref.read(autocompleteViewModelProvider.notifier).dismiss();
-    _removeOverlay();
     if (widget.mapboxMap != null) {
       widget.onAutocompleteNavigating?.call();
       ref
@@ -90,6 +50,8 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
     if (_controller.text.isNotEmpty) {
       final text = _controller.text;
       final streetAddress = text.contains(',') ? text.split(',')[0].trim() : text;
+      _focusNode.unfocus();
+      ref.read(autocompleteViewModelProvider.notifier).dismiss();
       ref
           .read(propertySearchViewModelProvider.notifier)
           .searchByAddress(streetAddress);
@@ -99,81 +61,92 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final autocompleteState = ref.watch(autocompleteViewModelProvider);
 
-    // Listen for autocomplete state changes to show/hide overlay and snackbar.
-    ref.listen<AutocompleteState>(autocompleteViewModelProvider,
-        (previous, next) {
-      if (next is AutocompleteError &&
-          next.kind == AutocompleteErrorKind.retrieveFailed) {
+    ref.listen<AutocompleteState>(autocompleteViewModelProvider, (previous, next) {
+      if (next is AutocompleteError && next.kind == AutocompleteErrorKind.retrieveFailed) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Could not load location details.'),
-          ),
+          const SnackBar(content: Text('Could not load location details.')),
         );
-        _removeOverlay();
-        return;
-      }
-
-      if (next is AutocompleteIdle) {
-        _removeOverlay();
-      } else {
-        _insertOverlay(next);
       }
     });
 
-    return CompositedTransformTarget(
-      link: _layerLink,
-      child: Container(
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(30),
-          boxShadow: [
-            BoxShadow(
-              color: theme.brightness == Brightness.light
-                  ? Colors.black12
-                  : Colors.black.withOpacity(0.3),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+    final showDropdown = autocompleteState is! AutocompleteIdle;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Search bar
+        Container(
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(30),
+            boxShadow: [
+              BoxShadow(
+                color: theme.brightness == Brightness.light
+                    ? Colors.black12
+                    : Colors.black.withOpacity(0.3),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: TextField(
+            controller: _controller,
+            focusNode: _focusNode,
+            textInputAction: TextInputAction.search,
+            onSubmitted: (_) => _onSearch(),
+            onChanged: (value) {
+              ref.read(autocompleteViewModelProvider.notifier).onQueryChanged(value);
+            },
+            style: TextStyle(color: theme.colorScheme.onSurface),
+            decoration: InputDecoration(
+              hintText: 'Search address...',
+              hintStyle: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5)),
+              prefixIcon: Icon(Icons.search, color: theme.colorScheme.onSurface.withOpacity(0.6)),
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
             ),
-          ],
-        ),
-        child: TextField(
-          controller: _controller,
-          focusNode: _focusNode,
-          textInputAction: TextInputAction.search,
-          onSubmitted: (_) => _onSearch(),
-          onChanged: (value) {
-            ref
-                .read(autocompleteViewModelProvider.notifier)
-                .onQueryChanged(value);
-          },
-          style: TextStyle(color: theme.colorScheme.onSurface),
-          decoration: InputDecoration(
-            hintText: 'Search address...',
-            hintStyle: TextStyle(
-                color: theme.colorScheme.onSurface.withOpacity(0.5)),
-            prefixIcon: Icon(Icons.search,
-                color: theme.colorScheme.onSurface.withOpacity(0.6)),
-            border: InputBorder.none,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-            suffixIcon: null,
           ),
         ),
-      ),
+
+        // Dropdown
+        if (showDropdown) ...[
+          const SizedBox(height: 8),
+          LimitedBox(
+            maxHeight: 300,
+            child: Material(
+              elevation: 6,
+              borderRadius: BorderRadius.circular(16),
+              color: theme.colorScheme.surface,
+              shadowColor: Colors.black.withOpacity(0.15),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: SingleChildScrollView(
+                  child: _SuggestionListContent(
+                    state: autocompleteState,
+                    onSuggestionTap: _onSuggestionTap,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ],
     );
   }
 }
 
 // ---------------------------------------------------------------------------
-// _SuggestionList
+// _SuggestionListContent
 // ---------------------------------------------------------------------------
 
-class _SuggestionList extends StatelessWidget {
+class _SuggestionListContent extends StatelessWidget {
   final AutocompleteState state;
   final void Function(AddressSuggestion) onSuggestionTap;
 
-  const _SuggestionList({
+  const _SuggestionListContent({
     required this.state,
     required this.onSuggestionTap,
   });
@@ -182,61 +155,129 @@ class _SuggestionList extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    Widget content;
-
     if (state is AutocompleteLoading) {
-      content = const Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Center(child: CircularProgressIndicator()),
-      );
-    } else if (state is AutocompleteEmpty) {
-      content = const Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Text('No results found'),
-      );
-    } else if (state is AutocompleteError) {
-      final kind = (state as AutocompleteError).kind;
-      final message = kind == AutocompleteErrorKind.auth
-          ? 'Search unavailable.'
-          : 'Could not load suggestions. Please try again.';
-      content = Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Text(message),
-      );
-    } else if (state is AutocompleteResults) {
-      final suggestions = (state as AutocompleteResults).suggestions;
-      final itemCount =
-          suggestions.length.clamp(0, AppConstants.autocompleteMaxResults);
-      content = ListView.builder(
-        padding: EdgeInsets.zero,
-        shrinkWrap: true,
-        itemCount: itemCount,
-        itemBuilder: (context, index) {
-          final suggestion = suggestions[index];
-          return Semantics(
-            label: suggestion.fullName,
-            child: ListTile(
-              title: Text(suggestion.fullName),
-              subtitle: suggestion.context != null
-                  ? Text(suggestion.context!)
-                  : null,
-              onTap: () => onSuggestionTap(suggestion),
+      return Shimmer.fromColors(
+        baseColor: theme.colorScheme.surfaceContainerHighest,
+        highlightColor: theme.colorScheme.surfaceContainerLow,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: List.generate(3, (i) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              children: [
+                Container(width: 36, height: 36, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8))),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(height: 13, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(6))),
+                      const SizedBox(height: 7),
+                      Container(height: 11, width: 120, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(6))),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          );
-        },
+          )),
+        ),
       );
-    } else {
-      // AutocompleteIdle — should not normally be shown
-      return const SizedBox.shrink();
     }
 
-    return Material(
-      elevation: 4,
-      borderRadius: BorderRadius.circular(8),
-      color: theme.colorScheme.surface,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 400),
-        child: content,
+    if (state is AutocompleteEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+        child: Row(
+          children: [
+            Icon(Icons.search_off, color: theme.colorScheme.onSurfaceVariant, size: 20),
+            const SizedBox(width: 12),
+            Text('No results found', style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          ],
+        ),
+      );
+    }
+
+    if (state is AutocompleteError) {
+      final kind = (state as AutocompleteError).kind;
+      final message = kind == AutocompleteErrorKind.auth ? 'Search unavailable.' : 'Could not load suggestions.';
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+        child: Row(
+          children: [
+            Icon(Icons.error_outline, color: theme.colorScheme.error, size: 20),
+            const SizedBox(width: 12),
+            Text(message, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.error)),
+          ],
+        ),
+      );
+    }
+
+    if (state is AutocompleteResults) {
+      final suggestions = (state as AutocompleteResults).suggestions;
+      final itemCount = suggestions.length.clamp(0, AppConstants.autocompleteMaxResults);
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 8),
+          for (int i = 0; i < itemCount; i++) ...[
+            if (i > 0)
+              Divider(height: 1, indent: 64, color: theme.colorScheme.outlineVariant.withOpacity(0.5)),
+            _SuggestionTile(suggestion: suggestions[i], onTap: onSuggestionTap),
+          ],
+          const SizedBox(height: 8),
+        ],
+      );
+    }
+
+    return const SizedBox.shrink();
+  }
+}
+
+class _SuggestionTile extends StatelessWidget {
+  final AddressSuggestion suggestion;
+  final void Function(AddressSuggestion) onTap;
+
+  const _SuggestionTile({required this.suggestion, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final parts = suggestion.fullName.split(',');
+    final street = parts[0].trim();
+    final secondary = parts.length > 1 ? parts.sublist(1).join(',').trim() : suggestion.context;
+
+    return Semantics(
+      label: suggestion.fullName,
+      child: InkWell(
+        onTap: () => onTap(suggestion),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            children: [
+              Container(
+                width: 36, height: 36,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(Icons.location_on, size: 18, color: theme.colorScheme.primary),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(street, style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    if (secondary != null && secondary.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(secondary, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

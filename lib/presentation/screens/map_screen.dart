@@ -117,12 +117,12 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                 onTapListener: _onMapTap,
               ),
               
-              // Header Overlay
+              // Header + Dropdown Overlay
               SafeArea(
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Align(
+                    alignment: Alignment.topCenter,
                     child: AddressSearchBar(
                       mapboxMap: mapboxMap,
                       onAutocompleteNavigating: () => _skipNextPropertyFlyTo = true,

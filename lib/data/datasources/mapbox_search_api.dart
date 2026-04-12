@@ -17,13 +17,6 @@ class AutocompleteNetworkException implements Exception {
   String toString() => 'AutocompleteNetworkException: $message';
 }
 
-// Datasource
-
-/// Uses the Mapbox Geocoding v5 API:
-/// GET https://api.mapbox.com/geocoding/v5/mapbox.places/{query}.json
-///
-/// Coordinates are included in the suggest response via `center`, so no
-/// separate retrieve call is needed — [retrieve] returns the suggestion as-is.
 class MapboxSearchApi {
   late final Dio _dio;
 
@@ -48,7 +41,6 @@ class MapboxSearchApi {
     try {
       // Strip to street address only (e.g. "79-33 213th Street, City, State" → "79-33 213th Street")
       final streetOnly = query.contains(',') ? query.split(',')[0].trim() : query;
-      // Encode the query for use in the path segment.
       final encoded = Uri.encodeQueryComponent(streetOnly);
       final url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/$encoded.json';
       final response = await _dio.get<Map<String, dynamic>>(
@@ -56,9 +48,10 @@ class MapboxSearchApi {
         queryParameters: {
           'autocomplete': true,
           'limit': AppConstants.autocompleteMaxResults,
+          'bbox': '-74.2591,40.4774,-73.7004,40.9176',
+          'proximity': '-74.0060,40.7128',
         },
       );
-
       final features = (response.data?['features'] as List<dynamic>?) ?? [];
       final suggestions = features
           .take(AppConstants.autocompleteMaxResults)
@@ -77,8 +70,6 @@ class MapboxSearchApi {
     String mapboxId,
     String sessionToken,
   ) async {
-    // The Geocoding v5 API returns coordinates in the suggest response via
-    // `center`, so no additional network call is required.
     throw UnimplementedError(
       'retrieve() should not be called directly; '
       'coordinates are already present on AddressSuggestion from suggest().',
@@ -88,21 +79,16 @@ class MapboxSearchApi {
   // --- helpers ---
 
   AddressSuggestion _featureToSuggestion(Map<String, dynamic> feature) {
-    // id: "place.123456" — use as mapboxId
     final mapboxId = (feature['id'] as String?) ?? '';
 
-    // place_name: full display string e.g. "Brooklyn, New York, United States"
     final fullName = (feature['place_name'] as String?) ?? '';
 
-    // context: array of parent features [{id, text}, ...]
-    // Use the first context item's text as the secondary line.
     final contextList = feature['context'] as List<dynamic>?;
     String? context;
     if (contextList != null && contextList.isNotEmpty) {
       context = (contextList.first as Map<String, dynamic>?)?['text'] as String?;
     }
 
-    // center: [longitude, latitude]
     final center = feature['center'] as List<dynamic>?;
     final longitude = center != null && center.isNotEmpty
         ? (center[0] as num).toDouble()
