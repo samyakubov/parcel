@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
 
 class InfoCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
   final List<Widget> children;
-  final MaterialColor color;
 
   const InfoCard({
     super.key,
-    required this.icon,
-    required this.title,
     required this.children,
-    required this.color,
+    // Keep these markers for backward compatibility if needed, but they are unused now
+    IconData? icon,
+    String? title,
+    MaterialColor? color,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 20),
+      margin: const EdgeInsets.only(bottom: 24),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -33,33 +31,8 @@ class InfoCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: color.shade50,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(icon, size: 22, color: color.shade700),
-                ),
-                const SizedBox(width: 14),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.black87,
-                    letterSpacing: -0.3,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            ...children,
-          ],
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: children,
         ),
       ),
     );

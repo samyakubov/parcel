@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../domain/entities/property.dart';
+import '../../../../core/utils/date_formatter.dart';
 import '../widgets/list_item_card.dart';
 import '../widgets/empty_state.dart';
+import '../widgets/section_header.dart';
 
 class ActivityTab extends StatelessWidget {
   final Property property;
@@ -24,10 +26,17 @@ class ActivityTab extends StatelessWidget {
 
     return ListView.builder(
       controller: controller,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      itemCount: property.records.length,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      itemCount: property.records.length + 1, // +1 for the header
       itemBuilder: (context, index) {
-        final record = property.records[index];
+        if (index == 0) {
+          return const SectionHeader(
+            title: 'Record Activity',
+            subtitle: 'Historical property and ownership data records.',
+          );
+        }
+        
+        final record = property.records[index - 1];
         final type = record['partytype_desc']?.toString() ?? 'Record';
         final partyName = record['party_name']?.toString() ?? '—';
         final amount = record['amount'] is num ? (record['amount'] as num).toDouble() : 0.0;
@@ -36,7 +45,7 @@ class ActivityTab extends StatelessWidget {
         return ListItemCard(
           title: type,
           subtitle: partyName,
-          date: date,
+          date: DateFormatter.format(date),
           amount: amount > 0 ? currencyFormatter.format(amount) : null,
           icon: Icons.description_outlined,
           color: Colors.blue,

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../domain/entities/property.dart';
+import '../../../../core/utils/date_formatter.dart';
 import '../widgets/list_item_card.dart';
 import '../widgets/empty_state.dart';
+import '../widgets/section_header.dart';
 
 class ViolationsTab extends StatelessWidget {
   final Property property;
@@ -24,10 +26,17 @@ class ViolationsTab extends StatelessWidget {
 
     return ListView.builder(
       controller: controller,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      itemCount: property.violations.length,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      itemCount: property.violations.length + 1,
       itemBuilder: (context, index) {
-        final v = property.violations[index];
+        if (index == 0) {
+          return const SectionHeader(
+            title: 'Property Violations',
+            subtitle: 'Outstanding and historical legal violations.',
+          );
+        }
+
+        final v = property.violations[index - 1];
         final type = v['violation_type']?.toString() ?? 'Violation';
         final status = v['violation_status']?.toString() ?? 'Unknown';
         final desc = v['description']?.toString() ?? '—';
@@ -39,7 +48,7 @@ class ViolationsTab extends StatelessWidget {
         return ListItemCard(
           title: type,
           subtitle: desc,
-          date: date,
+          date: DateFormatter.format(date),
           amount: amount > 0 ? 'Fine: ${currencyFormatter.format(amount)}' : null,
           status: status,
           isStatusPositive: isClosed,

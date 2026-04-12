@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../domain/entities/property.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/timeline_entry.dart';
+import '../widgets/section_header.dart';
 
 class OwnersTab extends StatelessWidget {
   final Property property;
@@ -26,22 +27,9 @@ class OwnersTab extends StatelessWidget {
       controller: controller,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Ownership History',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.black87),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Showing timeline from most recent to earliest.',
-                style: TextStyle(color: Colors.grey.shade500, fontSize: 13, fontWeight: FontWeight.w500),
-              ),
-            ],
-          ),
+        const SectionHeader(
+          title: 'Ownership History',
+          subtitle: 'Showing timeline from most recent to earliest.',
         ),
 
         // Current owners

@@ -11,7 +11,6 @@ import 'property_details/tabs/activity_tab.dart';
 import 'property_details/tabs/violations_tab.dart';
 import 'property_details/tabs/jobs_tab.dart';
 import 'property_details/tabs/complaints_tab.dart';
-import 'property_details/tabs/zoning_tab.dart';
 
 class PropertyDetailsSheet extends ConsumerWidget {
   const PropertyDetailsSheet({super.key});
@@ -60,7 +59,7 @@ class PropertyDetailsSheet extends ConsumerWidget {
           ),
           clipBehavior: Clip.antiAlias,
           child: DefaultTabController(
-            length: 8,
+            length: 7,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -119,6 +118,25 @@ class PropertyDetailsSheet extends ConsumerWidget {
                         ),
                       ),
                     ),
+                    // Bottom Gradient Transition
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        height: 80,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.white.withOpacity(0),
+                              Colors.white,
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
                 
@@ -172,7 +190,6 @@ class PropertyDetailsSheet extends ConsumerWidget {
                       Tab(text: 'Violations'),
                       Tab(text: 'Jobs'),
                       Tab(text: 'Complaints'),
-                      Tab(text: 'Zoning'),
                     ],
                   ),
                 ),
@@ -187,7 +204,6 @@ class PropertyDetailsSheet extends ConsumerWidget {
                       ViolationsTab(property: property, controller: scrollController),
                       JobsTab(property: property, controller: scrollController),
                       ComplaintsTab(property: property, controller: scrollController),
-                      ZoningTab(property: property, controller: scrollController),
                     ],
                   ),
                 ),

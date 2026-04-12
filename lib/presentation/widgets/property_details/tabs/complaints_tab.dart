@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../../domain/entities/property.dart';
+import '../../../../core/utils/date_formatter.dart';
 import '../widgets/status_tag.dart';
 import '../widgets/detail_grid.dart';
 import '../widgets/empty_state.dart';
+import '../widgets/section_header.dart';
 
 class ComplaintsTab extends StatelessWidget {
   final Property property;
@@ -22,10 +24,17 @@ class ComplaintsTab extends StatelessWidget {
 
     return ListView.builder(
       controller: controller,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      itemCount: property.complaints.length,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      itemCount: property.complaints.length + 1,
       itemBuilder: (context, index) {
-        final c = property.complaints[index];
+        if (index == 0) {
+          return const SectionHeader(
+            title: 'Property Complaints',
+            subtitle: 'Formal complaints lodged against the property.',
+          );
+        }
+
+        final c = property.complaints[index - 1];
         final number = c['complaint_number']?.toString() ?? '—';
         final category = c['complaint_category']?.toString() ?? 'Complaint';
         final status = c['status']?.toString() ?? '—';
@@ -67,8 +76,8 @@ class ComplaintsTab extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       DetailGrid(items: [
-                        if (c['inspection_date'] != null) DetailItem('Inspection', c['inspection_date']),
-                        if (c['disposition_date'] != null) DetailItem('Disposition', c['disposition_date']),
+                        if (c['inspection_date'] != null) DetailItem('Inspection', DateFormatter.format(c['inspection_date'])),
+                        if (c['disposition_date'] != null) DetailItem('Disposition', DateFormatter.format(c['disposition_date'])),
                         if (c['disposition_code'] != null) DetailItem('Code', c['disposition_code']),
                         if (c['bin'] != null) DetailItem('BIN', c['bin']),
                       ]),

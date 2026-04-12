@@ -4,6 +4,7 @@ import '../../../../domain/entities/property.dart';
 import '../widgets/info_card.dart';
 import '../widgets/standard_row.dart';
 import '../widgets/empty_state.dart';
+import '../widgets/section_header.dart';
 
 class MortgageTab extends StatelessWidget {
   final Property property;
@@ -28,10 +29,11 @@ class MortgageTab extends StatelessWidget {
       controller: controller,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       children: [
-        InfoCard(
-          icon: Icons.account_balance_outlined,
+        const SectionHeader(
           title: 'Loan Summary',
-          color: Colors.green,
+          subtitle: 'Current mortgage and financial lender data.',
+        ),
+        InfoCard(
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
