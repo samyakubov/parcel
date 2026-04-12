@@ -26,9 +26,14 @@ class PropertyDetailsSheet extends ConsumerWidget {
       }
     }
 
+    final coords = property.coordinates;
+    final imageUrl = coords != null
+        ? 'https://maps.googleapis.com/maps/api/streetview?size=800x600&scale=2&fov=90&pitch=10&location=${coords.latitude},${coords.longitude}&key=${AppConstants.streetViewApiKey}'
+        : null;
+
     return DraggableScrollableSheet(
-      initialChildSize: 0.45,
-      minChildSize: 0.15,
+      initialChildSize: 0.5,
+      minChildSize: 0.5,
       maxChildSize: 0.95,
       expand: false,
       builder: (context, scrollController) {
@@ -45,34 +50,94 @@ class PropertyDetailsSheet extends ConsumerWidget {
               )
             ],
           ),
+          clipBehavior: Clip.antiAlias, // Ensure image respects rounded corners
           child: DefaultTabController(
             length: 8,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Center(
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    width: 48,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+                // Top Header Section (Draggable area for the sheet)
+                SingleChildScrollView(
+                  controller: scrollController,
+                  physics: const ClampingScrollPhysics(),
+                  child: Column(
+                    children: [
+                      // Top Image + Drag Handle Overlay
+                      Stack(
+                        children: [
+                          if (imageUrl != null)
+                            Image.network(
+                              imageUrl,
+                              height: 240,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) => Container(
+                                height: 240,
+                                color: Colors.grey.shade100,
+                                child: const Center(child: Icon(Icons.broken_image_rounded, size: 48, color: Colors.grey)),
+                              ),
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Container(
+                                  height: 240,
+                                  color: Colors.grey.shade50,
+                                  child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                                );
+                              },
+                            )
+                          else
+                            Container(height: 240, color: Colors.grey.shade100),
+                          
+                          // Drag Handle Overlay
+                          Positioned(
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.black.withOpacity(0.35),
+                                    Colors.transparent,
+                                  ],
+                                ),
+                              ),
+                              child: Center(
+                                child: Container(
+                                  width: 52,
+                                  height: 5,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.9),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
+                
+                // Address & Details Section
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 6),
+                  padding: const EdgeInsets.fromLTRB(24, 20, 24, 12),
                   child: Text(
                     addressTitle,
                     style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.5,
-                      color: Colors.black87,
+                      fontSize: 26,
+                      fontWeight: FontWeight.w900, // Heavier weight for premium look
+                      letterSpacing: -0.8,
+                      color: Colors.black,
+                      height: 1.1,
                     ),
                   ),
                 ),
+                
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 20),
                   padding: const EdgeInsets.all(4),
@@ -112,7 +177,7 @@ class PropertyDetailsSheet extends ConsumerWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 12),
                 Expanded(
                   child: TabBarView(
                     children: [
@@ -139,60 +204,10 @@ class PropertyDetailsSheet extends ConsumerWidget {
     final currencyFormatter = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
     final numberFormatter = NumberFormat.decimalPattern();
 
-    final coords = property.coordinates;
-    final imageUrl = coords != null
-        ? 'https://maps.googleapis.com/maps/api/streetview?size=800x600&scale=2&fov=90&pitch=10&location=${coords.latitude},${coords.longitude}&key=${AppConstants.streetViewApiKey}'
-        : null;
-
     return ListView(
       controller: controller,
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       children: [
-        if (imageUrl != null) ...[
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                )
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Image.network(
-                imageUrl,
-                height: 220,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  height: 220,
-                  color: Colors.grey.shade100,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.broken_image_rounded, size: 48, color: Colors.grey.shade400),
-                      const SizedBox(height: 8),
-                      Text('Image unavailable', style: TextStyle(color: Colors.grey.shade500)),
-                    ],
-                  ),
-                ),
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Container(
-                    height: 220,
-                    color: Colors.grey.shade50,
-                    child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
-                  );
-                },
-              ),
-            ),
-          ),
-          const SizedBox(height: 28),
-        ],
-
         _buildSectionHeader('Valuation & Building'),
         _buildIconRow(Icons.monetization_on_rounded, 'Last Sold Price', property.lastSold?.lastSoldPrice != null ? currencyFormatter.format(property.lastSold!.lastSoldPrice) : 'N/A'),
         _buildIconRow(Icons.calendar_month_rounded, 'Last Sold Date', property.lastSold?.lastSoldDate ?? 'N/A'),
@@ -479,77 +494,74 @@ class PropertyDetailsSheet extends ConsumerWidget {
 
     return ListView.builder(
       controller: controller,
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       itemCount: property.records.length,
       itemBuilder: (context, index) {
         final record = property.records[index];
-        final documentId = record['documentid']?.toString() ?? 'Unknown Doc';
+        final documentId = record['documentid']?.toString() ?? '';
         final type = record['partytype_desc']?.toString() ?? 'Record';
-        final partyName = record['party_name']?.toString() ?? 'Unknown Party';
+        final partyName = record['party_name']?.toString() ?? '—';
         final amount = record['amount'] is num ? (record['amount'] as num).toDouble() : 0.0;
-        
+        final date = record['record_filed']?.toString() ?? '';
+
         return Container(
-          margin: const EdgeInsets.only(bottom: 16),
+          margin: const EdgeInsets.only(bottom: 10),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey.shade200),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.02),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
-              )
-            ],
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: const Color(0xFFEEEEEE)),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(14),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
                       child: Text(
-                        type, 
-                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: Colors.black87),
-                      )
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        documentId, 
-                        style: TextStyle(color: Colors.grey.shade600, fontSize: 12, fontWeight: FontWeight.w500),
+                        type,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                          color: Color(0xFF111111),
+                        ),
                       ),
                     ),
+                    if (amount > 0)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF0FFF7),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          currencyFormatter.format(amount),
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF1A7F4B),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 6),
+                Text(partyName,
+                    style: const TextStyle(fontSize: 13, color: Color(0xFF888888))),
+                const SizedBox(height: 6),
                 Row(
                   children: [
-                    Icon(Icons.person_outline_rounded, size: 16, color: Colors.grey.shade500),
-                    const SizedBox(width: 8),
-                    Expanded(child: Text(partyName, style: TextStyle(color: Colors.grey.shade800, fontSize: 14))),
+                    if (date.isNotEmpty) ...
+                      [Text(date,
+                          style: const TextStyle(fontSize: 12, color: Color(0xFFBBBBBB)))],
+                    const Spacer(),
+                    if (documentId.isNotEmpty)
+                      Text(documentId,
+                          style: const TextStyle(
+                              fontSize: 11, color: Color(0xFFBBBBBB), fontFamily: 'monospace')),
                   ],
                 ),
-                if (amount > 0) ...[
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(Icons.payments_outlined, size: 16, color: Colors.green.shade600),
-                      const SizedBox(width: 8),
-                      Text(
-                        currencyFormatter.format(amount), 
-                        style: TextStyle(color: Colors.green.shade700, fontWeight: FontWeight.w700, fontSize: 15)
-                      ),
-                    ],
-                  ),
-                ]
               ],
             ),
           ),
@@ -748,62 +760,116 @@ class PropertyDetailsSheet extends ConsumerWidget {
 
     return ListView.builder(
       controller: controller,
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       itemCount: property.complaints.length,
       itemBuilder: (context, index) {
-        final complaint = property.complaints[index];
-        final complaintNumber = complaint['complaint_number']?.toString() ?? 'Unknown';
-        final category = complaint['complaint_category']?.toString() ?? 'General';
-        final status = complaint['status']?.toString() ?? 'Unknown Status';
-        
+        final c = property.complaints[index];
+        final number = c['complaint_number']?.toString() ?? '—';
+        final category = c['complaint_category']?.toString() ?? 'Complaint';
+        final status = c['status']?.toString() ?? '—';
+        final bin = c['bin']?.toString() ?? '';
+        final specialDistrict = c['special_district']?.toString() ?? '';
+        final inspectionDate = c['inspection_date']?.toString() ?? '';
+        final dispositionDate = c['disposition_date']?.toString() ?? '';
+        final dispositionCode = c['disposition_code']?.toString() ?? '';
+        final dobrunDate = c['dobrun_date']?.toString() ?? '';
+
         final isClosed = status.toLowerCase().contains('closed');
+        final statusColor = isClosed ? const Color(0xFF888888) : const Color(0xFFB45309);
+        final statusBg = isClosed ? const Color(0xFFF9F9F9) : const Color(0xFFFFFBEB);
 
         return Container(
-          margin: const EdgeInsets.only(bottom: 16),
+          margin: const EdgeInsets.only(bottom: 10),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey.shade200),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.02),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
-              )
-            ],
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: const Color(0xFFEEEEEE)),
           ),
-          child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            leading: CircleAvatar(
-              backgroundColor: isClosed ? Colors.grey.shade100 : Colors.orange.shade50,
-              child: Icon(
-                isClosed ? Icons.check_circle_outline_rounded : Icons.warning_amber_rounded,
-                color: isClosed ? Colors.grey.shade500 : Colors.orange.shade700,
+          clipBehavior: Clip.hardEdge,
+          child: Theme(
+            data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+            child: ExpansionTile(
+              tilePadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+              childrenPadding: EdgeInsets.zero,
+              title: Row(
+                children: [
+                  Expanded(
+                    child: Text(category,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                          color: Color(0xFF111111),
+                        )),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: statusBg,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(status,
+                        style: TextStyle(
+                            fontSize: 11, fontWeight: FontWeight.w600, color: statusColor)),
+                  ),
+                ],
               ),
-            ),
-            title: Text(category, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
-            subtitle: Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text('Complaint #$complaintNumber', style: TextStyle(color: Colors.grey.shade600)),
-            ),
-            trailing: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              decoration: BoxDecoration(
-                color: isClosed ? Colors.grey.shade100 : Colors.orange.shade50,
-                borderRadius: BorderRadius.circular(20),
+              subtitle: Padding(
+                padding: const EdgeInsets.only(top: 2, bottom: 4),
+                child: Text('#$number',
+                    style: const TextStyle(fontSize: 12, color: Color(0xFFBBBBBB))),
               ),
-              child: Text(
-                status,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: isClosed ? Colors.grey.shade600 : Colors.orange.shade800,
+              children: [
+                Container(
+                  width: double.infinity,
+                  color: const Color(0xFFF9F9F9),
+                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Divider(height: 1, color: Color(0xFFEEEEEE)),
+                      const SizedBox(height: 12),
+                      _detailGrid([
+                        if (inspectionDate.isNotEmpty) _DetailItem('Inspection Date', inspectionDate),
+                        if (dispositionDate.isNotEmpty) _DetailItem('Disposition Date', dispositionDate),
+                        if (dispositionCode.isNotEmpty) _DetailItem('Disposition Code', dispositionCode),
+                        if (dobrunDate.isNotEmpty) _DetailItem('DOB Run Date', dobrunDate),
+                        if (bin.isNotEmpty) _DetailItem('BIN', bin),
+                        if (specialDistrict.isNotEmpty) _DetailItem('Special District', specialDistrict),
+                      ]),
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _detailGrid(List<_DetailItem> items) {
+    if (items.isEmpty) return const SizedBox.shrink();
+    return Wrap(
+      spacing: 16,
+      runSpacing: 12,
+      children: items.map((item) => SizedBox(
+        width: 140,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(item.label,
+                style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF888888),
+                    letterSpacing: 0.4)),
+            const SizedBox(height: 2),
+            Text(item.value,
+                style: const TextStyle(
+                    fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF111111))),
+          ],
+        ),
+      )).toList(),
     );
   }
 
@@ -928,4 +994,10 @@ class PropertyDetailsSheet extends ConsumerWidget {
       ],
     );
   }
+}
+
+class _DetailItem {
+  final String label;
+  final String value;
+  const _DetailItem(this.label, this.value);
 }
