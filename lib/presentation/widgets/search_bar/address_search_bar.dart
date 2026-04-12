@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
-import '../../core/utils/address_normalizer.dart';
-import '../../core/theme/app_theme.dart';
-import '../../domain/entities/address_suggestion.dart';
-import '../viewmodels/autocomplete_viewmodel.dart';
-import '../viewmodels/property_search_viewmodel.dart';
+import '../../../core/utils/address_normalizer.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../domain/entities/address_suggestion.dart';
+import '../../viewmodels/autocomplete_viewmodel.dart';
+import '../../viewmodels/property_search_viewmodel.dart';
 import 'search_suggestion_list.dart';
 
 class AddressSearchBar extends ConsumerStatefulWidget {
@@ -122,7 +122,7 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
                     ),
                     prefixIcon: Icon(
                       Icons.search, 
-                      color: theme.colorScheme.onSurface.withOpacity(0.4),
+                      color: theme.colorScheme.goldAccent,
                       size: 20,
                     ),
                     border: InputBorder.none,
@@ -135,17 +135,17 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
             // Mode Toggle
             Container(
               padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surface.withOpacity(0.9),
-                borderRadius: BorderRadius.circular(30),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.goldAccent,
+              borderRadius: BorderRadius.circular(30),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.15),
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -213,13 +213,13 @@ class _ModeButton extends StatelessWidget {
         curve: Curves.easeOutCubic,
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: isActive ? theme.colorScheme.primary : Colors.transparent,
+          color: isActive ? Colors.white.withOpacity(0.4) : Colors.transparent,
           shape: BoxShape.circle,
         ),
         child: Icon(
           icon,
           size: 18,
-          color: isActive ? Colors.white : theme.colorScheme.onSurface.withOpacity(0.4),
+          color: isActive ? Colors.white : Colors.white.withOpacity(0.6),
         ),
       ),
     );

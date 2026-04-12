@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../core/constants.dart';
-import '../../domain/entities/address_suggestion.dart';
-import '../viewmodels/autocomplete_viewmodel.dart';
+import '../../../core/constants.dart';
+import '../../../domain/entities/address_suggestion.dart';
+import '../../viewmodels/autocomplete_viewmodel.dart';
 
 class SearchSuggestionList extends StatelessWidget {
   final AutocompleteState state;

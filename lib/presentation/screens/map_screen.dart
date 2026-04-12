@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import '../widgets/address_search_bar.dart';
+import '../widgets/search_bar/address_search_bar.dart';
 import '../widgets/property_details_sheet.dart';
 import '../widgets/map_layer_toggle.dart';
 import '../viewmodels/property_search_viewmodel.dart';
