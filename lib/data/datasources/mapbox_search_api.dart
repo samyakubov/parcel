@@ -33,7 +33,6 @@ class MapboxSearchApi {
 
   /// Fetches address suggestions for [query].
   /// Returns at most [AppConstants.autocompleteMaxResults] results.
-  ///
   /// Geocoding v5 includes coordinates directly on each feature, so the
   /// selection flow is a single suggest request with no follow-up retrieve.
   Future<List<AddressSuggestion>> suggest(String query) async {
