@@ -12,6 +12,7 @@ class SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.only(left: 4, bottom: 24),
       child: Column(
@@ -19,10 +20,10 @@ class SectionHeader extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w800,
-              color: Colors.black87,
+              color: theme.colorScheme.onSurface,
               letterSpacing: -0.5,
             ),
           ),
@@ -31,7 +32,7 @@ class SectionHeader extends StatelessWidget {
             Text(
               subtitle!,
               style: TextStyle(
-                color: Colors.grey.shade500,
+                color: theme.colorScheme.secondary,
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
               ),

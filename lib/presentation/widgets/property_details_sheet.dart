@@ -21,6 +21,7 @@ class PropertyDetailsSheet extends ConsumerWidget {
     final state = ref.watch(propertySearchViewModelProvider);
     final property = state.value;
     final isLoading = state.isLoading;
+    final theme = Theme.of(context);
 
     if (property == null && !isLoading) return const SizedBox.shrink();
 
@@ -32,11 +33,13 @@ class PropertyDetailsSheet extends ConsumerWidget {
       builder: (context, scrollController) {
         return Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: theme.scaffoldBackgroundColor,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.12),
+                color: theme.brightness == Brightness.light
+                    ? Colors.black.withOpacity(0.12)
+                    : Colors.black.withOpacity(0.4),
                 blurRadius: 20,
                 spreadRadius: 2,
                 offset: const Offset(0, -2),
@@ -45,17 +48,21 @@ class PropertyDetailsSheet extends ConsumerWidget {
           ),
           clipBehavior: Clip.antiAlias,
           child: isLoading 
-            ? _buildSkeleton()
-            : _buildContent(context, ref, property!, scrollController),
+            ? _buildSkeleton(theme)
+            : _buildContent(context, ref, property!, scrollController, theme),
         );
       },
     );
   }
 
-  Widget _buildSkeleton() {
+  Widget _buildSkeleton(ThemeData theme) {
     return Shimmer.fromColors(
-      baseColor: Colors.grey.shade100,
-      highlightColor: Colors.white,
+      baseColor: theme.brightness == Brightness.light 
+        ? Colors.grey.shade100 
+        : theme.cardColor,
+      highlightColor: theme.brightness == Brightness.light 
+        ? Colors.white 
+        : theme.dividerColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -113,7 +120,7 @@ class PropertyDetailsSheet extends ConsumerWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context, WidgetRef ref, dynamic property, ScrollController scrollController) {
+  Widget _buildContent(BuildContext context, WidgetRef ref, dynamic property, ScrollController scrollController, ThemeData theme) {
     // Try to extract address from the first record if available
     String addressTitle = 'Property Details';
     if (property.records.isNotEmpty) {
@@ -146,20 +153,20 @@ class PropertyDetailsSheet extends ConsumerWidget {
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) => Container(
                     height: 240,
-                    color: Colors.grey.shade100,
-                    child: const Center(child: Icon(Icons.broken_image_rounded, size: 48, color: Colors.grey)),
+                    color: theme.brightness == Brightness.light ? Colors.grey.shade100 : theme.cardColor,
+                    child: Center(child: Icon(Icons.broken_image_rounded, size: 48, color: theme.colorScheme.secondary)),
                   ),
                   loadingBuilder: (context, child, loadingProgress) {
                     if (loadingProgress == null) return child;
                     return Container(
                       height: 240,
-                      color: Colors.grey.shade50,
+                      color: theme.brightness == Brightness.light ? Colors.grey.shade50 : theme.cardColor,
                       child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
                     );
                   },
                 )
               else
-                Container(height: 240, color: Colors.grey.shade100),
+                Container(height: 240, color: theme.brightness == Brightness.light ? Colors.grey.shade100 : theme.cardColor),
               
               // Drag Handle Overlay
               Positioned(
@@ -202,8 +209,8 @@ class PropertyDetailsSheet extends ConsumerWidget {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Colors.white.withOpacity(0),
-                        Colors.white,
+                        theme.scaffoldBackgroundColor.withOpacity(0),
+                        theme.scaffoldBackgroundColor,
                       ],
                     ),
                   ),
@@ -237,11 +244,11 @@ class PropertyDetailsSheet extends ConsumerWidget {
             padding: const EdgeInsets.fromLTRB(24, 20, 24, 12),
             child: Text(
               addressTitle,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.w900,
                 letterSpacing: -0.8,
-                color: Colors.black,
+                color: theme.colorScheme.onSurface,
                 height: 1.1,
               ),
             ),
@@ -251,7 +258,7 @@ class PropertyDetailsSheet extends ConsumerWidget {
             margin: const EdgeInsets.symmetric(horizontal: 20),
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: Colors.grey.shade100,
+              color: theme.brightness == Brightness.light ? Colors.grey.shade100 : theme.cardColor,
               borderRadius: BorderRadius.circular(12),
             ),
             child: TabBar(
@@ -260,7 +267,7 @@ class PropertyDetailsSheet extends ConsumerWidget {
               dividerColor: Colors.transparent,
               indicatorSize: TabBarIndicatorSize.tab,
               indicator: BoxDecoration(
-                color: Colors.white,
+                color: theme.brightness == Brightness.light ? Colors.white : theme.dividerColor,
                 borderRadius: BorderRadius.circular(8),
                 boxShadow: [
                   BoxShadow(
@@ -270,8 +277,8 @@ class PropertyDetailsSheet extends ConsumerWidget {
                   )
                 ],
               ),
-              labelColor: Colors.black87,
-              unselectedLabelColor: Colors.grey.shade500,
+              labelColor: theme.colorScheme.onSurface,
+              unselectedLabelColor: theme.colorScheme.secondary,
               labelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
               unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
               tabs: const [

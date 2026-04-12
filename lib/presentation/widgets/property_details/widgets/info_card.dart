@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_theme.dart';
 
 class InfoCard extends StatelessWidget {
   final List<Widget> children;
@@ -6,23 +7,21 @@ class InfoCard extends StatelessWidget {
   const InfoCard({
     super.key,
     required this.children,
-    // Keep these markers for backward compatibility if needed, but they are unused now
-    IconData? icon,
-    String? title,
-    MaterialColor? color,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
     return Container(
       margin: const EdgeInsets.only(bottom: 24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(color: theme.colorScheme.cardBorder),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withOpacity(theme.brightness == Brightness.light ? 0.03 : 0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           )

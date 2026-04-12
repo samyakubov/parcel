@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_theme.dart';
 import 'status_tag.dart';
 
 class ListItemCard extends StatelessWidget {
@@ -25,15 +26,17 @@ class ListItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(color: theme.colorScheme.cardBorder),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withOpacity(theme.brightness == Brightness.light ? 0.02 : 0.2),
             blurRadius: 8,
             offset: const Offset(0, 4),
           )
@@ -49,32 +52,51 @@ class ListItemCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     title,
-                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Colors.black87),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700, 
+                      fontSize: 15, 
+                      color: theme.colorScheme.onSurface,
+                    ),
                   ),
                 ),
                 if (status != null) StatusTag(status: status!, isPositive: isStatusPositive),
                 if (amount != null && status == null)
                   Text(
                     amount!,
-                    style: TextStyle(color: color.shade700, fontWeight: FontWeight.w700, fontSize: 13),
+                    style: TextStyle(
+                      color: theme.brightness == Brightness.light ? color.shade700 : color.shade300, 
+                      fontWeight: FontWeight.w700, 
+                      fontSize: 13,
+                    ),
                   ),
               ],
             ),
             if (subtitle != null) ...[
               const SizedBox(height: 6),
-              Text(subtitle!, style: TextStyle(color: Colors.grey.shade600, fontSize: 13, height: 1.3)),
+              Text(
+                subtitle!, 
+                style: TextStyle(
+                  color: theme.colorScheme.secondary, 
+                  fontSize: 13, 
+                  height: 1.3,
+                ),
+              ),
             ],
             if (date != null || (amount != null && status != null)) ...[
               const SizedBox(height: 12),
               Row(
                 children: [
                   if (date != null) ...[
-                    Icon(Icons.event_note_outlined, size: 13, color: Colors.grey.shade400),
+                    Icon(Icons.event_note_outlined, size: 13, color: theme.colorScheme.secondary.withOpacity(0.5)),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         date!, 
-                        style: TextStyle(color: Colors.grey.shade400, fontSize: 12, fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                          color: theme.colorScheme.secondary.withOpacity(0.7), 
+                          fontSize: 12, 
+                          fontWeight: FontWeight.w500,
+                        ),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                       ),
@@ -85,7 +107,11 @@ class ListItemCard extends StatelessWidget {
                     if (date != null) const SizedBox(width: 12),
                     Text(
                       amount!,
-                      style: TextStyle(color: color.shade700, fontWeight: FontWeight.w700, fontSize: 12),
+                      style: TextStyle(
+                        color: theme.brightness == Brightness.light ? color.shade700 : color.shade300, 
+                        fontWeight: FontWeight.w700, 
+                        fontSize: 12,
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],

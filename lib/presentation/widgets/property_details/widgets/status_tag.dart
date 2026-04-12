@@ -12,17 +12,25 @@ class StatusTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isPositive ? Colors.green : Colors.amber;
+    final theme = Theme.of(context);
+    final baseColor = isPositive ? Colors.green : Colors.amber;
+    final bgColor = theme.brightness == Brightness.light 
+      ? baseColor.shade50 
+      : baseColor.withOpacity(0.15);
+    final textColor = theme.brightness == Brightness.light 
+      ? baseColor.shade700 
+      : baseColor.shade300;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.shade50,
+        color: bgColor,
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
         status.toUpperCase(),
         style: TextStyle(
-          color: color.shade700,
+          color: textColor,
           fontSize: 9,
           fontWeight: FontWeight.w800,
           letterSpacing: 0.5,

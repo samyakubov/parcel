@@ -1,0 +1,24 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+// Modern Notifier approach (standard in Riverpod 2.x/3.x)
+class ThemeNotifier extends Notifier<ThemeMode> {
+  @override
+  ThemeMode build() => ThemeMode.system;
+
+  void setThemeMode(ThemeMode mode) {
+    state = mode;
+  }
+
+  void toggleTheme() {
+    if (state == ThemeMode.light) {
+      state = ThemeMode.dark;
+    } else {
+      state = ThemeMode.light;
+    }
+  }
+}
+
+final themeModeProvider = NotifierProvider<ThemeNotifier, ThemeMode>(() {
+  return ThemeNotifier();
+});

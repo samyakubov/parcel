@@ -20,23 +20,31 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(propertySearchViewModelProvider);
+    final theme = Theme.of(context);
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(30),
-        boxShadow: const [
-          BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 4)),
+        boxShadow: [
+          BoxShadow(
+            color: theme.brightness == Brightness.light 
+              ? Colors.black12 
+              : Colors.black.withOpacity(0.3), 
+            blurRadius: 10, 
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: TextField(
         controller: _controller,
         textInputAction: TextInputAction.search,
         onSubmitted: (_) => _onSearch(),
+        style: TextStyle(color: theme.colorScheme.onSurface),
         decoration: InputDecoration(
           hintText: 'Search address...',
-          prefixIcon: const Icon(Icons.search),
+          hintStyle: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5)),
+          prefixIcon: Icon(Icons.search, color: theme.colorScheme.onSurface.withOpacity(0.6)),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
           suffixIcon: null,

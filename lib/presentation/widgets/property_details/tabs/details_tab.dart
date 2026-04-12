@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../domain/entities/property.dart';
 import '../../../../core/utils/date_formatter.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../widgets/info_card.dart';
 import '../widgets/detail_grid.dart';
 import '../widgets/section_header.dart';
@@ -18,6 +19,7 @@ class DetailsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final currencyFormatter = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
     final numberFormatter = NumberFormat.decimalPattern();
     final zoning = property.zoning;
@@ -46,7 +48,7 @@ class DetailsTab extends StatelessWidget {
                 Text(
                   'Last Sold Price',
                   style: TextStyle(
-                    color: Colors.grey.shade500,
+                    color: theme.colorScheme.secondary,
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.5,
@@ -55,19 +57,19 @@ class DetailsTab extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   lastSoldPrice != null ? currencyFormatter.format(lastSoldPrice) : 'N/A',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 36,
                     fontWeight: FontWeight.w900,
-                    color: Colors.black,
+                    color: theme.colorScheme.onSurface,
                     letterSpacing: -1.5,
                   ),
                 ),
               ],
             ),
             
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 24),
-              child: Divider(height: 1),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24),
+              child: Divider(height: 1, color: theme.dividerColor),
             ),
             
             // Grid metrics
@@ -89,24 +91,28 @@ class DetailsTab extends StatelessWidget {
           
           if (zoning.zoningDistricts.isNotEmpty)
             _buildZoningCard(
+              context,
               title: 'Zoning Districts',
               codes: zoning.zoningDistricts,
             ),
           
           if (zoning.commercialOverlays.isNotEmpty)
             _buildZoningCard(
+              context,
               title: 'Commercial Overlays',
               codes: zoning.commercialOverlays,
             ),
           
           if (zoning.specialDistricts.isNotEmpty)
             _buildZoningCard(
+              context,
               title: 'Special Districts',
               codes: zoning.specialDistricts,
             ),
           
           if (zoning.limitedHeightDistrict != null && zoning.limitedHeightDistrict!.isNotEmpty)
             _buildZoningCard(
+              context,
               title: 'Limited Height District',
               codes: [zoning.limitedHeightDistrict!],
             ),
@@ -117,7 +123,7 @@ class DetailsTab extends StatelessWidget {
               child: Text(
                 'Zoning Last Updated: ${zoning.lastUpdated}',
                 style: TextStyle(
-                  color: Colors.grey.shade400,
+                  color: theme.colorScheme.secondary.withOpacity(0.5),
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
                 ),
@@ -130,10 +136,11 @@ class DetailsTab extends StatelessWidget {
     );
   }
 
-  Widget _buildZoningCard({
+  Widget _buildZoningCard(BuildContext context, {
     required String title,
     required List<String> codes,
   }) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -144,7 +151,7 @@ class DetailsTab extends StatelessWidget {
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w700,
-              color: Colors.grey.shade500,
+              color: theme.colorScheme.secondary,
               letterSpacing: 0.5,
             ),
           ),
@@ -157,14 +164,14 @@ class DetailsTab extends StatelessWidget {
               children: codes.map((code) => Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
+                  color: theme.brightness == Brightness.light ? Colors.grey.shade50 : theme.dividerColor.withOpacity(0.5),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade200),
+                  border: Border.all(color: theme.colorScheme.cardBorder),
                 ),
                 child: Text(
                   code,
                   style: TextStyle(
-                    color: Colors.grey.shade800,
+                    color: theme.colorScheme.onSurface,
                     fontWeight: FontWeight.w700,
                     fontSize: 14,
                     letterSpacing: 0.5,

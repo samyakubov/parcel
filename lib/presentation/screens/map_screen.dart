@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import '../widgets/address_search_bar.dart';
 import '../widgets/property_details_sheet.dart';
+import '../widgets/map_layer_toggle.dart';
 import '../viewmodels/property_search_viewmodel.dart';
+import '../viewmodels/map_style_viewmodel.dart';
 
 class MapScreen extends ConsumerStatefulWidget {
   const MapScreen({super.key});
@@ -15,11 +17,16 @@ class MapScreen extends ConsumerStatefulWidget {
 class _MapScreenState extends ConsumerState<MapScreen> {
   MapboxMap? mapboxMap;
   CircleAnnotationManager? circleAnnotationManager;
+  String? _currentStyle;
 
   void _onMapCreated(MapboxMap mapboxMap) async {
     this.mapboxMap = mapboxMap;
     circleAnnotationManager = await mapboxMap.annotations.createCircleAnnotationManager();
     
+    // Clean up UI by removing Mapbox branding
+    mapboxMap.logo.updateSettings(LogoSettings(enabled: false));
+    mapboxMap.attribution.updateSettings(AttributionSettings(enabled: false));
+
     mapboxMap.setCamera(CameraOptions(
       center: Point(coordinates: Position(-74.0060, 40.7128)), // NYC
       zoom: 12.0,
@@ -34,9 +41,30 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     );
   }
 
+  String _getEffectiveStyle(MapLayerStyle preference, Brightness brightness) {
+    if (preference == MapLayerStyle.satellite) {
+      return MapboxStyles.SATELLITE_STREETS;
+    }
+    return brightness == Brightness.dark 
+      ? MapboxStyles.DARK 
+      : MapboxStyles.LIGHT;
+  }
+
   @override
   Widget build(BuildContext context) {
     final searchState = ref.watch(propertySearchViewModelProvider);
+    final mapPreference = ref.watch(mapStyleProvider);
+    final brightness = Theme.of(context).brightness;
+    
+    final targetStyle = _getEffectiveStyle(mapPreference, brightness);
+
+    // Update map style if it change
+    if (mapboxMap != null && _currentStyle != targetStyle) {
+      _currentStyle = targetStyle;
+      mapboxMap!.loadStyleURI(targetStyle);
+    } else {
+      _currentStyle = targetStyle;
+    }
 
     // Listen for successful searches to fly the camera
     ref.listen(propertySearchViewModelProvider, (previous, next) {
@@ -71,10 +99,12 @@ class _MapScreenState extends ConsumerState<MapScreen> {
         children: [
           MapWidget(
             key: const ValueKey("mapWidget"),
-            styleUri: MapboxStyles.SATELLITE_STREETS,
+            styleUri: targetStyle,
             onMapCreated: _onMapCreated,
             onTapListener: _onMapTap,
           ),
+          
+          // Header Overlay
           const SafeArea(
             child: Align(
               alignment: Alignment.topCenter,
@@ -84,6 +114,18 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               ),
             ),
           ),
+
+          // Map Control Toggles (Floating)
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            bottom: (searchState.value != null || searchState.isLoading) 
+              ? (MediaQuery.of(context).size.height * 0.5) + 16 
+              : 24 + MediaQuery.of(context).padding.bottom,
+            right: 16,
+            child: const MapLayerToggle(),
+          ),
+
           // Sheet anchored to bottom — map above remains tappable
           if (searchState.value != null || searchState.isLoading)
             const Align(

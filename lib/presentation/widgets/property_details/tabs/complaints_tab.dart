@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../domain/entities/property.dart';
 import '../../../../core/utils/date_formatter.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../widgets/status_tag.dart';
 import '../widgets/detail_grid.dart';
 import '../widgets/empty_state.dart';
@@ -18,6 +19,9 @@ class ComplaintsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     if (property.complaints.isEmpty) {
       return EmptyState(controller: controller, icon: Icons.verified_user_rounded, message: 'No complaints recorded.');
     }
@@ -43,12 +47,12 @@ class ComplaintsTab extends StatelessWidget {
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: theme.cardColor,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey.shade100),
+            border: Border.all(color: theme.colorScheme.cardBorder),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.02),
+                color: Colors.black.withOpacity(isDark ? 0.2 : 0.02),
                 blurRadius: 8,
                 offset: const Offset(0, 4),
               )
@@ -56,21 +60,33 @@ class ComplaintsTab extends StatelessWidget {
           ),
           clipBehavior: Clip.antiAlias,
           child: Theme(
-            data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+            data: theme.copyWith(dividerColor: Colors.transparent),
             child: ExpansionTile(
               tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               childrenPadding: EdgeInsets.zero,
-              iconColor: Colors.grey.shade400,
+              iconColor: theme.colorScheme.secondary,
+              collapsedIconColor: theme.colorScheme.secondary.withOpacity(0.5),
               title: Text(
                 category,
-                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Colors.black87),
+                style: TextStyle(
+                  fontWeight: FontWeight.w700, 
+                  fontSize: 15, 
+                  color: theme.colorScheme.onSurface,
+                ),
               ),
-              subtitle: Text('#$number', style: TextStyle(fontSize: 12, color: Colors.grey.shade400, fontWeight: FontWeight.w500)),
+              subtitle: Text(
+                '#$number', 
+                style: TextStyle(
+                  fontSize: 12, 
+                  color: theme.colorScheme.secondary, 
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
               trailing: StatusTag(status: status, isPositive: isClosed),
               children: [
                 Container(
                   width: double.infinity,
-                  color: Colors.grey.shade50,
+                  color: isDark ? theme.dividerColor.withOpacity(0.3) : Colors.grey.shade50,
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

@@ -14,18 +14,30 @@ class StandardRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Row(
       children: [
-        Icon(icon, size: 18, color: Colors.grey.shade400),
+        Icon(icon, size: 18, color: theme.colorScheme.secondary.withOpacity(0.5)),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: TextStyle(fontSize: 11, color: Colors.grey.shade500, fontWeight: FontWeight.w600)),
+              Text(
+                label, 
+                style: TextStyle(
+                  fontSize: 11, 
+                  color: theme.colorScheme.secondary, 
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               Text(
                 value, 
-                style: const TextStyle(fontSize: 15, color: Colors.black87, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                  fontSize: 15, 
+                  color: theme.colorScheme.onSurface, 
+                  fontWeight: FontWeight.w600,
+                ),
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
               ),
