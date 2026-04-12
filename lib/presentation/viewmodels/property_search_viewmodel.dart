@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/property.dart';
-import '../../domain/repositories/property_repository.dart';
 import '../../data/repositories/property_repository_impl.dart';
 
 final propertySearchViewModelProvider = NotifierProvider<PropertySearchViewModel, AsyncValue<Property?>>(PropertySearchViewModel.new);
