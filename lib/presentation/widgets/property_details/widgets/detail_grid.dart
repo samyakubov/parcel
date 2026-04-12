@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:parcel_mobile_app/core/theme/app_theme.dart';
 
 class DetailItem {
   final String label;
@@ -13,7 +14,9 @@ class DetailGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     if (items.isEmpty) return const SizedBox.shrink();
+    
     return Wrap(
       spacing: 20,
       runSpacing: 16,
@@ -22,9 +25,24 @@ class DetailGrid extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(item.label, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.grey.shade400, letterSpacing: 0.5)),
+            Text(
+              item.label, 
+              style: TextStyle(
+                fontSize: 10, 
+                fontWeight: FontWeight.w700, 
+                color: theme.colorScheme.goldAccent, 
+                letterSpacing: 0.5,
+              ),
+            ),
             const SizedBox(height: 2),
-            Text(item.value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black87)),
+            Text(
+              item.value, 
+              style: TextStyle(
+                fontSize: 13, 
+                fontWeight: FontWeight.w600, 
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
           ],
         ),
       )).toList(),

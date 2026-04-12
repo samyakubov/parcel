@@ -5,6 +5,7 @@ import '../../../../core/utils/date_formatter.dart';
 import '../widgets/list_item_card.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/section_header.dart';
+import '../../../../core/theme/app_theme.dart';
 
 class ActivityTab extends StatelessWidget {
   final Property property;
@@ -48,7 +49,7 @@ class ActivityTab extends StatelessWidget {
           date: DateFormatter.format(date),
           amount: amount > 0 ? currencyFormatter.format(amount) : null,
           icon: Icons.description_outlined,
-          color: Colors.blue,
+          color: Theme.of(context).colorScheme.goldAccent,
         );
       },
     );

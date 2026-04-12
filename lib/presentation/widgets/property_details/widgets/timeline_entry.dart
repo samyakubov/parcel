@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_theme.dart';
 
 class TimelineEntry extends StatelessWidget {
   final String name;
@@ -18,6 +19,15 @@ class TimelineEntry extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
+    final gold = theme.colorScheme.goldAccent;
+    final activeColor = gold;
+    final activeBg = gold.withOpacity(0.12);
+    final activeBorder = gold.withOpacity(0.3);
+    final activeText = gold;
+    
     // Strip phone number from name if present
     final displayName = name.replaceAll(RegExp(r'\s*\(.*?\)\s*'), '').trim();
     final phoneMatch = RegExp(r'\((\d{10})\)').firstMatch(name);
@@ -33,21 +43,21 @@ class TimelineEntry extends StatelessWidget {
             child: Column(
               children: [
                 if (!isFirst)
-                  Container(width: 2, height: 12, color: Colors.grey.shade100),
+                  Container(width: 2, height: 12, color: theme.dividerColor),
                 Container(
                   width: 12,
                   height: 12,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isCurrent ? Colors.blue.shade600 : Colors.white,
+                    color: isCurrent ? activeColor : theme.cardColor,
                     border: Border.all(
-                      color: isCurrent ? Colors.blue.shade200 : Colors.grey.shade300,
+                      color: isCurrent ? activeColor.withOpacity(0.5) : theme.colorScheme.secondary.withOpacity(0.3),
                       width: 2,
                     ),
                     boxShadow: [
                       if (isCurrent)
                         BoxShadow(
-                          color: Colors.blue.withOpacity(0.2),
+                          color: activeColor.withOpacity(0.2),
                           blurRadius: 4,
                           spreadRadius: 1,
                         )
@@ -56,7 +66,7 @@ class TimelineEntry extends StatelessWidget {
                 ),
                 if (!isLast)
                   Expanded(
-                    child: Container(width: 2, color: Colors.grey.shade100),
+                    child: Container(width: 2, color: theme.dividerColor),
                   ),
               ],
             ),
@@ -68,12 +78,12 @@ class TimelineEntry extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 20),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: theme.cardColor,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: isCurrent ? Colors.blue.shade50 : Colors.grey.shade100),
+                border: Border.all(color: isCurrent ? activeBorder : theme.colorScheme.cardBorder),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.02),
+                    color: Colors.black.withOpacity(isDark ? 0.2 : 0.02),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   )
@@ -85,13 +95,13 @@ class TimelineEntry extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: isCurrent ? Colors.blue.shade50 : Colors.grey.shade50,
+                      color: isCurrent ? activeBg : theme.brightness == Brightness.light ? Colors.grey.shade50 : theme.dividerColor,
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
                       label.toUpperCase(),
                       style: TextStyle(
-                        color: isCurrent ? Colors.blue.shade700 : Colors.grey.shade600,
+                        color: isCurrent ? activeText : theme.colorScheme.secondary,
                         fontSize: 9,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.5,
@@ -104,18 +114,18 @@ class TimelineEntry extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 16,
-                      color: isCurrent ? Colors.blue.shade900 : Colors.black87,
+                      color: isCurrent ? gold : theme.colorScheme.onSurface,
                     ),
                   ),
                   if (phone != null) ...[
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        Icon(Icons.phone_rounded, size: 14, color: Colors.grey.shade400),
+                        Icon(Icons.phone_rounded, size: 14, color: theme.colorScheme.secondary.withOpacity(0.6)),
                         const SizedBox(width: 6),
                         Text(
                           '(${phone.substring(0, 3)}) ${phone.substring(3, 6)}-${phone.substring(6)}',
-                          style: TextStyle(color: Colors.grey.shade500, fontSize: 13, fontWeight: FontWeight.w500),
+                          style: TextStyle(color: theme.colorScheme.secondary, fontSize: 13, fontWeight: FontWeight.w500),
                         ),
                       ],
                     ),

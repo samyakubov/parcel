@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../domain/entities/property.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../widgets/info_card.dart';
 import '../widgets/standard_row.dart';
 import '../widgets/empty_state.dart';
@@ -18,6 +19,7 @@ class MortgageTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final mortgage = property.mortgage;
     final currencyFormatter = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
 
@@ -40,21 +42,29 @@ class MortgageTab extends StatelessWidget {
               children: [
                 Text(
                   'Principal Amount',
-                  style: TextStyle(color: Colors.grey.shade500, fontSize: 12, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    color: theme.colorScheme.secondary, 
+                    fontSize: 12, 
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.5,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   mortgage.amount != null ? currencyFormatter.format(mortgage.amount) : 'N/A',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.w900,
-                    color: Colors.black,
+                    color: theme.colorScheme.goldAccent,
                     letterSpacing: -1,
                   ),
                 ),
               ],
             ),
-            const Divider(height: 40),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24),
+              child: Divider(height: 1, color: theme.dividerColor),
+            ),
             StandardRow(icon: Icons.business_rounded, label: 'Lender', value: mortgage.lender ?? 'Unknown Lender'),
             const SizedBox(height: 12),
             StandardRow(icon: Icons.person_outline_rounded, label: 'Borrower', value: mortgage.borrower ?? 'Unknown Borrower'),
