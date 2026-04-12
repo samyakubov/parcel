@@ -19,6 +19,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   MapboxMap? mapboxMap;
   CircleAnnotationManager? circleAnnotationManager;
   String? _currentStyle;
+  bool _skipNextPropertyFlyTo = false;
 
   void _onMapCreated(MapboxMap mapboxMap) async {
     this.mapboxMap = mapboxMap;
@@ -32,6 +33,9 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       center: Point(coordinates: Position(-74.0060, 40.7128)), // NYC
       zoom: 12.0,
     ));
+
+    // Trigger rebuild so AddressSearchBar receives the MapboxMap reference.
+    setState(() {});
   }
 
   void _onMapTap(MapContentGestureContext gestureContext) {
@@ -74,14 +78,19 @@ class _MapScreenState extends ConsumerState<MapScreen> {
         final coords = property.coordinates!;
         if (coords.latitude != null && coords.longitude != null) {
           final position = Position(coords.longitude!, coords.latitude!);
-          
-          mapboxMap!.flyTo(
-            CameraOptions(
-              center: Point(coordinates: position),
-              zoom: 16.0,
-            ),
-            MapAnimationOptions(duration: 1500),
-          );
+
+          // Skip flyTo when autocomplete already handled navigation to avoid
+          // a duplicate camera animation (Requirement 4.2).
+          if (!_skipNextPropertyFlyTo) {
+            mapboxMap!.flyTo(
+              CameraOptions(
+                center: Point(coordinates: position),
+                zoom: 16.0,
+              ),
+              MapAnimationOptions(duration: 1500),
+            );
+          }
+          _skipNextPropertyFlyTo = false;
 
           circleAnnotationManager?.deleteAll();
           circleAnnotationManager?.create(CircleAnnotationOptions(
@@ -96,44 +105,52 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     });
 
     return Scaffold(
-      body: Stack(
-        children: [
-          MapWidget(
-            key: const ValueKey("mapWidget"),
-            styleUri: targetStyle,
-            onMapCreated: _onMapCreated,
-            onTapListener: _onMapTap,
-          ),
-          
-          // Header Overlay
-          const SafeArea(
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: Padding(
-                padding: EdgeInsets.all(16.0),
-                child: AddressSearchBar(),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final screenHeight = constraints.maxHeight;
+          return Stack(
+            children: [
+              MapWidget(
+                key: const ValueKey("mapWidget"),
+                styleUri: targetStyle,
+                onMapCreated: _onMapCreated,
+                onTapListener: _onMapTap,
               ),
-            ),
-          ),
+              
+              // Header Overlay
+              SafeArea(
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: AddressSearchBar(
+                      mapboxMap: mapboxMap,
+                      onAutocompleteNavigating: () => _skipNextPropertyFlyTo = true,
+                    ),
+                  ),
+                ),
+              ),
 
-          // Map Control Toggles (Floating)
-          AnimatedPositioned(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-            bottom: (searchState.value != null || searchState.isLoading) 
-              ? (MediaQuery.of(context).size.height * 0.5) + 16 
-              : 24 + MediaQuery.of(context).padding.bottom,
-            right: 16,
-            child: const MapLayerToggle(),
-          ),
+              // Map Control Toggles (Floating)
+              AnimatedPositioned(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                bottom: (searchState.value != null || searchState.isLoading)
+                    ? (screenHeight * 0.5) + 16
+                    : 24 + MediaQuery.of(context).padding.bottom,
+                right: 16,
+                child: const MapLayerToggle(),
+              ),
 
-          // Sheet anchored to bottom — map above remains tappable
-          if (searchState.value != null || searchState.isLoading)
-            const Align(
-              alignment: Alignment.bottomCenter,
-              child: PropertyDetailsSheet(),
-            ),
-        ],
+              // Sheet anchored to bottom — map above remains tappable
+              if (searchState.value != null || searchState.isLoading)
+                const Align(
+                  alignment: Alignment.bottomCenter,
+                  child: PropertyDetailsSheet(),
+                ),
+            ],
+          );
+        },
       ),
     );
   }
