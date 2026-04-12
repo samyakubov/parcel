@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
+import 'property_card_surface.dart';
 
 class InfoCard extends StatelessWidget {
   final List<Widget> children;
@@ -12,27 +13,17 @@ class InfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
-    return Container(
+ 
+    return PropertyCardSurface(
       margin: const EdgeInsets.only(bottom: 24),
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: theme.colorScheme.goldAccent.withOpacity(0.35)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(theme.brightness == Brightness.light ? 0.03 : 0.2),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          )
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: children,
-        ),
+      padding: const EdgeInsets.all(24),
+      radius: 20,
+      borderColor: theme.colorScheme.goldAccent.withValues(alpha: 0.35),
+      lightShadowOpacity: 0.03,
+      shadowBlurRadius: 10,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: children,
       ),
     );
   }

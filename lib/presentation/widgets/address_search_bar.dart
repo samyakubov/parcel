@@ -4,6 +4,7 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../core/constants.dart';
+import '../../core/utils/address_normalizer.dart';
 import '../../domain/entities/address_suggestion.dart';
 import '../viewmodels/autocomplete_viewmodel.dart';
 import '../viewmodels/property_search_viewmodel.dart';
@@ -21,11 +22,6 @@ class AddressSearchBar extends ConsumerStatefulWidget {
 class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   void dispose() {
@@ -48,8 +44,7 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
 
   void _onSearch() {
     if (_controller.text.isNotEmpty) {
-      final text = _controller.text;
-      final streetAddress = text.contains(',') ? text.split(',')[0].trim() : text;
+      final streetAddress = AddressNormalizer.streetOnly(_controller.text);
       _focusNode.unfocus();
       ref.read(autocompleteViewModelProvider.notifier).dismiss();
       ref

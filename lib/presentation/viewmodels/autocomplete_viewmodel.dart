@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
 import '../../core/constants.dart';
+import '../../core/utils/address_normalizer.dart';
 import '../../data/datasources/mapbox_search_api.dart';
 import '../../domain/entities/address_suggestion.dart';
 import 'property_search_viewmodel.dart';
@@ -53,9 +54,6 @@ final autocompleteViewModelProvider =
 // ---------------------------------------------------------------------------
 
 class AutocompleteViewModel extends Notifier<AutocompleteState> {
-  /// Session token — generated once per ViewModel lifecycle.
-  late final String _sessionToken;
-
   /// Debounce timer — cancelled on each new keystroke.
   Timer? _debounceTimer;
 
@@ -68,7 +66,6 @@ class AutocompleteViewModel extends Notifier<AutocompleteState> {
 
   @override
   AutocompleteState build() {
-    _sessionToken = DateTime.now().millisecondsSinceEpoch.toString();
     // Cancel any pending timer when the provider is disposed.
     ref.onDispose(() => _debounceTimer?.cancel());
     return const AutocompleteIdle();
@@ -130,9 +127,7 @@ class AutocompleteViewModel extends Notifier<AutocompleteState> {
       );
 
       // Trigger property search using street address only (strip city/state/zip).
-      final streetAddress = suggestion.fullName.contains(',')
-          ? suggestion.fullName.split(',')[0].trim()
-          : suggestion.fullName;
+      final streetAddress = AddressNormalizer.streetOnly(suggestion.fullName);
       ref
           .read(propertySearchViewModelProvider.notifier)
           .searchByAddress(streetAddress);
@@ -171,7 +166,7 @@ class AutocompleteViewModel extends Notifier<AutocompleteState> {
     state = const AutocompleteLoading();
 
     try {
-      final suggestions = await _api.suggest(query, _sessionToken);
+      final suggestions = await _api.suggest(query);
 
       // Discard stale response.
       if (capturedGeneration != _generation) return;

@@ -14,10 +14,6 @@ class MapStyleNotifier extends Notifier<MapLayerStyle> {
       ? MapLayerStyle.satellite 
       : MapLayerStyle.standard;
   }
-
-  void setStyle(MapLayerStyle style) {
-    state = style;
-  }
 }
 
 final mapStyleProvider = NotifierProvider<MapStyleNotifier, MapLayerStyle>(() {

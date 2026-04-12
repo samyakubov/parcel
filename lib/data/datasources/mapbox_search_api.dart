@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import '../../core/constants.dart';
+import '../../core/utils/address_normalizer.dart';
 import '../../domain/entities/address_suggestion.dart';
 
 // Exception types
@@ -32,15 +33,12 @@ class MapboxSearchApi {
 
   /// Fetches address suggestions for [query].
   /// Returns at most [AppConstants.autocompleteMaxResults] results.
-  /// [sessionToken] is accepted for API compatibility but not forwarded
-  /// (Geocoding v5 does not use session tokens).
-  Future<List<AddressSuggestion>> suggest(
-    String query,
-    String sessionToken,
-  ) async {
+  ///
+  /// Geocoding v5 includes coordinates directly on each feature, so the
+  /// selection flow is a single suggest request with no follow-up retrieve.
+  Future<List<AddressSuggestion>> suggest(String query) async {
     try {
-      // Strip to street address only (e.g. "79-33 213th Street, City, State" → "79-33 213th Street")
-      final streetOnly = query.contains(',') ? query.split(',')[0].trim() : query;
+      final streetOnly = AddressNormalizer.streetOnly(query);
       final encoded = Uri.encodeQueryComponent(streetOnly);
       final url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/$encoded.json';
       final response = await _dio.get<Map<String, dynamic>>(
@@ -62,18 +60,6 @@ class MapboxSearchApi {
     } on DioException catch (e) {
       throw _mapDioException(e);
     }
-  }
-
-  /// Returns the suggestion as-is — coordinates are already present from
-  /// the [suggest] call (Geocoding v5 includes `center` in every feature).
-  Future<AddressSuggestion> retrieve(
-    String mapboxId,
-    String sessionToken,
-  ) async {
-    throw UnimplementedError(
-      'retrieve() should not be called directly; '
-      'coordinates are already present on AddressSuggestion from suggest().',
-    );
   }
 
   // --- helpers ---
