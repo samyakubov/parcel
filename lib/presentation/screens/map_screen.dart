@@ -71,6 +71,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
         children: [
           MapWidget(
             key: const ValueKey("mapWidget"),
+            styleUri: MapboxStyles.SATELLITE_STREETS,
             onMapCreated: _onMapCreated,
             onTapListener: _onMapTap,
           ),

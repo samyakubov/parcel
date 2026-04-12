@@ -71,14 +71,24 @@ class ListItemCard extends StatelessWidget {
                   if (date != null) ...[
                     Icon(Icons.event_note_outlined, size: 13, color: Colors.grey.shade400),
                     const SizedBox(width: 4),
-                    Text(date!, style: TextStyle(color: Colors.grey.shade400, fontSize: 12, fontWeight: FontWeight.w500)),
+                    Expanded(
+                      child: Text(
+                        date!, 
+                        style: TextStyle(color: Colors.grey.shade400, fontSize: 12, fontWeight: FontWeight.w500),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ),
                   ],
-                  const Spacer(),
-                  if (amount != null && status != null)
+                  if (date == null) const Spacer(),
+                  if (amount != null && status != null) ...[
+                    if (date != null) const SizedBox(width: 12),
                     Text(
                       amount!,
                       style: TextStyle(color: color.shade700, fontWeight: FontWeight.w700, fontSize: 12),
+                      overflow: TextOverflow.ellipsis,
                     ),
+                  ],
                 ],
               ),
             ],
