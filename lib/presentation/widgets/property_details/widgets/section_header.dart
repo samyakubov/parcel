@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_theme.dart';
 
 class SectionHeader extends StatelessWidget {
   final String title;
@@ -32,7 +33,7 @@ class SectionHeader extends StatelessWidget {
             Text(
               subtitle!,
               style: TextStyle(
-                color: theme.colorScheme.secondary,
+                color: theme.colorScheme.goldAccent,
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
               ),

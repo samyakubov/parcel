@@ -10,7 +10,7 @@ class ListItemCard extends StatelessWidget {
   final String? status;
   final bool isStatusPositive;
   final IconData icon;
-  final MaterialColor color;
+  final Color color;
 
   const ListItemCard({
     super.key,
@@ -64,7 +64,7 @@ class ListItemCard extends StatelessWidget {
                   Text(
                     amount!,
                     style: TextStyle(
-                      color: theme.brightness == Brightness.light ? color.shade700 : color.shade300, 
+                      color: color, 
                       fontWeight: FontWeight.w700, 
                       fontSize: 13,
                     ),
@@ -108,7 +108,7 @@ class ListItemCard extends StatelessWidget {
                     Text(
                       amount!,
                       style: TextStyle(
-                        color: theme.brightness == Brightness.light ? color.shade700 : color.shade300, 
+                        color: color, 
                         fontWeight: FontWeight.w700, 
                         fontSize: 12,
                       ),

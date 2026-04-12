@@ -18,7 +18,7 @@ class InfoCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: theme.colorScheme.cardBorder),
+        border: Border.all(color: theme.colorScheme.goldAccent.withOpacity(0.35)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(theme.brightness == Brightness.light ? 0.03 : 0.2),

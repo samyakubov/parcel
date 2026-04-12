@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../domain/entities/property.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../widgets/info_card.dart';
 import '../widgets/standard_row.dart';
 import '../widgets/empty_state.dart';
@@ -54,7 +55,7 @@ class MortgageTab extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.w900,
-                    color: theme.colorScheme.onSurface,
+                    color: theme.colorScheme.goldAccent,
                     letterSpacing: -1,
                   ),
                 ),

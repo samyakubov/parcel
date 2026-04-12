@@ -22,11 +22,11 @@ class TimelineEntry extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     
-    // Day-friendly colors
-    final activeBlue = isDark ? Colors.blue.shade400 : Colors.blue.shade600;
-    final activeBg = isDark ? Colors.blue.withOpacity(0.15) : Colors.blue.shade50;
-    final activeBorder = isDark ? Colors.blue.withOpacity(0.3) : Colors.blue.shade100;
-    final activeText = isDark ? Colors.blue.shade300 : Colors.blue.shade800;
+    final gold = theme.colorScheme.goldAccent;
+    final activeColor = gold;
+    final activeBg = gold.withOpacity(0.12);
+    final activeBorder = gold.withOpacity(0.3);
+    final activeText = gold;
     
     // Strip phone number from name if present
     final displayName = name.replaceAll(RegExp(r'\s*\(.*?\)\s*'), '').trim();
@@ -49,15 +49,15 @@ class TimelineEntry extends StatelessWidget {
                   height: 12,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isCurrent ? activeBlue : theme.cardColor,
+                    color: isCurrent ? activeColor : theme.cardColor,
                     border: Border.all(
-                      color: isCurrent ? activeBlue.withOpacity(0.5) : theme.colorScheme.secondary.withOpacity(0.3),
+                      color: isCurrent ? activeColor.withOpacity(0.5) : theme.colorScheme.secondary.withOpacity(0.3),
                       width: 2,
                     ),
                     boxShadow: [
                       if (isCurrent)
                         BoxShadow(
-                          color: activeBlue.withOpacity(0.2),
+                          color: activeColor.withOpacity(0.2),
                           blurRadius: 4,
                           spreadRadius: 1,
                         )
@@ -114,7 +114,7 @@ class TimelineEntry extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 16,
-                      color: isCurrent ? (isDark ? Colors.blue.shade200 : Colors.blue.shade900) : theme.colorScheme.onSurface,
+                      color: isCurrent ? gold : theme.colorScheme.onSurface,
                     ),
                   ),
                   if (phone != null) ...[

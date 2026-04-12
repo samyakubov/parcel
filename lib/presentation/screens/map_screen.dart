@@ -6,6 +6,7 @@ import '../widgets/property_details_sheet.dart';
 import '../widgets/map_layer_toggle.dart';
 import '../viewmodels/property_search_viewmodel.dart';
 import '../viewmodels/map_style_viewmodel.dart';
+import '../../core/theme/app_theme.dart';
 
 class MapScreen extends ConsumerStatefulWidget {
   const MapScreen({super.key});
@@ -85,10 +86,10 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           circleAnnotationManager?.deleteAll();
           circleAnnotationManager?.create(CircleAnnotationOptions(
             geometry: Point(coordinates: position),
-            circleColor: Colors.blue.value,
+            circleColor: Theme.of(context).colorScheme.goldAccent.value,
             circleRadius: 8.0,
             circleStrokeWidth: 3.0,
-            circleStrokeColor: Colors.white.value,
+            circleStrokeColor: const Color(0xFFE5E2E1).value,
           ));
         }
       }

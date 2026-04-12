@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/theme/app_theme.dart';
 import '../viewmodels/map_style_viewmodel.dart';
 
 class MapLayerToggle extends ConsumerWidget {
@@ -39,7 +40,7 @@ class MapLayerToggle extends ConsumerWidget {
                     Icon(
                       isSatellite ? Icons.satellite_alt_rounded : Icons.layers_rounded,
                       size: 20,
-                      color: isSatellite ? theme.colorScheme.primary : theme.colorScheme.onSurface,
+                      color: isSatellite ? theme.colorScheme.goldAccent : theme.colorScheme.onSurface,
                     ),
                   ],
                 ),

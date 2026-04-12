@@ -12,6 +12,7 @@ import 'property_details/tabs/activity_tab.dart';
 import 'property_details/tabs/violations_tab.dart';
 import 'property_details/tabs/jobs_tab.dart';
 import 'property_details/tabs/complaints_tab.dart';
+import '../../core/theme/app_theme.dart';
 
 class PropertyDetailsSheet extends ConsumerWidget {
   const PropertyDetailsSheet({super.key});
@@ -277,7 +278,7 @@ class PropertyDetailsSheet extends ConsumerWidget {
                   )
                 ],
               ),
-              labelColor: theme.colorScheme.onSurface,
+              labelColor: theme.colorScheme.goldAccent,
               unselectedLabelColor: theme.colorScheme.secondary,
               labelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
               unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 15),

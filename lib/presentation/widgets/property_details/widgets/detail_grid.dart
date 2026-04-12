@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:parcel_mobile_app/core/theme/app_theme.dart';
 
 class DetailItem {
   final String label;
@@ -29,7 +30,7 @@ class DetailGrid extends StatelessWidget {
               style: TextStyle(
                 fontSize: 10, 
                 fontWeight: FontWeight.w700, 
-                color: theme.colorScheme.secondary, 
+                color: theme.colorScheme.goldAccent, 
                 letterSpacing: 0.5,
               ),
             ),

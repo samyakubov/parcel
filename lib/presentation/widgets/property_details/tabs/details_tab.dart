@@ -60,7 +60,7 @@ class DetailsTab extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 36,
                     fontWeight: FontWeight.w900,
-                    color: theme.colorScheme.onSurface,
+                    color: theme.colorScheme.goldAccent,
                     letterSpacing: -1.5,
                   ),
                 ),
