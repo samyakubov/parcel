@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../core/constants.dart';
 import '../../../domain/entities/address_suggestion.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../viewmodels/autocomplete_viewmodel.dart';
 
 class SearchSuggestionList extends StatelessWidget {
-  final AutocompleteState state;
+  final AsyncValue<List<AddressSuggestion>?> state;
   final void Function(AddressSuggestion) onSuggestionTap;
 
   const SearchSuggestionList({
@@ -20,8 +20,37 @@ class SearchSuggestionList extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    if (state is AutocompleteLoading) {
-      return Shimmer.fromColors(
+    return state.when(
+      data: (suggestions) {
+        if (suggestions == null) return const SizedBox.shrink();
+        if (suggestions.isEmpty) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            child: Row(
+              children: [
+                Icon(Icons.search_off, color: theme.colorScheme.onSurfaceVariant, size: 20),
+                const SizedBox(width: 12),
+                Text('No results found', style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+              ],
+            ),
+          );
+        }
+
+        final itemCount = suggestions.length.clamp(0, AppConstants.autocompleteMaxResults);
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 8),
+            for (int i = 0; i < itemCount; i++) ...[
+              if (i > 0)
+                Divider(height: 1, indent: 64, color: theme.colorScheme.outlineVariant.withOpacity(0.5)),
+              SearchSuggestionTile(suggestion: suggestions[i], onTap: onSuggestionTap),
+            ],
+            const SizedBox(height: 8),
+          ],
+        );
+      },
+      loading: () => Shimmer.fromColors(
         baseColor: theme.colorScheme.surfaceContainerHighest,
         highlightColor: theme.colorScheme.surfaceContainerLow,
         child: Column(
@@ -46,55 +75,18 @@ class SearchSuggestionList extends StatelessWidget {
             ),
           )),
         ),
-      );
-    }
-
-    if (state is AutocompleteEmpty) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-        child: Row(
-          children: [
-            Icon(Icons.search_off, color: theme.colorScheme.onSurfaceVariant, size: 20),
-            const SizedBox(width: 12),
-            Text('No results found', style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-          ],
-        ),
-      );
-    }
-
-    if (state is AutocompleteError) {
-      final kind = (state as AutocompleteError).kind;
-      final message = kind == AutocompleteErrorKind.auth ? 'Search unavailable.' : 'Could not load suggestions.';
-      return Padding(
+      ),
+      error: (error, stack) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
         child: Row(
           children: [
             Icon(Icons.error_outline, color: theme.colorScheme.error, size: 20),
             const SizedBox(width: 12),
-            Text(message, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.error)),
+            Text('Could not load suggestions.', style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.error)),
           ],
         ),
-      );
-    }
-
-    if (state is AutocompleteResults) {
-      final suggestions = (state as AutocompleteResults).suggestions;
-      final itemCount = suggestions.length.clamp(0, AppConstants.autocompleteMaxResults);
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 8),
-          for (int i = 0; i < itemCount; i++) ...[
-            if (i > 0)
-              Divider(height: 1, indent: 64, color: theme.colorScheme.outlineVariant.withOpacity(0.5)),
-            SearchSuggestionTile(suggestion: suggestions[i], onTap: onSuggestionTap),
-          ],
-          const SizedBox(height: 8),
-        ],
-      );
-    }
-
-    return const SizedBox.shrink();
+      ),
+    );
   }
 }
 

@@ -34,11 +34,11 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
   void _onSuggestionTap(AddressSuggestion suggestion) {
     _controller.text = suggestion.fullName;
     _focusNode.unfocus();
-    ref.read(autocompleteViewModelProvider.notifier).dismiss();
+    ref.read(addressAutocompleteProvider.notifier).dismiss();
     if (widget.mapboxMap != null) {
       widget.onAutocompleteNavigating?.call();
       ref
-          .read(autocompleteViewModelProvider.notifier)
+          .read(addressAutocompleteProvider.notifier)
           .selectSuggestion(suggestion, widget.mapboxMap!);
     }
   }
@@ -46,7 +46,7 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
   void _onSearch() {
     if (_controller.text.isNotEmpty) {
       _focusNode.unfocus();
-      ref.read(autocompleteViewModelProvider.notifier).dismiss();
+      ref.read(addressAutocompleteProvider.notifier).dismiss();
       
       if (_isBblMode) {
         ref.read(propertySearchViewModelProvider.notifier).searchByBbl(_controller.text);
@@ -61,24 +61,24 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
     setState(() {
       _isBblMode = isBbl;
       _controller.clear();
-      ref.read(autocompleteViewModelProvider.notifier).dismiss();
+      ref.read(addressAutocompleteProvider.notifier).dismiss();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final autocompleteState = ref.watch(autocompleteViewModelProvider);
+    final autocompleteState = ref.watch(addressAutocompleteProvider);
 
-    ref.listen<AutocompleteState>(autocompleteViewModelProvider, (previous, next) {
-      if (next is AutocompleteError && next.kind == AutocompleteErrorKind.retrieveFailed) {
+    ref.listen<AsyncValue<List<AddressSuggestion>?>>(addressAutocompleteProvider, (previous, next) {
+      if (next.hasError) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Could not load location details.')),
         );
       }
     });
 
-    final showDropdown = !_isBblMode && autocompleteState is! AutocompleteIdle;
+    final showDropdown = !_isBblMode && !autocompleteState.isLoading && autocompleteState.hasValue && autocompleteState.value != null;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -109,7 +109,7 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
                   onSubmitted: (_) => _onSearch(),
                   onChanged: (value) {
                     if (!_isBblMode) {
-                      ref.read(autocompleteViewModelProvider.notifier).onQueryChanged(value);
+                      ref.read(addressAutocompleteProvider.notifier).onQueryChanged(value);
                     }
                   },
                   keyboardType: _isBblMode ? TextInputType.number : TextInputType.text,

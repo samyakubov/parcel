@@ -79,7 +79,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           final position = Position(coords.longitude!, coords.latitude!);
 
           // Skip flyTo when autocomplete already handled navigation to avoid
-          // a duplicate camera animation (Requirement 4.2).
           if (!_skipNextPropertyFlyTo) {
             mapboxMap!.flyTo(
               CameraOptions(
