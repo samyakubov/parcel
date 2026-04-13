@@ -15,36 +15,27 @@ class MapLayerToggle extends ConsumerWidget {
 
     return Container(
       decoration: BoxDecoration(
+        color: theme.colorScheme.goldAccent,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(14),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Material(
-            color: theme.cardColor.withOpacity(0.8),
-            child: InkWell(
-              onTap: () => ref.read(mapStyleProvider.notifier).toggleStyle(),
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      isSatellite ? Icons.satellite_alt_rounded : Icons.layers_rounded,
-                      size: 20,
-                      color: isSatellite ? theme.colorScheme.goldAccent : theme.colorScheme.onSurface,
-                    ),
-                  ],
-                ),
-              ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => ref.read(mapStyleProvider.notifier).toggleStyle(),
+          borderRadius: BorderRadius.circular(14),
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Icon(
+              isSatellite ? Icons.satellite_alt_rounded : Icons.layers_rounded,
+              size: 20,
+              color: Colors.white,
             ),
           ),
         ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
+import 'property_card_surface.dart';
 
 class TimelineEntry extends StatelessWidget {
   final String name;
@@ -20,7 +21,6 @@ class TimelineEntry extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     
     final gold = theme.colorScheme.goldAccent;
     final activeColor = gold;
@@ -74,21 +74,11 @@ class TimelineEntry extends StatelessWidget {
           const SizedBox(width: 12),
           // Card content
           Expanded(
-            child: Container(
+            child: PropertyCardSurface(
               margin: const EdgeInsets.only(bottom: 20),
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: theme.cardColor,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: isCurrent ? activeBorder : theme.colorScheme.cardBorder),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(isDark ? 0.2 : 0.02),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  )
-                ],
-              ),
+              borderColor: isCurrent ? activeBorder : theme.colorScheme.cardBorder,
+              shadowOffset: const Offset(0, 2),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -121,7 +111,7 @@ class TimelineEntry extends StatelessWidget {
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        Icon(Icons.phone_rounded, size: 14, color: theme.colorScheme.secondary.withOpacity(0.6)),
+                        Icon(Icons.phone_rounded, size: 14, color: theme.colorScheme.secondary.withValues(alpha: 0.6)),
                         const SizedBox(width: 6),
                         Text(
                           '(${phone.substring(0, 3)}) ${phone.substring(3, 6)}-${phone.substring(6)}',

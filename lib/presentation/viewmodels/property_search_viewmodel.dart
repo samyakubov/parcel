@@ -21,6 +21,17 @@ class PropertySearchViewModel extends Notifier<AsyncValue<Property?>> {
     }
   }
 
+  Future<void> searchByBbl(String bbl) async {
+    state = const AsyncValue.loading();
+    try {
+      final repository = ref.read(propertyRepositoryProvider);
+      final property = await repository.searchByBbl(bbl);
+      state = AsyncValue.data(property);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+
   Future<void> searchByFuzzyCoords(double lat, double lng) async {
     state = const AsyncValue.loading();
     try {

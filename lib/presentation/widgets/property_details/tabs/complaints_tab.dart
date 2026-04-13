@@ -5,6 +5,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../widgets/status_tag.dart';
 import '../widgets/detail_grid.dart';
 import '../widgets/empty_state.dart';
+import '../widgets/property_card_surface.dart';
 import '../widgets/section_header.dart';
 
 class ComplaintsTab extends StatelessWidget {
@@ -44,20 +45,9 @@ class ComplaintsTab extends StatelessWidget {
         final status = c['status']?.toString() ?? '—';
         final isClosed = status.toLowerCase().contains('closed');
 
-        return Container(
+        return PropertyCardSurface(
           margin: const EdgeInsets.only(bottom: 12),
-          decoration: BoxDecoration(
-            color: theme.cardColor,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: theme.colorScheme.cardBorder),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(isDark ? 0.2 : 0.02),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
-              )
-            ],
-          ),
+          borderColor: theme.colorScheme.cardBorder,
           clipBehavior: Clip.antiAlias,
           child: Theme(
             data: theme.copyWith(dividerColor: Colors.transparent),
@@ -86,7 +76,7 @@ class ComplaintsTab extends StatelessWidget {
               children: [
                 Container(
                   width: double.infinity,
-                  color: isDark ? theme.dividerColor.withOpacity(0.3) : Colors.grey.shade50,
+                  color: isDark ? theme.dividerColor.withValues(alpha: 0.3) : Colors.grey.shade50,
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
