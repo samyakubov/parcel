@@ -104,7 +104,6 @@ class AutocompleteViewModel extends Notifier<AutocompleteState> {
   Future<void> selectSuggestion(
     AddressSuggestion suggestion,
     MapboxMap mapboxMap,
-    WidgetRef ref,
   ) async {
     try {
       if (suggestion.latitude == null || suggestion.longitude == null) {
@@ -128,9 +127,7 @@ class AutocompleteViewModel extends Notifier<AutocompleteState> {
 
       // Trigger property search using street address only (strip city/state/zip).
       final streetAddress = AddressNormalizer.streetOnly(suggestion.fullName);
-      ref
-          .read(propertySearchViewModelProvider.notifier)
-          .searchByAddress(streetAddress);
+      ref.read(propertySearchViewModelProvider.notifier).searchByAddress(streetAddress);
 
       // Dismiss the overlay after successful navigation.
       state = const AutocompleteIdle();

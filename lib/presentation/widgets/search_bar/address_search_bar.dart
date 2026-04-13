@@ -39,7 +39,7 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
       widget.onAutocompleteNavigating?.call();
       ref
           .read(autocompleteViewModelProvider.notifier)
-          .selectSuggestion(suggestion, widget.mapboxMap!, ref);
+          .selectSuggestion(suggestion, widget.mapboxMap!);
     }
   }
 

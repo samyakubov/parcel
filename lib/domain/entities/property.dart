@@ -4,7 +4,6 @@ part 'property.freezed.dart';
 part 'property.g.dart';
 
 @freezed
-
 abstract class Property with _$Property {
   const factory Property({
     LastSold? lastSold,
@@ -22,7 +21,6 @@ abstract class Property with _$Property {
 }
 
 @freezed
-
 abstract class LastSold with _$LastSold {
   const factory LastSold({
     double? lastSoldPrice,
@@ -36,7 +34,6 @@ abstract class LastSold with _$LastSold {
 }
 
 @freezed
-
 abstract class Mortgage with _$Mortgage {
   const factory Mortgage({
     String? lender,
@@ -59,7 +56,6 @@ abstract class Owners with _$Owners {
 }
 
 @freezed
-
 abstract class Zoning with _$Zoning {
   const factory Zoning({
     @Default([]) List<String> zoningDistricts,
@@ -73,7 +69,6 @@ abstract class Zoning with _$Zoning {
 }
 
 @freezed
-
 abstract class Coordinates with _$Coordinates {
   const factory Coordinates({
     double? latitude,
