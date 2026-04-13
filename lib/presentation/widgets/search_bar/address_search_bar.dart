@@ -7,7 +7,9 @@ import '../../../core/theme/app_theme.dart';
 import '../../../domain/entities/address_suggestion.dart';
 import '../../viewmodels/autocomplete_viewmodel.dart';
 import '../../viewmodels/property_search_viewmodel.dart';
+import 'widgets/mode_button.dart';
 import 'search_suggestion_list.dart';
+
 
 class AddressSearchBar extends ConsumerStatefulWidget {
   final MapboxMap? mapboxMap;
@@ -86,7 +88,6 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
       children: [
         Row(
           children: [
-            // Search bar
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
@@ -132,7 +133,6 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
               ),
             ),
             const SizedBox(width: 8),
-            // Mode Toggle
             Container(
               padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
@@ -149,12 +149,12 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _ModeButton(
+                  ModeButton(
                     icon: Icons.map_rounded,
                     isActive: !_isBblMode,
                     onTap: () => _toggleMode(false),
                   ),
-                  _ModeButton(
+                  ModeButton(
                     icon: Icons.pin_drop_rounded,
                     isActive: _isBblMode,
                     onTap: () => _toggleMode(true),
@@ -165,7 +165,6 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
           ],
         ),
 
-        // Dropdown
         if (showDropdown) ...[
           const SizedBox(height: 8),
           LimitedBox(
@@ -192,36 +191,4 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
   }
 }
 
-class _ModeButton extends StatelessWidget {
-  final IconData icon;
-  final bool isActive;
-  final VoidCallback onTap;
 
-  const _ModeButton({
-    required this.icon,
-    required this.isActive,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOutCubic,
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: isActive ? Colors.white.withOpacity(0.4) : Colors.transparent,
-          shape: BoxShape.circle,
-        ),
-        child: Icon(
-          icon,
-          size: 18,
-          color: isActive ? Colors.white : Colors.white.withOpacity(0.6),
-        ),
-      ),
-    );
-  }
-}

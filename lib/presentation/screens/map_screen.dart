@@ -33,7 +33,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       zoom: 12.0,
     ));
 
-    // Trigger rebuild so AddressSearchBar receives the MapboxMap reference.
     setState(() {});
   }
 
@@ -70,7 +69,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       _currentStyle = targetStyle;
     }
 
-    // Listen for successful searches to fly the camera
     ref.listen(propertySearchViewModelProvider, (previous, next) {
       final property = next.value;
       if (property != null && property.coordinates != null && mapboxMap != null) {
@@ -78,7 +76,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
         if (coords.latitude != null && coords.longitude != null) {
           final position = Position(coords.longitude!, coords.latitude!);
 
-          // Skip flyTo when autocomplete already handled navigation to avoid
           if (!_skipNextPropertyFlyTo) {
             mapboxMap!.flyTo(
               CameraOptions(
@@ -114,7 +111,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             onTapListener: _onMapTap,
           ),
           
-          // Header + Dropdown Overlay
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -128,7 +124,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             ),
           ),
 
-          // Map Control Toggles (Floating)
           AnimatedPositioned(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
@@ -139,7 +134,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             child: const MapLayerToggle(),
           ),
 
-          // Sheet anchored to bottom — map above remains tappable
           if (searchState.value != null || searchState.isLoading)
             const Align(
               alignment: Alignment.bottomCenter,

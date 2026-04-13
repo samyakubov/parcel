@@ -23,19 +23,15 @@ final addressAutocompleteProvider =
 // ---------------------------------------------------------------------------
 
 class AutocompleteViewModel extends Notifier<AsyncValue<List<AddressSuggestion>?>> {
-  /// Debounce timer — cancelled on each new keystroke.
   Timer? _debounceTimer;
 
-  /// Generation counter — incremented before each async fetch so stale
-  /// responses can be detected and discarded.
+
   int _generation = 0;
 
-  /// Lazily-created API instance.
   final MapboxSearchApi _api = MapboxSearchApi();
 
   @override
   AsyncValue<List<AddressSuggestion>?> build() {
-    // Cancel any pending timer when the provider is disposed.
     ref.onDispose(() => _debounceTimer?.cancel());
     return const AsyncValue.data(null);
   }
@@ -44,7 +40,6 @@ class AutocompleteViewModel extends Notifier<AsyncValue<List<AddressSuggestion>?
   // Public API
   // -------------------------------------------------------------------------
 
-  /// Called on every keystroke from the search field.
   void onQueryChanged(String query) {
     if (query.length < AppConstants.autocompleteMinChars) {
       _debounceTimer?.cancel();
@@ -53,7 +48,6 @@ class AutocompleteViewModel extends Notifier<AsyncValue<List<AddressSuggestion>?
       return;
     }
 
-    // Cancel any pending debounce and start a fresh one.
     _debounceTimer?.cancel();
     _debounceTimer = Timer(
       Duration(milliseconds: AppConstants.autocompleteDebounceMs),
@@ -61,7 +55,6 @@ class AutocompleteViewModel extends Notifier<AsyncValue<List<AddressSuggestion>?
     );
   }
 
-  /// Called when the user taps a suggestion in the list.
   Future<void> selectSuggestion(
     AddressSuggestion suggestion,
     MapboxMap mapboxMap,
@@ -75,7 +68,6 @@ class AutocompleteViewModel extends Notifier<AsyncValue<List<AddressSuggestion>?
         return;
       }
 
-      // Navigate the map camera.
       await mapboxMap.flyTo(
         CameraOptions(
           center: Point(
@@ -89,20 +81,17 @@ class AutocompleteViewModel extends Notifier<AsyncValue<List<AddressSuggestion>?
         MapAnimationOptions(duration: 1500),
       );
 
-      // Trigger property search using street address only.
       final streetAddress = AddressNormalizer.streetOnly(suggestion.fullName);
       ref
           .read(propertySearchViewModelProvider.notifier)
           .searchByAddress(streetAddress);
 
-      // Dismiss the overlay after successful navigation.
       state = const AsyncValue.data(null);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
     }
   }
 
-  /// Clears the suggestion list and cancels any pending timer.
   void dismiss() {
     _debounceTimer?.cancel();
     _debounceTimer = null;
@@ -122,7 +111,6 @@ class AutocompleteViewModel extends Notifier<AsyncValue<List<AddressSuggestion>?
     try {
       final suggestions = await _api.suggest(query);
 
-      // Discard stale response.
       if (capturedGeneration != _generation) return;
 
       state = AsyncValue.data(suggestions);

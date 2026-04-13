@@ -41,7 +41,6 @@ class DetailsTab extends StatelessWidget {
         
         InfoCard(
           children: [
-            // Prominent Price Section
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
