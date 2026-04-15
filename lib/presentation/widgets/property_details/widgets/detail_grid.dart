@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:parcel_mobile_app/core/theme/app_theme.dart';
+import 'package:parcel/core/theme/app_theme.dart';
 
 class DetailItem {
   final String label;
