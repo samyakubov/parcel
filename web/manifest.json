@@ -1,6 +1,6 @@
 {
-    "name": "parcel_mobile_app",
-    "short_name": "parcel_mobile_app",
+    "name": "parcel",
+    "short_name": "parcel",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -141,7 +141,6 @@ class _OwnersTabState extends ConsumerState<OwnersTab> {
             }),
           ],
 
-          // Previous owners
           if (filteredPreviousOwners.isNotEmpty) ...[
             ...filteredPreviousOwners.asMap().entries.map((entry) {
               final i = entry.key;

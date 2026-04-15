@@ -25,7 +25,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     this.mapboxMap = mapboxMap;
     circleAnnotationManager = await mapboxMap.annotations.createCircleAnnotationManager();
     
-    // Clean up UI by removing Mapbox branding
     mapboxMap.logo.updateSettings(LogoSettings(enabled: false));
     mapboxMap.attribution.updateSettings(AttributionSettings(enabled: false));
 
@@ -34,7 +33,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       zoom: 12.0,
     ));
 
-    // Trigger rebuild so AddressSearchBar receives the MapboxMap reference.
     setState(() {});
   }
 
@@ -71,7 +69,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       _currentStyle = targetStyle;
     }
 
-    // Listen for successful searches to fly the camera
     ref.listen(propertySearchViewModelProvider, (previous, next) {
       final property = next.value;
       if (property != null && property.coordinates != null && mapboxMap != null) {
@@ -79,8 +76,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
         if (coords.latitude != null && coords.longitude != null) {
           final position = Position(coords.longitude!, coords.latitude!);
 
-          // Skip flyTo when autocomplete already handled navigation to avoid
-          // a duplicate camera animation (Requirement 4.2).
           if (!_skipNextPropertyFlyTo) {
             mapboxMap!.flyTo(
               CameraOptions(
@@ -104,53 +99,47 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       }
     });
 
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final screenHeight = constraints.maxHeight;
-          return Stack(
-            children: [
-              MapWidget(
-                key: const ValueKey("mapWidget"),
-                styleUri: targetStyle,
-                onMapCreated: _onMapCreated,
-                onTapListener: _onMapTap,
-              ),
-              
-              // Header + Dropdown Overlay
-              SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    child: AddressSearchBar(
-                      mapboxMap: mapboxMap,
-                      onAutocompleteNavigating: () => _skipNextPropertyFlyTo = true,
-                    ),
-                  ),
+      body: Stack(
+        children: [
+          MapWidget(
+            key: const ValueKey("mapWidget"),
+            styleUri: targetStyle,
+            onMapCreated: _onMapCreated,
+            onTapListener: _onMapTap,
+          ),
+          
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: AddressSearchBar(
+                  mapboxMap: mapboxMap,
+                  onAutocompleteNavigating: () => _skipNextPropertyFlyTo = true,
                 ),
               ),
+            ),
+          ),
 
-              // Map Control Toggles (Floating)
-              AnimatedPositioned(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-                bottom: (searchState.value != null || searchState.isLoading)
-                    ? (screenHeight * 0.5) + 16
-                    : 24 + MediaQuery.of(context).padding.bottom,
-                right: 16,
-                child: const MapLayerToggle(),
-              ),
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            bottom: (searchState.value != null || searchState.isLoading)
+                ? (screenHeight * 0.5) + 16
+                : 24 + MediaQuery.of(context).padding.bottom,
+            right: 16,
+            child: const MapLayerToggle(),
+          ),
 
-              // Sheet anchored to bottom — map above remains tappable
-              if (searchState.value != null || searchState.isLoading)
-                const Align(
-                  alignment: Alignment.bottomCenter,
-                  child: PropertyDetailsSheet(),
-                ),
-            ],
-          );
-        },
+          if (searchState.value != null || searchState.isLoading)
+            const Align(
+              alignment: Alignment.bottomCenter,
+              child: PropertyDetailsSheet(),
+            ),
+        ],
       ),
     );
   }

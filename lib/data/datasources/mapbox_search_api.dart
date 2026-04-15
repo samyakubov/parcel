@@ -3,8 +3,6 @@ import '../../core/constants.dart';
 import '../../core/utils/address_normalizer.dart';
 import '../../domain/entities/address_suggestion.dart';
 
-// Exception types
-
 class AutocompleteAuthException implements Exception {
   const AutocompleteAuthException();
   @override
@@ -31,10 +29,6 @@ class MapboxSearchApi {
     );
   }
 
-  /// Fetches address suggestions for [query].
-  /// Returns at most [AppConstants.autocompleteMaxResults] results.
-  /// Geocoding v5 includes coordinates directly on each feature, so the
-  /// selection flow is a single suggest request with no follow-up retrieve.
   Future<List<AddressSuggestion>> suggest(String query) async {
     try {
       final streetOnly = AddressNormalizer.streetOnly(query);
@@ -60,8 +54,6 @@ class MapboxSearchApi {
       throw _mapDioException(e);
     }
   }
-
-  // --- helpers ---
 
   AddressSuggestion _featureToSuggestion(Map<String, dynamic> feature) {
     final mapboxId = (feature['id'] as String?) ?? '';

@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // Brand Colors
   static const Color primaryBlue = Color(0xFF3B82F6);
   static const Color blackDark = Color(0xFF000000);
   static const Color slateLight = Color(0xFFF1F5F9);
 
-  // Gold Accent Colors
   static const Color goldAccent = Color(0xFFD4AF37);     // light mode
   static const Color goldAccentDark = Color(0xFFF5C842); // dark mode
   
@@ -71,7 +69,6 @@ class AppTheme {
   }
 }
 
-// Extension to help pick colors
 extension AppThemeX on ColorScheme {
   Color get cardBorder => brightness == Brightness.light 
     ? const Color(0xFFF1F5F9) 

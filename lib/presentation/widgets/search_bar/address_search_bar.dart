@@ -7,7 +7,9 @@ import '../../../core/theme/app_theme.dart';
 import '../../../domain/entities/address_suggestion.dart';
 import '../../viewmodels/autocomplete_viewmodel.dart';
 import '../../viewmodels/property_search_viewmodel.dart';
-import 'search_suggestion_list.dart';
+import 'widgets/mode_button.dart';
+import '../suggestions/search_suggestion_list.dart';
+
 
 class AddressSearchBar extends ConsumerStatefulWidget {
   final MapboxMap? mapboxMap;
@@ -34,19 +36,19 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
   void _onSuggestionTap(AddressSuggestion suggestion) {
     _controller.text = suggestion.fullName;
     _focusNode.unfocus();
-    ref.read(autocompleteViewModelProvider.notifier).dismiss();
+    ref.read(addressAutocompleteProvider.notifier).dismiss();
     if (widget.mapboxMap != null) {
       widget.onAutocompleteNavigating?.call();
       ref
-          .read(autocompleteViewModelProvider.notifier)
-          .selectSuggestion(suggestion, widget.mapboxMap!, ref);
+          .read(addressAutocompleteProvider.notifier)
+          .selectSuggestion(suggestion, widget.mapboxMap!);
     }
   }
 
   void _onSearch() {
     if (_controller.text.isNotEmpty) {
       _focusNode.unfocus();
-      ref.read(autocompleteViewModelProvider.notifier).dismiss();
+      ref.read(addressAutocompleteProvider.notifier).dismiss();
       
       if (_isBblMode) {
         ref.read(propertySearchViewModelProvider.notifier).searchByBbl(_controller.text);
@@ -61,24 +63,24 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
     setState(() {
       _isBblMode = isBbl;
       _controller.clear();
-      ref.read(autocompleteViewModelProvider.notifier).dismiss();
+      ref.read(addressAutocompleteProvider.notifier).dismiss();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final autocompleteState = ref.watch(autocompleteViewModelProvider);
+    final autocompleteState = ref.watch(addressAutocompleteProvider);
 
-    ref.listen<AutocompleteState>(autocompleteViewModelProvider, (previous, next) {
-      if (next is AutocompleteError && next.kind == AutocompleteErrorKind.retrieveFailed) {
+    ref.listen<AsyncValue<List<AddressSuggestion>?>>(addressAutocompleteProvider, (previous, next) {
+      if (next.hasError) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Could not load location details.')),
         );
       }
     });
 
-    final showDropdown = !_isBblMode && autocompleteState is! AutocompleteIdle;
+    final showDropdown = !_isBblMode && !autocompleteState.isLoading && autocompleteState.hasValue && autocompleteState.value != null;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -86,7 +88,6 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
       children: [
         Row(
           children: [
-            // Search bar
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
@@ -109,7 +110,7 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
                   onSubmitted: (_) => _onSearch(),
                   onChanged: (value) {
                     if (!_isBblMode) {
-                      ref.read(autocompleteViewModelProvider.notifier).onQueryChanged(value);
+                      ref.read(addressAutocompleteProvider.notifier).onQueryChanged(value);
                     }
                   },
                   keyboardType: _isBblMode ? TextInputType.number : TextInputType.text,
@@ -132,7 +133,6 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
               ),
             ),
             const SizedBox(width: 8),
-            // Mode Toggle
             Container(
               padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
@@ -149,12 +149,12 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _ModeButton(
+                  ModeButton(
                     icon: Icons.map_rounded,
                     isActive: !_isBblMode,
                     onTap: () => _toggleMode(false),
                   ),
-                  _ModeButton(
+                  ModeButton(
                     icon: Icons.pin_drop_rounded,
                     isActive: _isBblMode,
                     onTap: () => _toggleMode(true),
@@ -165,7 +165,6 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
           ],
         ),
 
-        // Dropdown
         if (showDropdown) ...[
           const SizedBox(height: 8),
           LimitedBox(
@@ -192,36 +191,4 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
   }
 }
 
-class _ModeButton extends StatelessWidget {
-  final IconData icon;
-  final bool isActive;
-  final VoidCallback onTap;
 
-  const _ModeButton({
-    required this.icon,
-    required this.isActive,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOutCubic,
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: isActive ? Colors.white.withOpacity(0.4) : Colors.transparent,
-          shape: BoxShape.circle,
-        ),
-        child: Icon(
-          icon,
-          size: 18,
-          color: isActive ? Colors.white : Colors.white.withOpacity(0.6),
-        ),
-      ),
-    );
-  }
-}

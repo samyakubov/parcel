@@ -14,8 +14,6 @@ final dioProvider = Provider<Dio>((ref) {
     },
   ));
 
-  // Add interceptors if needed (e.g. for logging)
   dio.interceptors.add(LogInterceptor(responseBody: true, requestBody: true));
-
   return dio;
 });

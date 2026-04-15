@@ -1,4 +1,4 @@
-package com.example.parcel_mobile_app
+package com.example.parcel
 
 import io.flutter.embedding.android.FlutterActivity
 
