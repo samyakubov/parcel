@@ -8,7 +8,7 @@ import '../../../domain/entities/address_suggestion.dart';
 import '../../viewmodels/autocomplete_viewmodel.dart';
 import '../../viewmodels/property_search_viewmodel.dart';
 import 'widgets/mode_button.dart';
-import 'search_suggestion_list.dart';
+import '../suggestions/search_suggestion_list.dart';
 
 
 class AddressSearchBar extends ConsumerStatefulWidget {
