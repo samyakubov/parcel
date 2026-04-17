@@ -9,6 +9,9 @@ part of 'property.dart';
 // **************************************************************************
 
 _Property _$PropertyFromJson(Map<String, dynamic> json) => _Property(
+  propertyInfo: json['property_info'] == null
+      ? null
+      : PropertyInfo.fromJson(json['property_info'] as Map<String, dynamic>),
   lastSold: json['last_sold'] == null
       ? null
       : LastSold.fromJson(json['last_sold'] as Map<String, dynamic>),
@@ -47,6 +50,7 @@ _Property _$PropertyFromJson(Map<String, dynamic> json) => _Property(
 );
 
 Map<String, dynamic> _$PropertyToJson(_Property instance) => <String, dynamic>{
+  'property_info': instance.propertyInfo?.toJson(),
   'last_sold': instance.lastSold?.toJson(),
   'mortgage': instance.mortgage?.toJson(),
   'owners': instance.owners?.toJson(),
@@ -57,6 +61,32 @@ Map<String, dynamic> _$PropertyToJson(_Property instance) => <String, dynamic>{
   'zoning': instance.zoning?.toJson(),
   'coordinates': instance.coordinates?.toJson(),
 };
+
+_PropertyInfo _$PropertyInfoFromJson(Map<String, dynamic> json) =>
+    _PropertyInfo(
+      propertyType: json['property_type'] as String?,
+      bbl: json['bbl'] as String?,
+      floors: (json['floors'] as num?)?.toDouble(),
+      resUnits: (json['res_units'] as num?)?.toInt(),
+      totalUnits: (json['total_units'] as num?)?.toInt(),
+      lotFront: (json['lot_front'] as num?)?.toDouble(),
+      lotDepth: (json['lot_depth'] as num?)?.toDouble(),
+      bldgFront: (json['bldg_front'] as num?)?.toDouble(),
+      bldgDepth: (json['bldg_depth'] as num?)?.toDouble(),
+    );
+
+Map<String, dynamic> _$PropertyInfoToJson(_PropertyInfo instance) =>
+    <String, dynamic>{
+      'property_type': instance.propertyType,
+      'bbl': instance.bbl,
+      'floors': instance.floors,
+      'res_units': instance.resUnits,
+      'total_units': instance.totalUnits,
+      'lot_front': instance.lotFront,
+      'lot_depth': instance.lotDepth,
+      'bldg_front': instance.bldgFront,
+      'bldg_depth': instance.bldgDepth,
+    };
 
 _LastSold _$LastSoldFromJson(Map<String, dynamic> json) => _LastSold(
   lastSoldPrice: (json['last_sold_price'] as num?)?.toDouble(),

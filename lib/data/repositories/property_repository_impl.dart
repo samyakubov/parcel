@@ -13,19 +13,34 @@ class PropertyRepositoryImpl implements PropertyRepository {
 
   @override
   Future<Property> searchByAddress(String address) async {
-    final data = await _api.searchByAddress(address);
-    return Property.fromJson(data);
+    return _build(await _api.searchByAddress(address));
   }
 
   @override
   Future<Property> searchByBbl(String bbl) async {
-    final data = await _api.searchByBbl(bbl);
-    return Property.fromJson(data);
+    return _build(await _api.searchByBbl(bbl));
   }
 
   @override
   Future<Property> searchByFuzzyCoords(double lat, double lng) async {
-    final data = await _api.searchByFuzzyCoords(lat, lng);
-    return Property.fromJson(data);
+    return _build(await _api.searchByFuzzyCoords(lat, lng));
+  }
+
+  Property _build(Map<String, dynamic> data) {
+    final property = Property.fromJson(data);
+    if (property.records.isEmpty) return property;
+    final r = property.records.first;
+    final info = PropertyInfo(
+      propertyType: r['prop_type'] as String?,
+      bbl: r['bbl'] as String?,
+      floors: (r['num_floors'] as num?)?.toDouble(),
+      resUnits: r['units_res'] as int?,
+      totalUnits: r['units_total'] as int?,
+      lotFront: (r['lot_front'] as num?)?.toDouble(),
+      lotDepth: (r['lot_depth'] as num?)?.toDouble(),
+      bldgFront: (r['bldg_front'] as num?)?.toDouble(),
+      bldgDepth: (r['bldg_depth'] as num?)?.toDouble(),
+    );
+    return property.copyWith(propertyInfo: info);
   }
 }

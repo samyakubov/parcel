@@ -29,11 +29,39 @@ class DetailsTab extends StatelessWidget {
     final yearBuilt = property.lastSold?.yearBuilt;
     final landSqft = property.lastSold?.landSqft;
     final grossSqft = property.lastSold?.grossSqft;
+    final info = property.propertyInfo;
 
     return ListView(
       controller: controller,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       children: [
+        if (info != null) ...[
+          const SectionHeader(
+            title: 'Property Info',
+            subtitle: 'Building and lot characteristics.',
+          ),
+          InfoCard(
+            children: [
+              DetailGrid(items: [
+                if (info.propertyType != null)
+                  DetailItem('PROPERTY TYPE', info.propertyType!),
+                if (info.bbl != null)
+                  DetailItem('BBL', info.bbl!),
+                if (info.floors != null)
+                  DetailItem('FLOORS', info.floors!.toStringAsFixed(info.floors! % 1 == 0 ? 0 : 1)),
+                if (info.resUnits != null)
+                  DetailItem('RES UNITS', info.resUnits!.toString()),
+                if (info.totalUnits != null)
+                  DetailItem('TOTAL UNITS', info.totalUnits!.toString()),
+                if (info.lotFront != null && info.lotDepth != null)
+                  DetailItem('LOT DIMS', '${_fmtDim(info.lotFront!)} × ${_fmtDim(info.lotDepth!)}'),
+                if (info.bldgFront != null && info.bldgDepth != null)
+                  DetailItem('BLDG DIMS', '${_fmtDim(info.bldgFront!)} × ${_fmtDim(info.bldgDepth!)}'),
+              ]),
+            ],
+          ),
+        ],
+
         const SectionHeader(
           title: 'Market Overview',
           subtitle: 'Key metrics and recent assessment data.',
@@ -134,6 +162,8 @@ class DetailsTab extends StatelessWidget {
       ],
     );
   }
+
+  String _fmtDim(double v) => v % 1 == 0 ? v.toInt().toString() : v.toString();
 
   Widget _buildZoningCard(BuildContext context, {
     required String title,

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Property {
 
- LastSold? get lastSold; Mortgage? get mortgage; Owners? get owners; List<Map<String, dynamic>> get records; List<Map<String, dynamic>> get jobFilings; List<Map<String, dynamic>> get violations; List<Map<String, dynamic>> get complaints; Zoning? get zoning; Coordinates? get coordinates;
+ PropertyInfo? get propertyInfo; LastSold? get lastSold; Mortgage? get mortgage; Owners? get owners; List<Map<String, dynamic>> get records; List<Map<String, dynamic>> get jobFilings; List<Map<String, dynamic>> get violations; List<Map<String, dynamic>> get complaints; Zoning? get zoning; Coordinates? get coordinates;
 /// Create a copy of Property
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $PropertyCopyWith<Property> get copyWith => _$PropertyCopyWithImpl<Property>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Property&&(identical(other.lastSold, lastSold) || other.lastSold == lastSold)&&(identical(other.mortgage, mortgage) || other.mortgage == mortgage)&&(identical(other.owners, owners) || other.owners == owners)&&const DeepCollectionEquality().equals(other.records, records)&&const DeepCollectionEquality().equals(other.jobFilings, jobFilings)&&const DeepCollectionEquality().equals(other.violations, violations)&&const DeepCollectionEquality().equals(other.complaints, complaints)&&(identical(other.zoning, zoning) || other.zoning == zoning)&&(identical(other.coordinates, coordinates) || other.coordinates == coordinates));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Property&&(identical(other.propertyInfo, propertyInfo) || other.propertyInfo == propertyInfo)&&(identical(other.lastSold, lastSold) || other.lastSold == lastSold)&&(identical(other.mortgage, mortgage) || other.mortgage == mortgage)&&(identical(other.owners, owners) || other.owners == owners)&&const DeepCollectionEquality().equals(other.records, records)&&const DeepCollectionEquality().equals(other.jobFilings, jobFilings)&&const DeepCollectionEquality().equals(other.violations, violations)&&const DeepCollectionEquality().equals(other.complaints, complaints)&&(identical(other.zoning, zoning) || other.zoning == zoning)&&(identical(other.coordinates, coordinates) || other.coordinates == coordinates));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,lastSold,mortgage,owners,const DeepCollectionEquality().hash(records),const DeepCollectionEquality().hash(jobFilings),const DeepCollectionEquality().hash(violations),const DeepCollectionEquality().hash(complaints),zoning,coordinates);
+int get hashCode => Object.hash(runtimeType,propertyInfo,lastSold,mortgage,owners,const DeepCollectionEquality().hash(records),const DeepCollectionEquality().hash(jobFilings),const DeepCollectionEquality().hash(violations),const DeepCollectionEquality().hash(complaints),zoning,coordinates);
 
 @override
 String toString() {
-  return 'Property(lastSold: $lastSold, mortgage: $mortgage, owners: $owners, records: $records, jobFilings: $jobFilings, violations: $violations, complaints: $complaints, zoning: $zoning, coordinates: $coordinates)';
+  return 'Property(propertyInfo: $propertyInfo, lastSold: $lastSold, mortgage: $mortgage, owners: $owners, records: $records, jobFilings: $jobFilings, violations: $violations, complaints: $complaints, zoning: $zoning, coordinates: $coordinates)';
 }
 
 
@@ -48,11 +48,11 @@ abstract mixin class $PropertyCopyWith<$Res>  {
   factory $PropertyCopyWith(Property value, $Res Function(Property) _then) = _$PropertyCopyWithImpl;
 @useResult
 $Res call({
- LastSold? lastSold, Mortgage? mortgage, Owners? owners, List<Map<String, dynamic>> records, List<Map<String, dynamic>> jobFilings, List<Map<String, dynamic>> violations, List<Map<String, dynamic>> complaints, Zoning? zoning, Coordinates? coordinates
+ PropertyInfo? propertyInfo, LastSold? lastSold, Mortgage? mortgage, Owners? owners, List<Map<String, dynamic>> records, List<Map<String, dynamic>> jobFilings, List<Map<String, dynamic>> violations, List<Map<String, dynamic>> complaints, Zoning? zoning, Coordinates? coordinates
 });
 
 
-$LastSoldCopyWith<$Res>? get lastSold;$MortgageCopyWith<$Res>? get mortgage;$OwnersCopyWith<$Res>? get owners;$ZoningCopyWith<$Res>? get zoning;$CoordinatesCopyWith<$Res>? get coordinates;
+$PropertyInfoCopyWith<$Res>? get propertyInfo;$LastSoldCopyWith<$Res>? get lastSold;$MortgageCopyWith<$Res>? get mortgage;$OwnersCopyWith<$Res>? get owners;$ZoningCopyWith<$Res>? get zoning;$CoordinatesCopyWith<$Res>? get coordinates;
 
 }
 /// @nodoc
@@ -65,9 +65,10 @@ class _$PropertyCopyWithImpl<$Res>
 
 /// Create a copy of Property
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? lastSold = freezed,Object? mortgage = freezed,Object? owners = freezed,Object? records = null,Object? jobFilings = null,Object? violations = null,Object? complaints = null,Object? zoning = freezed,Object? coordinates = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? propertyInfo = freezed,Object? lastSold = freezed,Object? mortgage = freezed,Object? owners = freezed,Object? records = null,Object? jobFilings = null,Object? violations = null,Object? complaints = null,Object? zoning = freezed,Object? coordinates = freezed,}) {
   return _then(_self.copyWith(
-lastSold: freezed == lastSold ? _self.lastSold : lastSold // ignore: cast_nullable_to_non_nullable
+propertyInfo: freezed == propertyInfo ? _self.propertyInfo : propertyInfo // ignore: cast_nullable_to_non_nullable
+as PropertyInfo?,lastSold: freezed == lastSold ? _self.lastSold : lastSold // ignore: cast_nullable_to_non_nullable
 as LastSold?,mortgage: freezed == mortgage ? _self.mortgage : mortgage // ignore: cast_nullable_to_non_nullable
 as Mortgage?,owners: freezed == owners ? _self.owners : owners // ignore: cast_nullable_to_non_nullable
 as Owners?,records: null == records ? _self.records : records // ignore: cast_nullable_to_non_nullable
@@ -80,6 +81,18 @@ as Coordinates?,
   ));
 }
 /// Create a copy of Property
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$PropertyInfoCopyWith<$Res>? get propertyInfo {
+    if (_self.propertyInfo == null) {
+    return null;
+  }
+
+  return $PropertyInfoCopyWith<$Res>(_self.propertyInfo!, (value) {
+    return _then(_self.copyWith(propertyInfo: value));
+  });
+}/// Create a copy of Property
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
@@ -221,10 +234,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( LastSold? lastSold,  Mortgage? mortgage,  Owners? owners,  List<Map<String, dynamic>> records,  List<Map<String, dynamic>> jobFilings,  List<Map<String, dynamic>> violations,  List<Map<String, dynamic>> complaints,  Zoning? zoning,  Coordinates? coordinates)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( PropertyInfo? propertyInfo,  LastSold? lastSold,  Mortgage? mortgage,  Owners? owners,  List<Map<String, dynamic>> records,  List<Map<String, dynamic>> jobFilings,  List<Map<String, dynamic>> violations,  List<Map<String, dynamic>> complaints,  Zoning? zoning,  Coordinates? coordinates)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Property() when $default != null:
-return $default(_that.lastSold,_that.mortgage,_that.owners,_that.records,_that.jobFilings,_that.violations,_that.complaints,_that.zoning,_that.coordinates);case _:
+return $default(_that.propertyInfo,_that.lastSold,_that.mortgage,_that.owners,_that.records,_that.jobFilings,_that.violations,_that.complaints,_that.zoning,_that.coordinates);case _:
   return orElse();
 
 }
@@ -242,10 +255,10 @@ return $default(_that.lastSold,_that.mortgage,_that.owners,_that.records,_that.j
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( LastSold? lastSold,  Mortgage? mortgage,  Owners? owners,  List<Map<String, dynamic>> records,  List<Map<String, dynamic>> jobFilings,  List<Map<String, dynamic>> violations,  List<Map<String, dynamic>> complaints,  Zoning? zoning,  Coordinates? coordinates)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( PropertyInfo? propertyInfo,  LastSold? lastSold,  Mortgage? mortgage,  Owners? owners,  List<Map<String, dynamic>> records,  List<Map<String, dynamic>> jobFilings,  List<Map<String, dynamic>> violations,  List<Map<String, dynamic>> complaints,  Zoning? zoning,  Coordinates? coordinates)  $default,) {final _that = this;
 switch (_that) {
 case _Property():
-return $default(_that.lastSold,_that.mortgage,_that.owners,_that.records,_that.jobFilings,_that.violations,_that.complaints,_that.zoning,_that.coordinates);case _:
+return $default(_that.propertyInfo,_that.lastSold,_that.mortgage,_that.owners,_that.records,_that.jobFilings,_that.violations,_that.complaints,_that.zoning,_that.coordinates);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -262,10 +275,10 @@ return $default(_that.lastSold,_that.mortgage,_that.owners,_that.records,_that.j
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( LastSold? lastSold,  Mortgage? mortgage,  Owners? owners,  List<Map<String, dynamic>> records,  List<Map<String, dynamic>> jobFilings,  List<Map<String, dynamic>> violations,  List<Map<String, dynamic>> complaints,  Zoning? zoning,  Coordinates? coordinates)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( PropertyInfo? propertyInfo,  LastSold? lastSold,  Mortgage? mortgage,  Owners? owners,  List<Map<String, dynamic>> records,  List<Map<String, dynamic>> jobFilings,  List<Map<String, dynamic>> violations,  List<Map<String, dynamic>> complaints,  Zoning? zoning,  Coordinates? coordinates)?  $default,) {final _that = this;
 switch (_that) {
 case _Property() when $default != null:
-return $default(_that.lastSold,_that.mortgage,_that.owners,_that.records,_that.jobFilings,_that.violations,_that.complaints,_that.zoning,_that.coordinates);case _:
+return $default(_that.propertyInfo,_that.lastSold,_that.mortgage,_that.owners,_that.records,_that.jobFilings,_that.violations,_that.complaints,_that.zoning,_that.coordinates);case _:
   return null;
 
 }
@@ -277,9 +290,10 @@ return $default(_that.lastSold,_that.mortgage,_that.owners,_that.records,_that.j
 @JsonSerializable()
 
 class _Property implements Property {
-  const _Property({this.lastSold, this.mortgage, this.owners, final  List<Map<String, dynamic>> records = const [], final  List<Map<String, dynamic>> jobFilings = const [], final  List<Map<String, dynamic>> violations = const [], final  List<Map<String, dynamic>> complaints = const [], this.zoning, this.coordinates}): _records = records,_jobFilings = jobFilings,_violations = violations,_complaints = complaints;
+  const _Property({this.propertyInfo, this.lastSold, this.mortgage, this.owners, final  List<Map<String, dynamic>> records = const [], final  List<Map<String, dynamic>> jobFilings = const [], final  List<Map<String, dynamic>> violations = const [], final  List<Map<String, dynamic>> complaints = const [], this.zoning, this.coordinates}): _records = records,_jobFilings = jobFilings,_violations = violations,_complaints = complaints;
   factory _Property.fromJson(Map<String, dynamic> json) => _$PropertyFromJson(json);
 
+@override final  PropertyInfo? propertyInfo;
 @override final  LastSold? lastSold;
 @override final  Mortgage? mortgage;
 @override final  Owners? owners;
@@ -327,16 +341,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Property&&(identical(other.lastSold, lastSold) || other.lastSold == lastSold)&&(identical(other.mortgage, mortgage) || other.mortgage == mortgage)&&(identical(other.owners, owners) || other.owners == owners)&&const DeepCollectionEquality().equals(other._records, _records)&&const DeepCollectionEquality().equals(other._jobFilings, _jobFilings)&&const DeepCollectionEquality().equals(other._violations, _violations)&&const DeepCollectionEquality().equals(other._complaints, _complaints)&&(identical(other.zoning, zoning) || other.zoning == zoning)&&(identical(other.coordinates, coordinates) || other.coordinates == coordinates));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Property&&(identical(other.propertyInfo, propertyInfo) || other.propertyInfo == propertyInfo)&&(identical(other.lastSold, lastSold) || other.lastSold == lastSold)&&(identical(other.mortgage, mortgage) || other.mortgage == mortgage)&&(identical(other.owners, owners) || other.owners == owners)&&const DeepCollectionEquality().equals(other._records, _records)&&const DeepCollectionEquality().equals(other._jobFilings, _jobFilings)&&const DeepCollectionEquality().equals(other._violations, _violations)&&const DeepCollectionEquality().equals(other._complaints, _complaints)&&(identical(other.zoning, zoning) || other.zoning == zoning)&&(identical(other.coordinates, coordinates) || other.coordinates == coordinates));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,lastSold,mortgage,owners,const DeepCollectionEquality().hash(_records),const DeepCollectionEquality().hash(_jobFilings),const DeepCollectionEquality().hash(_violations),const DeepCollectionEquality().hash(_complaints),zoning,coordinates);
+int get hashCode => Object.hash(runtimeType,propertyInfo,lastSold,mortgage,owners,const DeepCollectionEquality().hash(_records),const DeepCollectionEquality().hash(_jobFilings),const DeepCollectionEquality().hash(_violations),const DeepCollectionEquality().hash(_complaints),zoning,coordinates);
 
 @override
 String toString() {
-  return 'Property(lastSold: $lastSold, mortgage: $mortgage, owners: $owners, records: $records, jobFilings: $jobFilings, violations: $violations, complaints: $complaints, zoning: $zoning, coordinates: $coordinates)';
+  return 'Property(propertyInfo: $propertyInfo, lastSold: $lastSold, mortgage: $mortgage, owners: $owners, records: $records, jobFilings: $jobFilings, violations: $violations, complaints: $complaints, zoning: $zoning, coordinates: $coordinates)';
 }
 
 
@@ -347,11 +361,11 @@ abstract mixin class _$PropertyCopyWith<$Res> implements $PropertyCopyWith<$Res>
   factory _$PropertyCopyWith(_Property value, $Res Function(_Property) _then) = __$PropertyCopyWithImpl;
 @override @useResult
 $Res call({
- LastSold? lastSold, Mortgage? mortgage, Owners? owners, List<Map<String, dynamic>> records, List<Map<String, dynamic>> jobFilings, List<Map<String, dynamic>> violations, List<Map<String, dynamic>> complaints, Zoning? zoning, Coordinates? coordinates
+ PropertyInfo? propertyInfo, LastSold? lastSold, Mortgage? mortgage, Owners? owners, List<Map<String, dynamic>> records, List<Map<String, dynamic>> jobFilings, List<Map<String, dynamic>> violations, List<Map<String, dynamic>> complaints, Zoning? zoning, Coordinates? coordinates
 });
 
 
-@override $LastSoldCopyWith<$Res>? get lastSold;@override $MortgageCopyWith<$Res>? get mortgage;@override $OwnersCopyWith<$Res>? get owners;@override $ZoningCopyWith<$Res>? get zoning;@override $CoordinatesCopyWith<$Res>? get coordinates;
+@override $PropertyInfoCopyWith<$Res>? get propertyInfo;@override $LastSoldCopyWith<$Res>? get lastSold;@override $MortgageCopyWith<$Res>? get mortgage;@override $OwnersCopyWith<$Res>? get owners;@override $ZoningCopyWith<$Res>? get zoning;@override $CoordinatesCopyWith<$Res>? get coordinates;
 
 }
 /// @nodoc
@@ -364,9 +378,10 @@ class __$PropertyCopyWithImpl<$Res>
 
 /// Create a copy of Property
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? lastSold = freezed,Object? mortgage = freezed,Object? owners = freezed,Object? records = null,Object? jobFilings = null,Object? violations = null,Object? complaints = null,Object? zoning = freezed,Object? coordinates = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? propertyInfo = freezed,Object? lastSold = freezed,Object? mortgage = freezed,Object? owners = freezed,Object? records = null,Object? jobFilings = null,Object? violations = null,Object? complaints = null,Object? zoning = freezed,Object? coordinates = freezed,}) {
   return _then(_Property(
-lastSold: freezed == lastSold ? _self.lastSold : lastSold // ignore: cast_nullable_to_non_nullable
+propertyInfo: freezed == propertyInfo ? _self.propertyInfo : propertyInfo // ignore: cast_nullable_to_non_nullable
+as PropertyInfo?,lastSold: freezed == lastSold ? _self.lastSold : lastSold // ignore: cast_nullable_to_non_nullable
 as LastSold?,mortgage: freezed == mortgage ? _self.mortgage : mortgage // ignore: cast_nullable_to_non_nullable
 as Mortgage?,owners: freezed == owners ? _self.owners : owners // ignore: cast_nullable_to_non_nullable
 as Owners?,records: null == records ? _self._records : records // ignore: cast_nullable_to_non_nullable
@@ -380,6 +395,18 @@ as Coordinates?,
 }
 
 /// Create a copy of Property
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$PropertyInfoCopyWith<$Res>? get propertyInfo {
+    if (_self.propertyInfo == null) {
+    return null;
+  }
+
+  return $PropertyInfoCopyWith<$Res>(_self.propertyInfo!, (value) {
+    return _then(_self.copyWith(propertyInfo: value));
+  });
+}/// Create a copy of Property
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
@@ -440,6 +467,293 @@ $CoordinatesCopyWith<$Res>? get coordinates {
     return _then(_self.copyWith(coordinates: value));
   });
 }
+}
+
+
+/// @nodoc
+mixin _$PropertyInfo {
+
+ String? get propertyType; String? get bbl; double? get floors; int? get resUnits; int? get totalUnits; double? get lotFront; double? get lotDepth; double? get bldgFront; double? get bldgDepth;
+/// Create a copy of PropertyInfo
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$PropertyInfoCopyWith<PropertyInfo> get copyWith => _$PropertyInfoCopyWithImpl<PropertyInfo>(this as PropertyInfo, _$identity);
+
+  /// Serializes this PropertyInfo to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PropertyInfo&&(identical(other.propertyType, propertyType) || other.propertyType == propertyType)&&(identical(other.bbl, bbl) || other.bbl == bbl)&&(identical(other.floors, floors) || other.floors == floors)&&(identical(other.resUnits, resUnits) || other.resUnits == resUnits)&&(identical(other.totalUnits, totalUnits) || other.totalUnits == totalUnits)&&(identical(other.lotFront, lotFront) || other.lotFront == lotFront)&&(identical(other.lotDepth, lotDepth) || other.lotDepth == lotDepth)&&(identical(other.bldgFront, bldgFront) || other.bldgFront == bldgFront)&&(identical(other.bldgDepth, bldgDepth) || other.bldgDepth == bldgDepth));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,propertyType,bbl,floors,resUnits,totalUnits,lotFront,lotDepth,bldgFront,bldgDepth);
+
+@override
+String toString() {
+  return 'PropertyInfo(propertyType: $propertyType, bbl: $bbl, floors: $floors, resUnits: $resUnits, totalUnits: $totalUnits, lotFront: $lotFront, lotDepth: $lotDepth, bldgFront: $bldgFront, bldgDepth: $bldgDepth)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $PropertyInfoCopyWith<$Res>  {
+  factory $PropertyInfoCopyWith(PropertyInfo value, $Res Function(PropertyInfo) _then) = _$PropertyInfoCopyWithImpl;
+@useResult
+$Res call({
+ String? propertyType, String? bbl, double? floors, int? resUnits, int? totalUnits, double? lotFront, double? lotDepth, double? bldgFront, double? bldgDepth
+});
+
+
+
+
+}
+/// @nodoc
+class _$PropertyInfoCopyWithImpl<$Res>
+    implements $PropertyInfoCopyWith<$Res> {
+  _$PropertyInfoCopyWithImpl(this._self, this._then);
+
+  final PropertyInfo _self;
+  final $Res Function(PropertyInfo) _then;
+
+/// Create a copy of PropertyInfo
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? propertyType = freezed,Object? bbl = freezed,Object? floors = freezed,Object? resUnits = freezed,Object? totalUnits = freezed,Object? lotFront = freezed,Object? lotDepth = freezed,Object? bldgFront = freezed,Object? bldgDepth = freezed,}) {
+  return _then(_self.copyWith(
+propertyType: freezed == propertyType ? _self.propertyType : propertyType // ignore: cast_nullable_to_non_nullable
+as String?,bbl: freezed == bbl ? _self.bbl : bbl // ignore: cast_nullable_to_non_nullable
+as String?,floors: freezed == floors ? _self.floors : floors // ignore: cast_nullable_to_non_nullable
+as double?,resUnits: freezed == resUnits ? _self.resUnits : resUnits // ignore: cast_nullable_to_non_nullable
+as int?,totalUnits: freezed == totalUnits ? _self.totalUnits : totalUnits // ignore: cast_nullable_to_non_nullable
+as int?,lotFront: freezed == lotFront ? _self.lotFront : lotFront // ignore: cast_nullable_to_non_nullable
+as double?,lotDepth: freezed == lotDepth ? _self.lotDepth : lotDepth // ignore: cast_nullable_to_non_nullable
+as double?,bldgFront: freezed == bldgFront ? _self.bldgFront : bldgFront // ignore: cast_nullable_to_non_nullable
+as double?,bldgDepth: freezed == bldgDepth ? _self.bldgDepth : bldgDepth // ignore: cast_nullable_to_non_nullable
+as double?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [PropertyInfo].
+extension PropertyInfoPatterns on PropertyInfo {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _PropertyInfo value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _PropertyInfo() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _PropertyInfo value)  $default,){
+final _that = this;
+switch (_that) {
+case _PropertyInfo():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _PropertyInfo value)?  $default,){
+final _that = this;
+switch (_that) {
+case _PropertyInfo() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? propertyType,  String? bbl,  double? floors,  int? resUnits,  int? totalUnits,  double? lotFront,  double? lotDepth,  double? bldgFront,  double? bldgDepth)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _PropertyInfo() when $default != null:
+return $default(_that.propertyType,_that.bbl,_that.floors,_that.resUnits,_that.totalUnits,_that.lotFront,_that.lotDepth,_that.bldgFront,_that.bldgDepth);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? propertyType,  String? bbl,  double? floors,  int? resUnits,  int? totalUnits,  double? lotFront,  double? lotDepth,  double? bldgFront,  double? bldgDepth)  $default,) {final _that = this;
+switch (_that) {
+case _PropertyInfo():
+return $default(_that.propertyType,_that.bbl,_that.floors,_that.resUnits,_that.totalUnits,_that.lotFront,_that.lotDepth,_that.bldgFront,_that.bldgDepth);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? propertyType,  String? bbl,  double? floors,  int? resUnits,  int? totalUnits,  double? lotFront,  double? lotDepth,  double? bldgFront,  double? bldgDepth)?  $default,) {final _that = this;
+switch (_that) {
+case _PropertyInfo() when $default != null:
+return $default(_that.propertyType,_that.bbl,_that.floors,_that.resUnits,_that.totalUnits,_that.lotFront,_that.lotDepth,_that.bldgFront,_that.bldgDepth);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _PropertyInfo implements PropertyInfo {
+  const _PropertyInfo({this.propertyType, this.bbl, this.floors, this.resUnits, this.totalUnits, this.lotFront, this.lotDepth, this.bldgFront, this.bldgDepth});
+  factory _PropertyInfo.fromJson(Map<String, dynamic> json) => _$PropertyInfoFromJson(json);
+
+@override final  String? propertyType;
+@override final  String? bbl;
+@override final  double? floors;
+@override final  int? resUnits;
+@override final  int? totalUnits;
+@override final  double? lotFront;
+@override final  double? lotDepth;
+@override final  double? bldgFront;
+@override final  double? bldgDepth;
+
+/// Create a copy of PropertyInfo
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$PropertyInfoCopyWith<_PropertyInfo> get copyWith => __$PropertyInfoCopyWithImpl<_PropertyInfo>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$PropertyInfoToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PropertyInfo&&(identical(other.propertyType, propertyType) || other.propertyType == propertyType)&&(identical(other.bbl, bbl) || other.bbl == bbl)&&(identical(other.floors, floors) || other.floors == floors)&&(identical(other.resUnits, resUnits) || other.resUnits == resUnits)&&(identical(other.totalUnits, totalUnits) || other.totalUnits == totalUnits)&&(identical(other.lotFront, lotFront) || other.lotFront == lotFront)&&(identical(other.lotDepth, lotDepth) || other.lotDepth == lotDepth)&&(identical(other.bldgFront, bldgFront) || other.bldgFront == bldgFront)&&(identical(other.bldgDepth, bldgDepth) || other.bldgDepth == bldgDepth));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,propertyType,bbl,floors,resUnits,totalUnits,lotFront,lotDepth,bldgFront,bldgDepth);
+
+@override
+String toString() {
+  return 'PropertyInfo(propertyType: $propertyType, bbl: $bbl, floors: $floors, resUnits: $resUnits, totalUnits: $totalUnits, lotFront: $lotFront, lotDepth: $lotDepth, bldgFront: $bldgFront, bldgDepth: $bldgDepth)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$PropertyInfoCopyWith<$Res> implements $PropertyInfoCopyWith<$Res> {
+  factory _$PropertyInfoCopyWith(_PropertyInfo value, $Res Function(_PropertyInfo) _then) = __$PropertyInfoCopyWithImpl;
+@override @useResult
+$Res call({
+ String? propertyType, String? bbl, double? floors, int? resUnits, int? totalUnits, double? lotFront, double? lotDepth, double? bldgFront, double? bldgDepth
+});
+
+
+
+
+}
+/// @nodoc
+class __$PropertyInfoCopyWithImpl<$Res>
+    implements _$PropertyInfoCopyWith<$Res> {
+  __$PropertyInfoCopyWithImpl(this._self, this._then);
+
+  final _PropertyInfo _self;
+  final $Res Function(_PropertyInfo) _then;
+
+/// Create a copy of PropertyInfo
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? propertyType = freezed,Object? bbl = freezed,Object? floors = freezed,Object? resUnits = freezed,Object? totalUnits = freezed,Object? lotFront = freezed,Object? lotDepth = freezed,Object? bldgFront = freezed,Object? bldgDepth = freezed,}) {
+  return _then(_PropertyInfo(
+propertyType: freezed == propertyType ? _self.propertyType : propertyType // ignore: cast_nullable_to_non_nullable
+as String?,bbl: freezed == bbl ? _self.bbl : bbl // ignore: cast_nullable_to_non_nullable
+as String?,floors: freezed == floors ? _self.floors : floors // ignore: cast_nullable_to_non_nullable
+as double?,resUnits: freezed == resUnits ? _self.resUnits : resUnits // ignore: cast_nullable_to_non_nullable
+as int?,totalUnits: freezed == totalUnits ? _self.totalUnits : totalUnits // ignore: cast_nullable_to_non_nullable
+as int?,lotFront: freezed == lotFront ? _self.lotFront : lotFront // ignore: cast_nullable_to_non_nullable
+as double?,lotDepth: freezed == lotDepth ? _self.lotDepth : lotDepth // ignore: cast_nullable_to_non_nullable
+as double?,bldgFront: freezed == bldgFront ? _self.bldgFront : bldgFront // ignore: cast_nullable_to_non_nullable
+as double?,bldgDepth: freezed == bldgDepth ? _self.bldgDepth : bldgDepth // ignore: cast_nullable_to_non_nullable
+as double?,
+  ));
+}
+
+
 }
 
 
