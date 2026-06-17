@@ -6,6 +6,7 @@ part 'property.g.dart';
 @freezed
 abstract class Property with _$Property {
   const factory Property({
+    PropertyInfo? propertyInfo,
     LastSold? lastSold,
     Mortgage? mortgage,
     Owners? owners,
@@ -18,6 +19,23 @@ abstract class Property with _$Property {
   }) = _Property;
 
   factory Property.fromJson(Map<String, Object?> json) => _$PropertyFromJson(json);
+}
+
+@freezed
+abstract class PropertyInfo with _$PropertyInfo {
+  const factory PropertyInfo({
+    String? propertyType,
+    String? bbl,
+    double? floors,
+    int? resUnits,
+    int? totalUnits,
+    double? lotFront,
+    double? lotDepth,
+    double? bldgFront,
+    double? bldgDepth,
+  }) = _PropertyInfo;
+
+  factory PropertyInfo.fromJson(Map<String, Object?> json) => _$PropertyInfoFromJson(json);
 }
 
 @freezed
