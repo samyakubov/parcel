@@ -16,7 +16,7 @@ class JobsTab extends StatelessWidget {
       controller: controller,
       emptyIcon: Icons.construction_rounded,
       emptyMessage: 'No job filings recorded.',
-      sectionTitle: 'Job Filings',
+      sectionTitle: 'Permit Filings',
       sectionSubtitle: 'New construction, alterations, and renovation filings.',
       buildItem: (context, job) {
         final type = job['job_type']?.toString() ?? 'Job Filing';

@@ -20,7 +20,7 @@ class ActivityTab extends StatelessWidget {
       controller: controller,
       emptyIcon: Icons.history_rounded,
       emptyMessage: 'No activity records available.',
-      sectionTitle: 'Record Activity',
+      sectionTitle: 'Property Records',
       sectionSubtitle: 'Historical property and ownership data records.',
       buildItem: (context, record) {
         final type = record['partytype_desc']?.toString() ?? 'Record';
