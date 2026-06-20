@@ -25,6 +25,9 @@ class PropertyDetailsSheet extends ConsumerStatefulWidget {
 class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
   final _sheetController = DraggableScrollableController();
 
+  static final _numberFmt = NumberFormat('#,###');
+  static final _dateFmt = DateFormat('MM/dd/yyyy');
+
   static const double _minSize = 0.5;
   static const double _maxSize = 0.95;
 
@@ -334,38 +337,15 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
     String soldDate = '';
     if (lastSold?.lastSoldDate != null) {
       try {
-        final dt = DateTime.parse(lastSold!.lastSoldDate!);
-        soldDate = DateFormat('MM/dd/yyyy').format(dt);
+        soldDate = _dateFmt.format(DateTime.parse(lastSold!.lastSoldDate!));
       } catch (_) {
         soldDate = lastSold!.lastSoldDate!;
       }
     }
 
-    String grossSqft = 'N/A';
-    if (lastSold?.grossSqft != null) {
-      final sqftStr = '${NumberFormat('#,###').format(lastSold!.grossSqft!.round())} ft²';
-      final info = property.propertyInfo;
-      if (info?.bldgFront != null && info?.bldgDepth != null) {
-        final front = _fmtDim(info!.bldgFront!);
-        final depth = _fmtDim(info.bldgDepth!);
-        grossSqft = '$sqftStr ($front×$depth)';
-      } else {
-        grossSqft = sqftStr;
-      }
-    }
-
-    String landSqft = 'N/A';
-    if (lastSold?.landSqft != null) {
-      final sqftStr = '${NumberFormat('#,###').format(lastSold!.landSqft!.round())} ft²';
-      final info = property.propertyInfo;
-      if (info?.lotFront != null && info?.lotDepth != null) {
-        final front = _fmtDim(info!.lotFront!);
-        final depth = _fmtDim(info.lotDepth!);
-        landSqft = '$sqftStr ($front×$depth)';
-      } else {
-        landSqft = sqftStr;
-      }
-    }
+    final info = property.propertyInfo;
+    final grossSqft = _fmtSqft(lastSold?.grossSqft, info?.bldgFront, info?.bldgDepth);
+    final landSqft = _fmtSqft(lastSold?.landSqft, info?.lotFront, info?.lotDepth);
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -423,6 +403,13 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
   }
 
   String _fmtDim(double v) => v % 1 == 0 ? v.toInt().toString() : v.toStringAsFixed(1);
+
+  String _fmtSqft(double? sqft, double? front, double? depth) {
+    if (sqft == null) return 'N/A';
+    final base = '${_numberFmt.format(sqft.round())} ft²';
+    if (front != null && depth != null) return '$base (${_fmtDim(front)}×${_fmtDim(depth)})';
+    return base;
+  }
 
   Widget _vertDivider(ThemeData theme) {
     return Container(

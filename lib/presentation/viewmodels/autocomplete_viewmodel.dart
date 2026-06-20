@@ -79,7 +79,7 @@ class AutocompleteViewModel extends Notifier<AsyncValue<List<AddressSuggestion>?
         MapAnimationOptions(duration: 1500),
       );
 
-      final streetAddress = suggestion.fullName.split(',')[0].trim();
+      final streetAddress = _streetOnly(suggestion.fullName);
       ref
           .read(propertySearchViewModelProvider.notifier)
           .searchByAddress(streetAddress);
@@ -100,6 +100,8 @@ class AutocompleteViewModel extends Notifier<AsyncValue<List<AddressSuggestion>?
   // Private helpers
   // -------------------------------------------------------------------------
 
+  static String _streetOnly(String s) => s.split(',')[0].trim();
+
   Future<void> _fetchSuggestions(String query) async {
     _generation++;
     final capturedGeneration = _generation;
@@ -107,7 +109,7 @@ class AutocompleteViewModel extends Notifier<AsyncValue<List<AddressSuggestion>?
     state = const AsyncValue.loading();
 
     try {
-      final normalized = query.split(',')[0].trim();
+      final normalized = _streetOnly(query);
       final suggestions = await _api.suggest(normalized);
 
       if (capturedGeneration != _generation) return;

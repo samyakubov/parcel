@@ -19,6 +19,12 @@ class DetailsTab extends StatelessWidget {
     final theme = Theme.of(context);
     final zoning = property.zoning;
     final info = property.propertyInfo;
+    final hasZoning = zoning != null && (
+      zoning.zoningDistricts.isNotEmpty ||
+      zoning.commercialOverlays.isNotEmpty ||
+      zoning.specialDistricts.isNotEmpty ||
+      (zoning.limitedHeightDistrict?.isNotEmpty ?? false)
+    );
 
     return ListView(
       controller: controller,
@@ -42,7 +48,7 @@ class DetailsTab extends StatelessWidget {
                 DetailItem('Total Units', info.totalUnits!.toString()),
             ]),
           ),
-        if (zoning != null && (zoning.zoningDistricts.isNotEmpty || zoning.commercialOverlays.isNotEmpty || zoning.specialDistricts.isNotEmpty || (zoning.limitedHeightDistrict != null && zoning.limitedHeightDistrict!.isNotEmpty))) ...[
+        if (hasZoning) ...[
           if (zoning.zoningDistricts.isNotEmpty)
             _buildZoningCard(context, title: 'Zoning Districts', codes: zoning.zoningDistricts),
           if (zoning.commercialOverlays.isNotEmpty)

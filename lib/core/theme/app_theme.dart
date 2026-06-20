@@ -28,7 +28,7 @@ class AppTheme {
       ),
       scaffoldBackgroundColor: const Color(0xFFF1F5F9),
       cardColor: const Color(0xFFF8FAFC),
-      dividerColor: const Color(0xFFF1F5F9),
+      dividerColor: const Color(0xFFE2E8F0),
       textTheme: GoogleFonts.plusJakartaSansTextTheme(
         ThemeData.light().textTheme,
       ).apply(
