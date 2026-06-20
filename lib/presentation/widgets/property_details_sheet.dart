@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
 import '../viewmodels/property_search_viewmodel.dart';
 import '../../core/constants.dart';
+import '../../domain/entities/property.dart';
 
 // Tab Imports
 import 'property_details/tabs/details_tab.dart';
@@ -121,7 +122,7 @@ class PropertyDetailsSheet extends ConsumerWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context, WidgetRef ref, dynamic property, ScrollController scrollController, ThemeData theme) {
+  Widget _buildContent(BuildContext context, WidgetRef ref, Property property, ScrollController scrollController, ThemeData theme) {
     // Try to extract address from the first record if available
     String addressTitle = 'Property Details';
     if (property.records.isNotEmpty) {

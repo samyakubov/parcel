@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
@@ -39,9 +41,11 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
     ref.read(addressAutocompleteProvider.notifier).dismiss();
     if (widget.mapboxMap != null) {
       widget.onAutocompleteNavigating?.call();
-      ref
-          .read(addressAutocompleteProvider.notifier)
-          .selectSuggestion(suggestion, widget.mapboxMap!);
+      unawaited(
+        ref
+            .read(addressAutocompleteProvider.notifier)
+            .selectSuggestion(suggestion, widget.mapboxMap!),
+      );
     }
   }
 

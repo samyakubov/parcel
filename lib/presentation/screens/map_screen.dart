@@ -22,18 +22,22 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   bool _skipNextPropertyFlyTo = false;
 
   void _onMapCreated(MapboxMap mapboxMap) async {
-    this.mapboxMap = mapboxMap;
-    circleAnnotationManager = await mapboxMap.annotations.createCircleAnnotationManager();
-    
-    mapboxMap.logo.updateSettings(LogoSettings(enabled: false));
-    mapboxMap.attribution.updateSettings(AttributionSettings(enabled: false));
+    try {
+      this.mapboxMap = mapboxMap;
+      circleAnnotationManager = await mapboxMap.annotations.createCircleAnnotationManager();
 
-    mapboxMap.setCamera(CameraOptions(
-      center: Point(coordinates: Position(-74.0060, 40.7128)), // NYC
-      zoom: 12.0,
-    ));
+      mapboxMap.logo.updateSettings(LogoSettings(enabled: false));
+      mapboxMap.attribution.updateSettings(AttributionSettings(enabled: false));
 
-    setState(() {});
+      mapboxMap.setCamera(CameraOptions(
+        center: Point(coordinates: Position(-74.0060, 40.7128)),
+        zoom: 12.0,
+      ));
+
+      setState(() {});
+    } catch (e, st) {
+      debugPrint('Map initialization failed: $e\n$st');
+    }
   }
 
   void _onMapTap(MapContentGestureContext gestureContext) {

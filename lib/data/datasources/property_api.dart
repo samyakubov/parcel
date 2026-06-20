@@ -11,12 +11,14 @@ class PropertyApi {
   PropertyApi(this._dio);
 
   Future<Map<String, dynamic>> searchByAddress(String address) async {
-    final response = await _dio.get('/property/search_by_property_address/address=$address');
+    final encoded = Uri.encodeComponent(address);
+    final response = await _dio.get('/property/search_by_property_address/address=$encoded');
     return response.data;
   }
 
   Future<Map<String, dynamic>> searchByBbl(String bbl) async {
-    final response = await _dio.get('/property/search_by_property_bbl/bbl=$bbl');
+    final encoded = Uri.encodeComponent(bbl);
+    final response = await _dio.get('/property/search_by_property_bbl/bbl=$encoded');
     return response.data;
   }
 
