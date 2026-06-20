@@ -1,5 +1,7 @@
 # General Architecture Guide
 
+Always use /graphify skill with looking for code or a code snippet, never look file by file
+
 ## Overview
 This project follows recommended Flutter architecture principles focused on:
 - Separation of concerns
@@ -198,13 +200,3 @@ Detailed property and legal records including:
 ### coordinates
 - latitude
 - longitude
-
----
-
-## Census APIs
-
-### Get Census Data by Address
-`GET /census/get_census_data/address={address}`
-
-### Get Census Data by BBL
-`GET /census/get_census_data/bbl={bbl}`
