@@ -15,7 +15,7 @@ class MapLayerToggle extends ConsumerWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: theme.colorScheme.goldAccent,
+        color: theme.colorScheme.accentColor,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(

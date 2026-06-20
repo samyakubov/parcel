@@ -4,10 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
 import '../../core/constants.dart';
-import '../../core/utils/address_normalizer.dart';
 import '../../data/datasources/mapbox_search_api.dart';
 import '../../domain/entities/address_suggestion.dart';
 import 'property_search_viewmodel.dart';
+
 
 // ---------------------------------------------------------------------------
 // Provider
@@ -24,14 +24,12 @@ final addressAutocompleteProvider =
 
 class AutocompleteViewModel extends Notifier<AsyncValue<List<AddressSuggestion>?>> {
   Timer? _debounceTimer;
-
-
   int _generation = 0;
-
-  final MapboxSearchApi _api = MapboxSearchApi();
+  late MapboxSearchApi _api;
 
   @override
   AsyncValue<List<AddressSuggestion>?> build() {
+    _api = ref.watch(mapboxSearchApiProvider);
     ref.onDispose(() => _debounceTimer?.cancel());
     return const AsyncValue.data(null);
   }
@@ -81,7 +79,7 @@ class AutocompleteViewModel extends Notifier<AsyncValue<List<AddressSuggestion>?
         MapAnimationOptions(duration: 1500),
       );
 
-      final streetAddress = AddressNormalizer.streetOnly(suggestion.fullName);
+      final streetAddress = _streetOnly(suggestion.fullName);
       ref
           .read(propertySearchViewModelProvider.notifier)
           .searchByAddress(streetAddress);
@@ -102,6 +100,8 @@ class AutocompleteViewModel extends Notifier<AsyncValue<List<AddressSuggestion>?
   // Private helpers
   // -------------------------------------------------------------------------
 
+  static String _streetOnly(String s) => s.split(',')[0].trim();
+
   Future<void> _fetchSuggestions(String query) async {
     _generation++;
     final capturedGeneration = _generation;
@@ -109,7 +109,8 @@ class AutocompleteViewModel extends Notifier<AsyncValue<List<AddressSuggestion>?
     state = const AsyncValue.loading();
 
     try {
-      final suggestions = await _api.suggest(query);
+      final normalized = _streetOnly(query);
+      final suggestions = await _api.suggest(normalized);
 
       if (capturedGeneration != _generation) return;
 

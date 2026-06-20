@@ -11,6 +11,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
+
+  if (AppConstants.mapboxApiKey.isEmpty) {
+    throw StateError('MAPBOX_API_KEY is missing from .env');
+  }
+  if (AppConstants.backendApiKey.isEmpty) {
+    throw StateError('BACKEND_API_KEY is missing from .env');
+  }
+
   MapboxOptions.setAccessToken(AppConstants.mapboxApiKey);
   
   runApp(

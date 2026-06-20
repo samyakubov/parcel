@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../constants.dart';
 
@@ -14,6 +15,12 @@ final dioProvider = Provider<Dio>((ref) {
     },
   ));
 
-  dio.interceptors.add(LogInterceptor(responseBody: true, requestBody: true));
+  if (kDebugMode) {
+    dio.interceptors.add(LogInterceptor(
+      requestHeader: false,
+      responseBody: true,
+      requestBody: false,
+    ));
+  }
   return dio;
 });

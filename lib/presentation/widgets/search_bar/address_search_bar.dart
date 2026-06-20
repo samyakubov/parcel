@@ -1,8 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
-import '../../../core/utils/address_normalizer.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../domain/entities/address_suggestion.dart';
 import '../../viewmodels/autocomplete_viewmodel.dart';
@@ -39,9 +40,11 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
     ref.read(addressAutocompleteProvider.notifier).dismiss();
     if (widget.mapboxMap != null) {
       widget.onAutocompleteNavigating?.call();
-      ref
-          .read(addressAutocompleteProvider.notifier)
-          .selectSuggestion(suggestion, widget.mapboxMap!);
+      unawaited(
+        ref
+            .read(addressAutocompleteProvider.notifier)
+            .selectSuggestion(suggestion, widget.mapboxMap!),
+      );
     }
   }
 
@@ -53,7 +56,7 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
       if (_isBblMode) {
         ref.read(propertySearchViewModelProvider.notifier).searchByBbl(_controller.text);
       } else {
-        final streetAddress = AddressNormalizer.streetOnly(_controller.text);
+        final streetAddress = _controller.text.split(',')[0].trim();
         ref.read(propertySearchViewModelProvider.notifier).searchByAddress(streetAddress);
       }
     }
@@ -123,7 +126,7 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
                     ),
                     prefixIcon: Icon(
                       Icons.search, 
-                      color: theme.colorScheme.goldAccent,
+                      color: theme.colorScheme.accentColor,
                       size: 20,
                     ),
                     border: InputBorder.none,
@@ -136,7 +139,7 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
             Container(
               padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: theme.colorScheme.goldAccent,
+              color: theme.colorScheme.accentColor,
               borderRadius: BorderRadius.circular(30),
               boxShadow: [
                 BoxShadow(

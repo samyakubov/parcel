@@ -31,10 +31,10 @@ class SearchSuggestionTile extends StatelessWidget {
               Container(
                 width: 36, height: 36,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.goldAccent.withOpacity(0.15),
+                  color: theme.colorScheme.accentColor.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(Icons.location_on, size: 18, color: theme.colorScheme.goldAccent),
+                child: Icon(Icons.location_on, size: 18, color: theme.colorScheme.accentColor),
               ),
               const SizedBox(width: 12),
               Expanded(

@@ -1,7 +1,11 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants.dart';
-import '../../core/utils/address_normalizer.dart';
 import '../../domain/entities/address_suggestion.dart';
+
+final mapboxSearchApiProvider = Provider<MapboxSearchApi>((ref) {
+  return MapboxSearchApi();
+});
 
 class AutocompleteAuthException implements Exception {
   const AutocompleteAuthException();
@@ -31,8 +35,7 @@ class MapboxSearchApi {
 
   Future<List<AddressSuggestion>> suggest(String query) async {
     try {
-      final streetOnly = AddressNormalizer.streetOnly(query);
-      final encoded = Uri.encodeQueryComponent(streetOnly);
+      final encoded = Uri.encodeQueryComponent(query);
       final url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/$encoded.json';
       final response = await _dio.get<Map<String, dynamic>>(
         url,
