@@ -7,7 +7,6 @@ import '../../core/constants.dart';
 import '../../domain/entities/property.dart';
 
 // Tab Imports
-import 'property_details/tabs/details_tab.dart';
 import 'property_details/tabs/owners_tab.dart';
 import 'property_details/tabs/mortgage_tab.dart';
 import 'property_details/tabs/activity_tab.dart';
@@ -124,7 +123,7 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
         : null;
 
     return DefaultTabController(
-      length: 6,
+      length: 5,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -289,10 +288,9 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
                     labelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
                     unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
                     tabs: const [
-                      Tab(text: 'Details'),
+                      Tab(text: 'Records'),
                       Tab(text: 'Owners'),
                       Tab(text: 'Mortgage'),
-                      Tab(text: 'Records'),
                       Tab(text: 'Permits'),
                       Tab(text: 'Issues'),
                     ],
@@ -307,10 +305,9 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
           Expanded(
             child: TabBarView(
               children: [
-                DetailsTab(property: property, controller: scrollController),
+                ActivityTab(property: property, controller: scrollController),
                 OwnersTab(property: property, controller: scrollController),
                 MortgageTab(property: property, controller: scrollController),
-                ActivityTab(property: property, controller: scrollController),
                 JobsTab(property: property, controller: scrollController),
                 IssuesTab(property: property, controller: scrollController),
               ],
