@@ -6,9 +6,9 @@ class AppTheme {
   static const Color blackDark = Color(0xFF000000);
   static const Color slateLight = Color(0xFFF1F5F9);
 
-  static const Color goldAccent = Color(0xFFD4AF37);     // light mode
-  static const Color goldAccentDark = Color(0xFFF5C842); // dark mode
-  
+  static const Color blueAccent = Color(0xFF2D5DA8);      // light mode
+  static const Color blueAccentDark = Color(0xFF4A80D4);  // dark mode
+
   static ThemeData get light {
     return ThemeData(
       useMaterial3: true,
@@ -21,10 +21,10 @@ class AppTheme {
         primary: primaryBlue,
         secondary: const Color(0xFF64748B),
       ).copyWith(
-        tertiary: goldAccent,
-        onTertiary: const Color(0xFFE5E2E1),
-        tertiaryContainer: const Color(0xFFFDF3C0),
-        onTertiaryContainer: const Color(0xFF5C4A00),
+        tertiary: blueAccent,
+        onTertiary: const Color(0xFFFFFFFF),
+        tertiaryContainer: const Color(0xFFDBE8F8),
+        onTertiaryContainer: const Color(0xFF0D2D5E),
       ),
       scaffoldBackgroundColor: const Color(0xFFF1F5F9),
       cardColor: const Color(0xFFF8FAFC),
@@ -51,10 +51,10 @@ class AppTheme {
         secondary: const Color(0xFF94A3B8),
         error: const Color(0xFFEF4444),
       ).copyWith(
-        tertiary: goldAccentDark,
-        onTertiary: const Color(0xFF3A2E00),
-        tertiaryContainer: const Color(0xFF4A3B00),
-        onTertiaryContainer: const Color(0xFFF5C842),
+        tertiary: blueAccentDark,
+        onTertiary: const Color(0xFFFFFFFF),
+        tertiaryContainer: const Color(0xFF1A3A6B),
+        onTertiaryContainer: const Color(0xFFBDD5F5),
       ),
       scaffoldBackgroundColor: blackDark, // Pure Black
       cardColor: const Color(0xFF121212), // Deep Black-Grey for cards
@@ -79,6 +79,6 @@ extension AppThemeX on ColorScheme {
     : const Color(0xFF94A3B8);
 
   Color get goldAccent => brightness == Brightness.light
-      ? const Color(0xFFD4AF37)
-      : const Color(0xFFF5C842);
+      ? const Color(0xFF2D5DA8)
+      : const Color(0xFF4A80D4);
 }
