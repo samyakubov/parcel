@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
 import '../../core/constants.dart';
-import '../../core/utils/address_normalizer.dart';
 import '../../data/datasources/mapbox_search_api.dart';
 import '../../domain/entities/address_suggestion.dart';
 import 'property_search_viewmodel.dart';
@@ -80,7 +79,7 @@ class AutocompleteViewModel extends Notifier<AsyncValue<List<AddressSuggestion>?
         MapAnimationOptions(duration: 1500),
       );
 
-      final streetAddress = AddressNormalizer.streetOnly(suggestion.fullName);
+      final streetAddress = suggestion.fullName.split(',')[0].trim();
       ref
           .read(propertySearchViewModelProvider.notifier)
           .searchByAddress(streetAddress);
@@ -108,7 +107,7 @@ class AutocompleteViewModel extends Notifier<AsyncValue<List<AddressSuggestion>?
     state = const AsyncValue.loading();
 
     try {
-      final normalized = AddressNormalizer.streetOnly(query);
+      final normalized = query.split(',')[0].trim();
       final suggestions = await _api.suggest(normalized);
 
       if (capturedGeneration != _generation) return;

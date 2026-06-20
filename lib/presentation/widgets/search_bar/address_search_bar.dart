@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
-import '../../../core/utils/address_normalizer.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../domain/entities/address_suggestion.dart';
 import '../../viewmodels/autocomplete_viewmodel.dart';
@@ -57,7 +56,7 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
       if (_isBblMode) {
         ref.read(propertySearchViewModelProvider.notifier).searchByBbl(_controller.text);
       } else {
-        final streetAddress = AddressNormalizer.streetOnly(_controller.text);
+        final streetAddress = _controller.text.split(',')[0].trim();
         ref.read(propertySearchViewModelProvider.notifier).searchByAddress(streetAddress);
       }
     }
