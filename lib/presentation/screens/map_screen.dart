@@ -94,7 +94,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           circleAnnotationManager?.deleteAll();
           circleAnnotationManager?.create(CircleAnnotationOptions(
             geometry: Point(coordinates: position),
-            circleColor: Theme.of(context).colorScheme.goldAccent.value,
+            circleColor: Theme.of(context).colorScheme.accentColor.value,
             circleRadius: 8.0,
             circleStrokeWidth: 3.0,
             circleStrokeColor: const Color(0xFFE5E2E1).value,

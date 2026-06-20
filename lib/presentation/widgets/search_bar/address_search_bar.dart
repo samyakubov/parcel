@@ -126,7 +126,7 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
                     ),
                     prefixIcon: Icon(
                       Icons.search, 
-                      color: theme.colorScheme.goldAccent,
+                      color: theme.colorScheme.accentColor,
                       size: 20,
                     ),
                     border: InputBorder.none,
@@ -139,7 +139,7 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
             Container(
               padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: theme.colorScheme.goldAccent,
+              color: theme.colorScheme.accentColor,
               borderRadius: BorderRadius.circular(30),
               boxShadow: [
                 BoxShadow(

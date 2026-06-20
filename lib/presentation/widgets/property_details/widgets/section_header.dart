@@ -33,7 +33,7 @@ class SectionHeader extends StatelessWidget {
             Text(
               subtitle!,
               style: TextStyle(
-                color: theme.colorScheme.goldAccent,
+                color: theme.colorScheme.accentColor,
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
               ),

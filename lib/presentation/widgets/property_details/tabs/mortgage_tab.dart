@@ -54,7 +54,7 @@ class MortgageTab extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.w900,
-                  color: theme.colorScheme.goldAccent,
+                  color: theme.colorScheme.accentColor,
                   letterSpacing: -1,
                 ),
               ),

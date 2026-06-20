@@ -30,7 +30,7 @@ class DetailGrid extends StatelessWidget {
               style: TextStyle(
                 fontSize: 10, 
                 fontWeight: FontWeight.w700, 
-                color: theme.colorScheme.goldAccent, 
+                color: theme.colorScheme.accentColor, 
                 letterSpacing: 0.5,
               ),
             ),

@@ -24,77 +24,41 @@ class DetailsTab extends StatelessWidget {
       controller: controller,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       children: [
-        if (info != null) ...[
-          const SectionHeader(
-            title: 'Property Info',
-            subtitle: 'Building and lot characteristics.',
-          ),
+        const SectionHeader(
+          title: 'Property Info',
+          subtitle: 'Building, lot, and zoning characteristics.',
+        ),
+        if (info != null)
           Padding(
             padding: const EdgeInsets.only(bottom: 24),
             child: DetailGrid(items: [
               if (info.propertyType != null)
                 DetailItem('Property Type', info.propertyType!),
-              if (info.bbl != null)
-                DetailItem('BBL', info.bbl!),
               if (info.floors != null)
                 DetailItem('Floors', info.floors!.toStringAsFixed(info.floors! % 1 == 0 ? 0 : 1)),
               if (info.resUnits != null)
                 DetailItem('Res Units', info.resUnits!.toString()),
               if (info.totalUnits != null)
                 DetailItem('Total Units', info.totalUnits!.toString()),
-              if (info.lotFront != null && info.lotDepth != null)
-                DetailItem('Lot Size', '${_fmtDim(info.lotFront!)} × ${_fmtDim(info.lotDepth!)}'),
-              if (info.bldgFront != null && info.bldgDepth != null)
-                DetailItem('Building Size', '${_fmtDim(info.bldgFront!)} × ${_fmtDim(info.bldgDepth!)}'),
             ]),
           ),
-        ],
-
-        // Zoning Section
         if (zoning != null && (zoning.zoningDistricts.isNotEmpty || zoning.commercialOverlays.isNotEmpty || zoning.specialDistricts.isNotEmpty || (zoning.limitedHeightDistrict != null && zoning.limitedHeightDistrict!.isNotEmpty))) ...[
-          const SectionHeader(
-            title: 'Zoning & Land Use',
-            subtitle: 'Zoning districts and classification data.',
-          ),
-          
           if (zoning.zoningDistricts.isNotEmpty)
-            _buildZoningCard(
-              context,
-              title: 'Zoning Districts',
-              codes: zoning.zoningDistricts,
-            ),
-          
+            _buildZoningCard(context, title: 'Zoning Districts', codes: zoning.zoningDistricts),
           if (zoning.commercialOverlays.isNotEmpty)
-            _buildZoningCard(
-              context,
-              title: 'Commercial Overlays',
-              codes: zoning.commercialOverlays,
-            ),
-          
+            _buildZoningCard(context, title: 'Commercial Overlays', codes: zoning.commercialOverlays),
           if (zoning.specialDistricts.isNotEmpty)
-            _buildZoningCard(
-              context,
-              title: 'Special Districts',
-              codes: zoning.specialDistricts,
-            ),
-          
+            _buildZoningCard(context, title: 'Special Districts', codes: zoning.specialDistricts),
           if (zoning.limitedHeightDistrict != null && zoning.limitedHeightDistrict!.isNotEmpty)
-            _buildZoningCard(
-              context,
-              title: 'Limited Height District',
-              codes: [zoning.limitedHeightDistrict!],
-            ),
-
+            _buildZoningCard(context, title: 'Limited Height District', codes: [zoning.limitedHeightDistrict!]),
           if (zoning.lastUpdated != null && zoning.lastUpdated!.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            Center(
-              child: Text(
-                'Zoning Last Updated: ${zoning.lastUpdated}',
-                style: TextStyle(
-                  color: theme.colorScheme.secondary.withOpacity(0.5),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
+            const SizedBox(height: 4),
+            Text(
+              'Zoning last updated ${zoning.lastUpdated}',
+              style: TextStyle(
+                color: theme.colorScheme.secondary.withValues(alpha: 0.5),
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
@@ -103,8 +67,6 @@ class DetailsTab extends StatelessWidget {
       ],
     );
   }
-
-  String _fmtDim(double v) => v % 1 == 0 ? v.toInt().toString() : v.toString();
 
   Widget _buildZoningCard(BuildContext context, {
     required String title,
@@ -115,37 +77,24 @@ class DetailsTab extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 12),
+          padding: const EdgeInsets.only(bottom: 8),
           child: Text(
             title,
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 10,
               fontWeight: FontWeight.w700,
-              color: theme.colorScheme.secondary,
+              color: theme.colorScheme.accentColor,
               letterSpacing: 0.5,
             ),
           ),
         ),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: codes.map((code) => Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            decoration: BoxDecoration(
-              color: theme.brightness == Brightness.light ? Colors.grey.shade50 : theme.dividerColor.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: theme.colorScheme.cardBorder),
-            ),
-            child: Text(
-              code,
-              style: TextStyle(
-                color: theme.colorScheme.onSurface,
-                fontWeight: FontWeight.w700,
-                fontSize: 14,
-                letterSpacing: 0.5,
-              ),
-            ),
-          )).toList(),
+        Text(
+          codes.join(', '),
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: theme.colorScheme.onSurface,
+          ),
         ),
         const SizedBox(height: 16),
       ],

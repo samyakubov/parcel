@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 import '../viewmodels/property_search_viewmodel.dart';
-import '../../core/utils/date_formatter.dart';
 import '../../core/constants.dart';
 import '../../domain/entities/property.dart';
 
@@ -282,7 +281,7 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
                         )
                       ],
                     ),
-                    labelColor: theme.colorScheme.goldAccent,
+                    labelColor: theme.colorScheme.accentColor,
                     unselectedLabelColor: theme.colorScheme.secondary,
                     labelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
                     unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
@@ -332,7 +331,15 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
 
     final year = lastSold?.yearBuilt?.toString() ?? 'N/A';
 
-    final soldDate = DateFormatter.format(lastSold?.lastSoldDate);
+    String soldDate = '';
+    if (lastSold?.lastSoldDate != null) {
+      try {
+        final dt = DateTime.parse(lastSold!.lastSoldDate!);
+        soldDate = DateFormat('MM/dd/yyyy').format(dt);
+      } catch (_) {
+        soldDate = lastSold!.lastSoldDate!;
+      }
+    }
 
     String grossSqft = 'N/A';
     if (lastSold?.grossSqft != null) {

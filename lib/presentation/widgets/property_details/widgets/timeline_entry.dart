@@ -21,8 +21,8 @@ class TimelineEntry extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     
-    final gold = theme.colorScheme.goldAccent;
-    final activeBg = gold.withOpacity(0.12);
+    final accent = theme.colorScheme.accentColor;
+    final activeBg = accent.withOpacity(0.12);
     
     // Strip phone number from name if present
     final displayName = name.replaceAll(RegExp(r'\s*\(.*?\)\s*'), '').trim();
@@ -45,15 +45,15 @@ class TimelineEntry extends StatelessWidget {
                   height: 12,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isCurrent ? gold : theme.cardColor,
+                    color: isCurrent ? accent : theme.cardColor,
                     border: Border.all(
-                      color: isCurrent ? gold.withOpacity(0.5) : theme.colorScheme.secondary.withOpacity(0.3),
+                      color: isCurrent ? accent.withOpacity(0.5) : theme.colorScheme.secondary.withOpacity(0.3),
                       width: 2,
                     ),
                     boxShadow: [
                       if (isCurrent)
                         BoxShadow(
-                          color: gold.withOpacity(0.2),
+                          color: accent.withOpacity(0.2),
                           blurRadius: 4,
                           spreadRadius: 1,
                         )
@@ -83,7 +83,7 @@ class TimelineEntry extends StatelessWidget {
                     child: Text(
                       label.toUpperCase(),
                       style: TextStyle(
-                        color: isCurrent ? gold : theme.colorScheme.secondary,
+                        color: isCurrent ? accent : theme.colorScheme.secondary,
                         fontSize: 9,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.5,
@@ -96,7 +96,7 @@ class TimelineEntry extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 16,
-                      color: isCurrent ? gold : theme.colorScheme.onSurface,
+                      color: isCurrent ? accent : theme.colorScheme.onSurface,
                     ),
                   ),
                   if (phone != null) ...[

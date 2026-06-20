@@ -78,7 +78,7 @@ extension AppThemeX on ColorScheme {
     ? const Color(0xFF64748B)
     : const Color(0xFF94A3B8);
 
-  Color get goldAccent => brightness == Brightness.light
+  Color get accentColor => brightness == Brightness.light
       ? const Color(0xFF2D5DA8)
       : const Color(0xFF4A80D4);
 }

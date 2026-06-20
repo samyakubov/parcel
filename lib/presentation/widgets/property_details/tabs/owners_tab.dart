@@ -89,7 +89,7 @@ class _OwnersTabState extends ConsumerState<OwnersTab> {
               prefixIcon: Icon(
                 Icons.search_rounded, 
                 size: 20, 
-                color: theme.colorScheme.goldAccent,
+                color: theme.colorScheme.accentColor,
               ),
               suffixIcon: _searchQuery.isNotEmpty
                   ? IconButton(

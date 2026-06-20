@@ -32,7 +32,7 @@ class ActivityTab extends StatelessWidget {
           subtitle: partyName,
           date: DateFormatter.format(date),
           amount: amount > 0 ? currencyFormatter.format(amount) : null,
-          color: Theme.of(context).colorScheme.goldAccent,
+          color: Theme.of(context).colorScheme.accentColor,
         );
       },
     );
