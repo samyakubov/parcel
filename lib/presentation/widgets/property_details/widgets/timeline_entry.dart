@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
-import 'property_card_surface.dart';
 
 class TimelineEntry extends StatelessWidget {
   final String name;
@@ -23,10 +22,7 @@ class TimelineEntry extends StatelessWidget {
     final theme = Theme.of(context);
     
     final gold = theme.colorScheme.goldAccent;
-    final activeColor = gold;
     final activeBg = gold.withOpacity(0.12);
-    final activeBorder = gold.withOpacity(0.3);
-    final activeText = gold;
     
     // Strip phone number from name if present
     final displayName = name.replaceAll(RegExp(r'\s*\(.*?\)\s*'), '').trim();
@@ -49,15 +45,15 @@ class TimelineEntry extends StatelessWidget {
                   height: 12,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isCurrent ? activeColor : theme.cardColor,
+                    color: isCurrent ? gold : theme.cardColor,
                     border: Border.all(
-                      color: isCurrent ? activeColor.withOpacity(0.5) : theme.colorScheme.secondary.withOpacity(0.3),
+                      color: isCurrent ? gold.withOpacity(0.5) : theme.colorScheme.secondary.withOpacity(0.3),
                       width: 2,
                     ),
                     boxShadow: [
                       if (isCurrent)
                         BoxShadow(
-                          color: activeColor.withOpacity(0.2),
+                          color: gold.withOpacity(0.2),
                           blurRadius: 4,
                           spreadRadius: 1,
                         )
@@ -72,13 +68,9 @@ class TimelineEntry extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          // Card content
           Expanded(
-            child: PropertyCardSurface(
-              margin: const EdgeInsets.only(bottom: 20),
-              padding: const EdgeInsets.all(16),
-              borderColor: isCurrent ? activeBorder : theme.colorScheme.cardBorder,
-              shadowOffset: const Offset(0, 2),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -91,7 +83,7 @@ class TimelineEntry extends StatelessWidget {
                     child: Text(
                       label.toUpperCase(),
                       style: TextStyle(
-                        color: isCurrent ? activeText : theme.colorScheme.secondary,
+                        color: isCurrent ? gold : theme.colorScheme.secondary,
                         fontSize: 9,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.5,

@@ -35,7 +35,6 @@ class ViolationsTab extends StatelessWidget {
           amount: amount > 0 ? 'Fine: ${currencyFormatter.format(amount)}' : null,
           status: status,
           isStatusPositive: isClosed,
-          icon: Icons.gavel_outlined,
           color: Colors.red,
         );
       },

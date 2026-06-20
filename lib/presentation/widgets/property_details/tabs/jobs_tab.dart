@@ -30,7 +30,6 @@ class JobsTab extends StatelessWidget {
           date: applicant.isNotEmpty ? 'Applicant: $applicant' : null,
           status: status,
           isStatusPositive: status.toLowerCase().contains('permit') || status.toLowerCase().contains('complete'),
-          icon: Icons.construction_outlined,
           color: Colors.amber,
         );
       },

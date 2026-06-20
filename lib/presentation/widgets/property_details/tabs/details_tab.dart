@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import '../../../../domain/entities/property.dart';
 import '../../../../core/utils/date_formatter.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../widgets/info_card.dart';
 import '../widgets/detail_grid.dart';
 import '../widgets/section_header.dart';
 
@@ -40,25 +39,24 @@ class DetailsTab extends StatelessWidget {
             title: 'Property Info',
             subtitle: 'Building and lot characteristics.',
           ),
-          InfoCard(
-            children: [
-              DetailGrid(items: [
-                if (info.propertyType != null)
-                  DetailItem('PROPERTY TYPE', info.propertyType!),
-                if (info.bbl != null)
-                  DetailItem('BBL', info.bbl!),
-                if (info.floors != null)
-                  DetailItem('FLOORS', info.floors!.toStringAsFixed(info.floors! % 1 == 0 ? 0 : 1)),
-                if (info.resUnits != null)
-                  DetailItem('RES UNITS', info.resUnits!.toString()),
-                if (info.totalUnits != null)
-                  DetailItem('TOTAL UNITS', info.totalUnits!.toString()),
-                if (info.lotFront != null && info.lotDepth != null)
-                  DetailItem('LOT DIMS', '${_fmtDim(info.lotFront!)} × ${_fmtDim(info.lotDepth!)}'),
-                if (info.bldgFront != null && info.bldgDepth != null)
-                  DetailItem('BLDG DIMS', '${_fmtDim(info.bldgFront!)} × ${_fmtDim(info.bldgDepth!)}'),
-              ]),
-            ],
+          Padding(
+            padding: const EdgeInsets.only(bottom: 24),
+            child: DetailGrid(items: [
+              if (info.propertyType != null)
+                DetailItem('PROPERTY TYPE', info.propertyType!),
+              if (info.bbl != null)
+                DetailItem('BBL', info.bbl!),
+              if (info.floors != null)
+                DetailItem('FLOORS', info.floors!.toStringAsFixed(info.floors! % 1 == 0 ? 0 : 1)),
+              if (info.resUnits != null)
+                DetailItem('RES UNITS', info.resUnits!.toString()),
+              if (info.totalUnits != null)
+                DetailItem('TOTAL UNITS', info.totalUnits!.toString()),
+              if (info.lotFront != null && info.lotDepth != null)
+                DetailItem('LOT DIMS', '${_fmtDim(info.lotFront!)} × ${_fmtDim(info.lotDepth!)}'),
+              if (info.bldgFront != null && info.bldgDepth != null)
+                DetailItem('BLDG DIMS', '${_fmtDim(info.bldgFront!)} × ${_fmtDim(info.bldgDepth!)}'),
+            ]),
           ),
         ],
 
@@ -67,46 +65,42 @@ class DetailsTab extends StatelessWidget {
           subtitle: 'Key metrics and recent assessment data.',
         ),
         
-        InfoCard(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Last Sold Price',
-                  style: TextStyle(
-                    color: theme.colorScheme.secondary,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.5,
-                  ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Last Sold Price',
+                style: TextStyle(
+                  color: theme.colorScheme.secondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.5,
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  lastSoldPrice != null ? currencyFormatter.format(lastSoldPrice) : 'N/A',
-                  style: TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.w900,
-                    color: theme.colorScheme.goldAccent,
-                    letterSpacing: -1.5,
-                  ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                lastSoldPrice != null ? currencyFormatter.format(lastSoldPrice) : 'N/A',
+                style: TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.w900,
+                  color: theme.colorScheme.goldAccent,
+                  letterSpacing: -1.5,
                 ),
-              ],
-            ),
-            
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 24),
-              child: Divider(height: 1, color: theme.dividerColor),
-            ),
-            
-            // Grid metrics
-            DetailGrid(items: [
-              DetailItem('SOLD DATE', DateFormatter.format(lastSoldDate)),
-              DetailItem('YEAR BUILT', yearBuilt?.toString() ?? 'N/A'),
-              DetailItem('LAND SIZE', landSqft != null ? '${numberFormatter.format(landSqft)} SqFt' : 'N/A'),
-              DetailItem('GROSS AREA', grossSqft != null ? '${numberFormatter.format(grossSqft)} SqFt' : 'N/A'),
-            ]),
-          ],
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Divider(height: 1, color: theme.dividerColor),
+              ),
+              DetailGrid(items: [
+                DetailItem('SOLD DATE', DateFormatter.format(lastSoldDate)),
+                DetailItem('YEAR BUILT', yearBuilt?.toString() ?? 'N/A'),
+                DetailItem('LAND SIZE', landSqft != null ? '${numberFormatter.format(landSqft)} SqFt' : 'N/A'),
+                DetailItem('GROSS AREA', grossSqft != null ? '${numberFormatter.format(grossSqft)} SqFt' : 'N/A'),
+              ]),
+            ],
+          ),
         ),
 
         // Zoning Section
@@ -185,32 +179,28 @@ class DetailsTab extends StatelessWidget {
             ),
           ),
         ),
-        InfoCard(
-          children: [
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: codes.map((code) => Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  color: theme.brightness == Brightness.light ? Colors.grey.shade50 : theme.dividerColor.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: theme.colorScheme.cardBorder),
-                ),
-                child: Text(
-                  code,
-                  style: TextStyle(
-                    color: theme.colorScheme.onSurface,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              )).toList(),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: codes.map((code) => Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: theme.brightness == Brightness.light ? Colors.grey.shade50 : theme.dividerColor.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: theme.colorScheme.cardBorder),
             ),
-          ],
+            child: Text(
+              code,
+              style: TextStyle(
+                color: theme.colorScheme.onSurface,
+                fontWeight: FontWeight.w700,
+                fontSize: 14,
+                letterSpacing: 0.5,
+              ),
+            ),
+          )).toList(),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 16),
       ],
     );
   }
