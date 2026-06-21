@@ -7,6 +7,8 @@ import '../widgets/map_layer_toggle.dart';
 import '../viewmodels/property_search_viewmodel.dart';
 import '../viewmodels/map_style_viewmodel.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/constants.dart';
+import '../../core/utils/error_formatter.dart';
 
 class MapScreen extends ConsumerStatefulWidget {
   const MapScreen({super.key});
@@ -65,7 +67,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     
     final targetStyle = _getEffectiveStyle(mapPreference, brightness);
 
-    // Update map style if it change
+    // Update map style when preference changes (guarded to avoid calling in every build)
     if (mapboxMap != null && _currentStyle != targetStyle) {
       _currentStyle = targetStyle;
       mapboxMap!.loadStyleURI(targetStyle);
@@ -74,6 +76,23 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     }
 
     ref.listen(propertySearchViewModelProvider, (previous, next) {
+      if (next.hasError && !(previous?.hasError ?? false)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(formatNetworkError(next.error)),
+            duration: const Duration(seconds: 4),
+            behavior: SnackBarBehavior.floating,
+            margin: EdgeInsets.only(
+              left: 16,
+              right: 16,
+              bottom: MediaQuery.of(context).padding.bottom + AppConstants.bottomNavBarHeight - 8,
+            ),
+          ),
+        );
+        _skipNextPropertyFlyTo = false;
+        return;
+      }
+
       final property = next.value;
       if (property != null && property.coordinates != null && mapboxMap != null) {
         final coords = property.coordinates!;
@@ -81,10 +100,18 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           final position = Position(coords.longitude!, coords.latitude!);
 
           if (!_skipNextPropertyFlyTo) {
+            final screenHeight = MediaQuery.of(context).size.height;
+            final cardHeight = screenHeight * 0.4;
             mapboxMap!.flyTo(
               CameraOptions(
                 center: Point(coordinates: position),
                 zoom: 16.0,
+                padding: MbxEdgeInsets(
+                  top: 0,
+                  left: 0,
+                  bottom: cardHeight,
+                  right: 0,
+                ),
               ),
               MapAnimationOptions(duration: 1500),
             );
@@ -133,7 +160,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             curve: Curves.easeInOut,
             bottom: (searchState.value != null || searchState.isLoading)
                 ? (screenHeight * 0.5) + 16
-                : 24 + MediaQuery.of(context).padding.bottom,
+                : MediaQuery.of(context).padding.bottom + AppConstants.bottomNavBarHeight + 16,
             right: 16,
             child: const MapLayerToggle(),
           ),

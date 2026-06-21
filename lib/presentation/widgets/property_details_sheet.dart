@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../core/utils/property_formatters.dart';
 import '../viewmodels/property_search_viewmodel.dart';
 import '../../core/constants.dart';
 import '../../domain/entities/property.dart';
@@ -21,18 +21,42 @@ class PropertyDetailsSheet extends ConsumerStatefulWidget {
   ConsumerState<PropertyDetailsSheet> createState() => _PropertyDetailsSheetState();
 }
 
-class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
+class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet>
+    with SingleTickerProviderStateMixin {
   final _sheetController = DraggableScrollableController();
-
-  static final _numberFmt = NumberFormat('#,###');
-  static final _dateFmt = DateFormat('MM/dd/yyyy');
+  late final TabController _tabController;
+  // One dedicated controller per tab so only the active tab uses the sheet's
+  // scrollController. TabBarView keeps adjacent tabs alive, causing the sheet
+  // controller to be attached to multiple scroll views if all tabs share it.
+  final List<ScrollController> _tabScrollControllers =
+      List.generate(5, (_) => ScrollController());
 
   static const double _minSize = 0.5;
   static const double _maxSize = 0.95;
 
   @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 5, vsync: this);
+    _tabController.addListener(_onTabSettled);
+  }
+
+  void _onTabSettled() {
+    if (!_tabController.indexIsChanging) setState(() {});
+  }
+
+  ScrollController _controllerFor(int i, ScrollController sheetController) =>
+      _tabController.index == i ? sheetController : _tabScrollControllers[i];
+
+  @override
   void dispose() {
     _sheetController.dispose();
+    _tabController
+      ..removeListener(_onTabSettled)
+      ..dispose();
+    for (final c in _tabScrollControllers) {
+      c.dispose();
+    }
     super.dispose();
   }
 
@@ -122,9 +146,7 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
         ? 'https://maps.googleapis.com/maps/api/streetview?size=800x600&scale=2&fov=90&pitch=10&location=${coords.latitude},${coords.longitude}&key=${AppConstants.streetViewApiKey}'
         : null;
 
-    return DefaultTabController(
-      length: 5,
-      child: Column(
+    return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Header — draggable from anywhere in this block
@@ -141,25 +163,25 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
                     if (imageUrl != null)
                       Image.network(
                         imageUrl,
-                        height: 200,
+                        height: 160,
                         width: double.infinity,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) => Container(
-                          height: 200,
+                          height: 160,
                           color: theme.brightness == Brightness.light ? Colors.grey.shade100 : theme.cardColor,
                           child: Center(child: Icon(Icons.broken_image_rounded, size: 48, color: theme.colorScheme.secondary)),
                         ),
                         loadingBuilder: (context, child, loadingProgress) {
                           if (loadingProgress == null) return child;
                           return Container(
-                            height: 200,
+                            height: 160,
                             color: theme.brightness == Brightness.light ? Colors.grey.shade50 : theme.cardColor,
                             child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
                           );
                         },
                       )
                     else
-                      Container(height: 200, color: theme.brightness == Brightness.light ? Colors.grey.shade100 : theme.cardColor),
+                      Container(height: 160, color: theme.brightness == Brightness.light ? Colors.grey.shade100 : theme.cardColor),
 
                     // Drag handle
                     Positioned(
@@ -259,6 +281,9 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
                 // Stats strip
                 _buildStatsStrip(property, theme),
 
+                // Property info + zoning strip
+                _buildInfoStrip(property, theme),
+
                 // Tab bar
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -268,6 +293,7 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: TabBar(
+                    controller: _tabController,
                     isScrollable: true,
                     tabAlignment: TabAlignment.start,
                     dividerColor: Colors.transparent,
@@ -292,7 +318,7 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
                       Tab(text: 'Owners'),
                       Tab(text: 'Mortgage'),
                       Tab(text: 'Permits'),
-                      Tab(text: 'Issues'),
+                      Tab(text: 'Violations'),
                     ],
                   ),
                 ),
@@ -301,20 +327,21 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
             ),
           ),
 
-          // Tab content — scroll controller drives the sheet
+          // Tab content — only the active tab receives the sheet's
+          // scrollController; others use their own dedicated controllers.
           Expanded(
             child: TabBarView(
+              controller: _tabController,
               children: [
-                ActivityTab(property: property, controller: scrollController),
-                OwnersTab(property: property, controller: scrollController),
-                MortgageTab(property: property, controller: scrollController),
-                JobsTab(property: property, controller: scrollController),
-                IssuesTab(property: property, controller: scrollController),
+                ActivityTab(property: property, controller: _controllerFor(0, scrollController)),
+                OwnersTab(property: property, controller: _controllerFor(1, scrollController)),
+                MortgageTab(property: property, controller: _controllerFor(2, scrollController)),
+                JobsTab(property: property, controller: _controllerFor(3, scrollController)),
+                IssuesTab(property: property, controller: _controllerFor(4, scrollController)),
               ],
             ),
           ),
         ],
-      ),
     );
   }
 
@@ -323,10 +350,7 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
 
     String price = 'N/A';
     if (lastSold?.lastSoldPrice != null) {
-      final p = lastSold!.lastSoldPrice!;
-      price = p >= 1000000
-          ? '\$${(p / 1000000).toStringAsFixed(1)}M'
-          : '\$${(p / 1000).round()}K';
+      price = fmtPrice(lastSold!.lastSoldPrice!);
     }
 
     final year = lastSold?.yearBuilt?.toString() ?? 'N/A';
@@ -334,15 +358,15 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
     String soldDate = '';
     if (lastSold?.lastSoldDate != null) {
       try {
-        soldDate = _dateFmt.format(DateTime.parse(lastSold!.lastSoldDate!));
+        soldDate = dateFmt.format(DateTime.parse(lastSold!.lastSoldDate!));
       } catch (_) {
         soldDate = lastSold!.lastSoldDate!;
       }
     }
 
     final info = property.propertyInfo;
-    final grossSqft = _fmtSqft(lastSold?.grossSqft, info?.bldgFront, info?.bldgDepth);
-    final landSqft = _fmtSqft(lastSold?.landSqft, info?.lotFront, info?.lotDepth);
+    final grossSqft = fmtSqft(lastSold?.grossSqft, info?.bldgFront, info?.bldgDepth, inline: true);
+    final landSqft = fmtSqft(lastSold?.landSqft, info?.lotFront, info?.lotDepth, inline: true);
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -358,6 +382,88 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
           _vertDivider(theme),
           _statItem('Land Area', landSqft, theme),
         ],
+      ),
+    );
+  }
+
+  Widget _buildInfoStrip(Property property, ThemeData theme) {
+    final info = property.propertyInfo;
+    final zoning = property.zoning;
+
+    final statItems = <MapEntry<String, String>>[
+      if (info?.propertyType != null) MapEntry('Type', info!.propertyType!),
+      if (info?.floors != null) MapEntry('Floors', info!.floors!.toStringAsFixed(info.floors! % 1 == 0 ? 0 : 1)),
+      if (info?.resUnits != null) MapEntry('Res Units', info!.resUnits!.toString()),
+      if (info?.totalUnits != null) MapEntry('Total Units', info!.totalUnits!.toString()),
+    ];
+
+    final zoningGroups = <({String label, List<String> codes, Color color})>[
+      if (zoning != null && zoning.zoningDistricts.isNotEmpty)
+        (label: 'Districts', codes: zoning.zoningDistricts, color: theme.colorScheme.accentColor),
+      if (zoning != null && zoning.commercialOverlays.isNotEmpty)
+        (label: 'Commercial', codes: zoning.commercialOverlays, color: const Color(0xFF7C5CBF)),
+      if (zoning != null && zoning.specialDistricts.isNotEmpty)
+        (label: 'Special', codes: zoning.specialDistricts, color: const Color(0xFF1A8A5A)),
+      if (zoning?.limitedHeightDistrict?.isNotEmpty ?? false)
+        (label: 'Ltd. Height', codes: [zoning!.limitedHeightDistrict!], color: const Color(0xFFD97706)),
+    ];
+
+    if (statItems.isEmpty && zoningGroups.isEmpty) return const SizedBox.shrink();
+
+    final children = <Widget>[];
+
+    for (int i = 0; i < statItems.length; i++) {
+      children.add(_statItem(statItems[i].key, statItems[i].value, theme));
+      if (i < statItems.length - 1 || zoningGroups.isNotEmpty) children.add(_vertDivider(theme));
+    }
+
+    for (int i = 0; i < zoningGroups.length; i++) {
+      final g = zoningGroups[i];
+      children.add(Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            g.label,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              color: theme.colorScheme.secondary,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Row(
+            children: g.codes.map((code) => Padding(
+              padding: const EdgeInsets.only(right: 4),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                decoration: BoxDecoration(
+                  color: g.color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(5),
+                  border: Border.all(color: g.color.withValues(alpha: 0.25)),
+                ),
+                child: Text(
+                  code,
+                  style: TextStyle(
+                    color: g.color,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            )).toList(),
+          ),
+        ],
+      ));
+      if (i < zoningGroups.length - 1) children.add(_vertDivider(theme));
+    }
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: children,
       ),
     );
   }
@@ -399,14 +505,6 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
     );
   }
 
-  String _fmtDim(double v) => v % 1 == 0 ? v.toInt().toString() : v.toStringAsFixed(1);
-
-  String _fmtSqft(double? sqft, double? front, double? depth) {
-    if (sqft == null) return 'N/A';
-    final base = '${_numberFmt.format(sqft.round())} ft²';
-    if (front != null && depth != null) return '$base (${_fmtDim(front)}×${_fmtDim(depth)})';
-    return base;
-  }
 
   Widget _vertDivider(ThemeData theme) {
     return Container(
@@ -428,7 +526,7 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Container(height: 200, color: Colors.white),
+          Container(height: 160, color: Colors.white),
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 20, 24, 12),
             child: Column(

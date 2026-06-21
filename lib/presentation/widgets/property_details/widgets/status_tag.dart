@@ -16,7 +16,7 @@ class StatusTag extends StatelessWidget {
     final baseColor = isPositive ? Colors.green : Colors.amber;
     final bgColor = theme.brightness == Brightness.light 
       ? baseColor.shade50 
-      : baseColor.withOpacity(0.15);
+      : baseColor.withValues(alpha: 0.15);
     final textColor = theme.brightness == Brightness.light 
       ? baseColor.shade700 
       : baseColor.shade300;

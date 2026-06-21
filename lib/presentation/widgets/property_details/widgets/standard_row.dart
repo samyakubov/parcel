@@ -17,7 +17,7 @@ class StandardRow extends StatelessWidget {
     final theme = Theme.of(context);
     return Row(
       children: [
-        Icon(icon, size: 18, color: theme.colorScheme.secondary.withOpacity(0.5)),
+        Icon(icon, size: 18, color: theme.colorScheme.secondary.withValues(alpha: 0.5)),
         const SizedBox(width: 12),
         Expanded(
           child: Column(

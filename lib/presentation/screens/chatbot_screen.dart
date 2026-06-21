@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import '../viewmodels/chatbot_viewmodel.dart';
 import '../../domain/entities/property.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/constants.dart';
+import '../../core/utils/property_formatters.dart';
 
 class ChatbotScreen extends ConsumerStatefulWidget {
   const ChatbotScreen({super.key});
@@ -46,7 +46,9 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     ref.listen(chatbotViewModelProvider, (prev, next) {
-      Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
+      if (prev?.messages.length != next.messages.length) {
+        WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+      }
     });
 
     return Scaffold(
@@ -57,14 +59,31 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
           SafeArea(
             bottom: false,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-              child: Text(
-                'Parcel AI',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: -0.3,
-                      color: colorScheme.onSurface,
+              padding: const EdgeInsets.fromLTRB(20, 10, 8, 0),
+              child: Row(
+                children: [
+                  Text(
+                    'Parcel AI',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.2,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                  ),
+                  const Spacer(),
+                  if (chatState.messages.isNotEmpty)
+                    IconButton(
+                      onPressed: () => ref
+                          .read(chatbotViewModelProvider.notifier)
+                          .clearConversation(),
+                      icon: const Icon(Icons.edit_outlined),
+                      iconSize: 18,
+                      color: colorScheme.onSurfaceVariant,
+                      tooltip: 'New chat',
+                      padding: const EdgeInsets.all(8),
+                      constraints: const BoxConstraints(),
                     ),
+                ],
               ),
             ),
           ),
@@ -75,8 +94,15 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
                     controller: _scrollController,
                     padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
                     itemCount: chatState.messages.length,
-                    itemBuilder: (context, index) =>
-                        _MessageRow(message: chatState.messages[index]),
+                    itemBuilder: (context, index) {
+                      final msg = chatState.messages[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 20),
+                        child: msg.sender == MessageSender.user
+                            ? _UserBubble(message: msg)
+                            : _BotMessage(message: msg),
+                      );
+                    },
                   ),
           ),
           _InputBar(
@@ -123,20 +149,6 @@ class _EmptyState extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _MessageRow extends StatelessWidget {
-  final ChatMessage message;
-  const _MessageRow({required this.message});
-
-  @override
-  Widget build(BuildContext context) {
-    final isUser = message.sender == MessageSender.user;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
-      child: isUser ? _UserBubble(message: message) : _BotMessage(message: message),
     );
   }
 }
@@ -201,34 +213,13 @@ class _BotMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          width: 28,
-          height: 28,
-          decoration: BoxDecoration(
-            color: colorScheme.accentColor,
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(Icons.apartment_rounded, color: Colors.white, size: 16),
-        ),
-        const SizedBox(width: 10),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Parcel',
-                style: textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: colorScheme.onSurface,
-                ),
-              ),
-              const SizedBox(height: 4),
               if (message.isLoading)
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
@@ -304,24 +295,6 @@ class _PropertyCard extends StatelessWidget {
   final Property property;
   const _PropertyCard({required this.property});
 
-  static final _numberFmt = NumberFormat('#,###');
-  static final _dateFmt = DateFormat('MM/dd/yyyy');
-
-  String _fmtPrice(double p) => p >= 1000000
-      ? '\$${(p / 1000000).toStringAsFixed(1)}M'
-      : '\$${(p / 1000).round()}K';
-
-  String _fmtDim(double v) =>
-      v % 1 == 0 ? v.toInt().toString() : v.toStringAsFixed(1);
-
-  String _fmtSqft(double? sqft, double? front, double? depth) {
-    if (sqft == null) return 'N/A';
-    final base = '${_numberFmt.format(sqft.round())} ft²';
-    if (front != null && depth != null) {
-      return '$base\n${_fmtDim(front)}×${_fmtDim(depth)}';
-    }
-    return base;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -340,19 +313,19 @@ class _PropertyCard extends StatelessWidget {
     String price = 'N/A';
     String soldDate = '';
     if (lastSold?.lastSoldPrice != null) {
-      price = _fmtPrice(lastSold!.lastSoldPrice!);
+      price = fmtPrice(lastSold!.lastSoldPrice!);
     }
     if (lastSold?.lastSoldDate != null) {
       try {
-        soldDate = _dateFmt.format(DateTime.parse(lastSold!.lastSoldDate!));
+        soldDate = dateFmt.format(DateTime.parse(lastSold!.lastSoldDate!));
       } catch (_) {
         soldDate = lastSold!.lastSoldDate!;
       }
     }
 
     final year = lastSold?.yearBuilt?.toString() ?? 'N/A';
-    final grossSqft = _fmtSqft(lastSold?.grossSqft, info?.bldgFront, info?.bldgDepth);
-    final landSqft = _fmtSqft(lastSold?.landSqft, info?.lotFront, info?.lotDepth);
+    final grossSqft = fmtSqft(lastSold?.grossSqft, info?.bldgFront, info?.bldgDepth);
+    final landSqft = fmtSqft(lastSold?.landSqft, info?.lotFront, info?.lotDepth);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(14),
@@ -497,7 +470,7 @@ class _InputBar extends StatelessWidget {
 
     return Container(
       color: colorScheme.surface,
-      padding: EdgeInsets.fromLTRB(12, 8, 12, bottomPadding + 80),
+      padding: EdgeInsets.fromLTRB(12, 8, 12, bottomPadding + AppConstants.bottomNavBarHeight + 16),
       child: Container(
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF1C1C1E) : const Color(0xFFF2F2F7),
@@ -573,7 +546,7 @@ class _SendButtonState extends State<_SendButton>
 
   void _onTap() {
     if (!widget.enabled) return;
-    _anim.forward().then((_) => _anim.reverse());
+    _anim.forward().then((_) { if (mounted) _anim.reverse(); });
     widget.onSend();
   }
 
@@ -581,26 +554,31 @@ class _SendButtonState extends State<_SendButton>
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return ScaleTransition(
-      scale: _scale,
-      child: GestureDetector(
-        onTap: _onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            color: widget.enabled
-                ? colorScheme.accentColor
-                : colorScheme.onSurface.withValues(alpha: 0.15),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            Icons.arrow_upward_rounded,
-            color: widget.enabled
-                ? Colors.white
-                : colorScheme.onSurfaceVariant,
-            size: 18,
+    return Semantics(
+      button: true,
+      enabled: widget.enabled,
+      label: 'Send message',
+      child: ScaleTransition(
+        scale: _scale,
+        child: GestureDetector(
+          onTap: _onTap,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: widget.enabled
+                  ? colorScheme.accentColor
+                  : colorScheme.onSurface.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.arrow_upward_rounded,
+              color: widget.enabled
+                  ? Colors.white
+                  : colorScheme.onSurfaceVariant,
+              size: 18,
+            ),
           ),
         ),
       ),

@@ -19,23 +19,27 @@ class MapLayerToggle extends ConsumerWidget {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: Colors.black.withValues(alpha: 0.15),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
         ],
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => ref.read(mapStyleProvider.notifier).toggleStyle(),
-          borderRadius: BorderRadius.circular(14),
-          child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Icon(
-              isSatellite ? Icons.satellite_alt_rounded : Icons.layers_rounded,
-              size: 20,
-              color: Colors.white,
+      child: Semantics(
+        button: true,
+        label: isSatellite ? 'Switch to standard map' : 'Switch to satellite view',
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => ref.read(mapStyleProvider.notifier).toggleStyle(),
+            borderRadius: BorderRadius.circular(14),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Icon(
+                isSatellite ? Icons.satellite_alt_rounded : Icons.layers_rounded,
+                size: 20,
+                color: Colors.white,
+              ),
             ),
           ),
         ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../../../../domain/entities/property.dart';
 import '../../../../core/utils/date_formatter.dart';
+import '../../../../core/utils/property_formatters.dart';
 import '../widgets/list_item_card.dart';
 import '../widgets/status_tag.dart';
 import '../widgets/detail_grid.dart';
@@ -13,8 +13,6 @@ class IssuesTab extends StatelessWidget {
   final ScrollController controller;
 
   const IssuesTab({super.key, required this.property, required this.controller});
-
-  static final _currencyFmt = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +50,7 @@ class IssuesTab extends StatelessWidget {
               title: type,
               subtitle: desc,
               date: DateFormatter.format(date),
-              amount: amount > 0 ? 'Fine: ${_currencyFmt.format(amount)}' : null,
+              amount: amount > 0 ? 'Fine: ${currencyFmt.format(amount)}' : null,
               status: status,
               isStatusPositive: isClosed,
               color: Colors.red,

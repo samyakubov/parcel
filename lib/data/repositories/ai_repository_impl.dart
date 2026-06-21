@@ -13,8 +13,8 @@ class AiRepositoryImpl implements AiRepository {
   AiRepositoryImpl(this._api);
 
   @override
-  Future<AiResponse> ask(String question) async {
-    final data = await _api.ask(question);
+  Future<AiResponse> ask(String question, List<Map<String, dynamic>> conversationHistory) async {
+    final data = await _api.ask(question, conversationHistory);
     final rawProperty = data['property_data'];
     Property? property;
     if (rawProperty is Map<String, dynamic>) {
@@ -24,9 +24,14 @@ class AiRepositoryImpl implements AiRepository {
         property = null;
       }
     }
+    final rawHistory = data['updated_history'];
+    final updatedHistory = rawHistory is List
+        ? rawHistory.whereType<Map<String, dynamic>>().toList()
+        : <Map<String, dynamic>>[];
     return AiResponse(
-      response: data['response'] as String,
+      response: (data['response'] as String?) ?? 'No response received.',
       propertyData: property,
+      updatedHistory: updatedHistory,
     );
   }
 }

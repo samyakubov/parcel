@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/error_formatter.dart';
 import '../../../domain/entities/address_suggestion.dart';
 import '../../viewmodels/autocomplete_viewmodel.dart';
 import '../../viewmodels/property_search_viewmodel.dart';
@@ -78,7 +79,7 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
     ref.listen<AsyncValue<List<AddressSuggestion>?>>(addressAutocompleteProvider, (previous, next) {
       if (next.hasError) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not load location details.')),
+          SnackBar(content: Text(formatNetworkError(next.error))),
         );
       }
     });
@@ -100,7 +101,7 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
                     BoxShadow(
                       color: theme.brightness == Brightness.light
                           ? Colors.black12
-                          : Colors.black.withOpacity(0.3),
+                          : Colors.black.withValues(alpha: 0.3),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -117,11 +118,12 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
                     }
                   },
                   keyboardType: _isBblMode ? TextInputType.number : TextInputType.text,
+                  maxLength: 200,
                   style: TextStyle(color: theme.colorScheme.onSurface),
                   decoration: InputDecoration(
                     hintText: _isBblMode ? 'BBL...' : 'Search address...',
                     hintStyle: TextStyle(
-                      color: theme.colorScheme.onSurface.withOpacity(0.5),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                       fontSize: 14,
                     ),
                     prefixIcon: Icon(
@@ -130,6 +132,7 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
                       size: 20,
                     ),
                     border: InputBorder.none,
+                    counterText: '',
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   ),
                 ),
@@ -143,7 +146,7 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
               borderRadius: BorderRadius.circular(30),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.15),
+                  color: Colors.black.withValues(alpha: 0.15),
                   blurRadius: 10,
                   offset: const Offset(0, 3),
                 ),
@@ -176,7 +179,7 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
               elevation: 6,
               borderRadius: BorderRadius.circular(16),
               color: theme.colorScheme.surface,
-              shadowColor: Colors.black.withOpacity(0.15),
+              shadowColor: Colors.black.withValues(alpha: 0.15),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: SingleChildScrollView(
