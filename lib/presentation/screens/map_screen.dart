@@ -133,7 +133,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             curve: Curves.easeInOut,
             bottom: (searchState.value != null || searchState.isLoading)
                 ? (screenHeight * 0.5) + 16
-                : 24 + MediaQuery.of(context).padding.bottom,
+                : MediaQuery.of(context).padding.bottom + 68 + 12,
             right: 16,
             child: const MapLayerToggle(),
           ),

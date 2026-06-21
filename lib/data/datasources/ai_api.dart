@@ -8,10 +8,16 @@ class AiApi {
   final Dio _dio;
   AiApi(this._dio);
 
-  Future<Map<String, dynamic>> ask(String question) async {
+  Future<Map<String, dynamic>> ask(
+    String question,
+    List<Map<String, dynamic>> conversationHistory,
+  ) async {
     final response = await _dio.post<Map<String, dynamic>>(
       '/ai/ask',
-      data: {'question': question},
+      data: {
+        'question': question,
+        'conversation_history': conversationHistory,
+      },
     );
     return response.data!;
   }

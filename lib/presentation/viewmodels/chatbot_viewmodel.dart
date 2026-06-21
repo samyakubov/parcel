@@ -23,13 +23,23 @@ class ChatMessage {
 class ChatbotState {
   final List<ChatMessage> messages;
   final bool isSending;
+  final List<Map<String, dynamic>> conversationHistory;
 
-  const ChatbotState({required this.messages, this.isSending = false});
+  const ChatbotState({
+    required this.messages,
+    this.isSending = false,
+    this.conversationHistory = const [],
+  });
 
-  ChatbotState copyWith({List<ChatMessage>? messages, bool? isSending}) {
+  ChatbotState copyWith({
+    List<ChatMessage>? messages,
+    bool? isSending,
+    List<Map<String, dynamic>>? conversationHistory,
+  }) {
     return ChatbotState(
       messages: messages ?? this.messages,
       isSending: isSending ?? this.isSending,
+      conversationHistory: conversationHistory ?? this.conversationHistory,
     );
   }
 }
@@ -61,7 +71,9 @@ class ChatbotViewModel extends Notifier<ChatbotState> {
     );
 
     try {
-      final aiResponse = await ref.read(aiRepositoryProvider).ask(trimmed);
+      final aiResponse = await ref
+          .read(aiRepositoryProvider)
+          .ask(trimmed, state.conversationHistory);
       final botMsg = ChatMessage(
         text: aiResponse.response,
         sender: MessageSender.bot,
@@ -71,6 +83,7 @@ class ChatbotViewModel extends Notifier<ChatbotState> {
       state = state.copyWith(
         messages: [...state.messages.sublist(0, state.messages.length - 1), botMsg],
         isSending: false,
+        conversationHistory: aiResponse.updatedHistory,
       );
     } catch (e) {
       final errMsg = ChatMessage(
@@ -83,6 +96,10 @@ class ChatbotViewModel extends Notifier<ChatbotState> {
         isSending: false,
       );
     }
+  }
+
+  void clearConversation() {
+    state = const ChatbotState(messages: [], conversationHistory: []);
   }
 }
 

@@ -57,14 +57,31 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
           SafeArea(
             bottom: false,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-              child: Text(
-                'Parcel AI',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: -0.3,
-                      color: colorScheme.onSurface,
+              padding: const EdgeInsets.fromLTRB(20, 10, 8, 0),
+              child: Row(
+                children: [
+                  Text(
+                    'Parcel AI',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.2,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                  ),
+                  const Spacer(),
+                  if (chatState.messages.isNotEmpty)
+                    IconButton(
+                      onPressed: () => ref
+                          .read(chatbotViewModelProvider.notifier)
+                          .clearConversation(),
+                      icon: const Icon(Icons.edit_outlined),
+                      iconSize: 18,
+                      color: colorScheme.onSurfaceVariant,
+                      tooltip: 'New chat',
+                      padding: const EdgeInsets.all(8),
+                      constraints: const BoxConstraints(),
                     ),
+                ],
               ),
             ),
           ),
