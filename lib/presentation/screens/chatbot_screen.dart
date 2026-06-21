@@ -28,7 +28,6 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
   void _send() {
     ref.read(chatbotViewModelProvider.notifier).sendMessage(_controller.text);
     _controller.clear();
-    Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
   }
 
   void _scrollToBottom() {
@@ -169,6 +168,33 @@ class _UserBubble extends StatelessWidget {
   }
 }
 
+MarkdownStyleSheet _chatMarkdownStyle(BuildContext context) {
+  final colorScheme = Theme.of(context).colorScheme;
+  final textTheme = Theme.of(context).textTheme;
+  final body = textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface, height: 1.6);
+  return MarkdownStyleSheet(
+    p: body,
+    strong: body?.copyWith(fontWeight: FontWeight.w700),
+    em: body?.copyWith(fontStyle: FontStyle.italic),
+    listBullet: body,
+    code: textTheme.bodySmall?.copyWith(
+      color: colorScheme.onSurface,
+      backgroundColor: colorScheme.surfaceContainerHighest,
+      fontFamily: 'monospace',
+    ),
+    codeblockDecoration: BoxDecoration(
+      color: colorScheme.surfaceContainerHighest,
+      borderRadius: BorderRadius.circular(8),
+    ),
+    blockquoteDecoration: BoxDecoration(
+      border: Border(left: BorderSide(color: colorScheme.outlineVariant, width: 3)),
+    ),
+    h1: textTheme.titleLarge?.copyWith(color: colorScheme.onSurface, fontWeight: FontWeight.w700),
+    h2: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface, fontWeight: FontWeight.w700),
+    h3: textTheme.titleSmall?.copyWith(color: colorScheme.onSurface, fontWeight: FontWeight.w700),
+  );
+}
+
 class _BotMessage extends StatelessWidget {
   final ChatMessage message;
   const _BotMessage({required this.message});
@@ -215,55 +241,7 @@ class _BotMessage extends StatelessWidget {
                 ],
                 MarkdownBody(
                   data: message.text,
-                  styleSheet: MarkdownStyleSheet(
-                    p: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurface,
-                      height: 1.6,
-                    ),
-                    strong: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurface,
-                      fontWeight: FontWeight.w700,
-                      height: 1.6,
-                    ),
-                    em: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurface,
-                      fontStyle: FontStyle.italic,
-                      height: 1.6,
-                    ),
-                    code: textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurface,
-                      backgroundColor: colorScheme.surfaceContainerHighest,
-                      fontFamily: 'monospace',
-                    ),
-                    codeblockDecoration: BoxDecoration(
-                      color: colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    blockquoteDecoration: BoxDecoration(
-                      border: Border(
-                        left: BorderSide(
-                          color: colorScheme.outlineVariant,
-                          width: 3,
-                        ),
-                      ),
-                    ),
-                    listBullet: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurface,
-                      height: 1.6,
-                    ),
-                    h1: textTheme.titleLarge?.copyWith(
-                      color: colorScheme.onSurface,
-                      fontWeight: FontWeight.w700,
-                    ),
-                    h2: textTheme.titleMedium?.copyWith(
-                      color: colorScheme.onSurface,
-                      fontWeight: FontWeight.w700,
-                    ),
-                    h3: textTheme.titleSmall?.copyWith(
-                      color: colorScheme.onSurface,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+                  styleSheet: _chatMarkdownStyle(context),
                 ),
               ],
             ],

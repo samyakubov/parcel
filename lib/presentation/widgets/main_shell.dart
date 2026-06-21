@@ -5,16 +5,15 @@ import '../screens/chatbot_screen.dart';
 import '../viewmodels/navigation_viewmodel.dart';
 import '../../core/theme/app_theme.dart';
 
-class MainShell extends StatefulWidget {
+class MainShell extends ConsumerStatefulWidget {
   const MainShell({super.key});
 
   @override
-  State<MainShell> createState() => _MainShellState();
+  ConsumerState<MainShell> createState() => _MainShellState();
 }
 
-class _MainShellState extends State<MainShell> {
+class _MainShellState extends ConsumerState<MainShell> {
   late final PageController _pageController;
-  int _currentIndex = 0;
 
   static const _tabs = [
     (icon: Icons.map_outlined, activeIcon: Icons.map, label: 'Map'),
@@ -41,101 +40,95 @@ class _MainShellState extends State<MainShell> {
     );
   }
 
+  Widget _edgeSwipeZone({required bool isRight, required int currentIndex}) {
+    return Positioned(
+      right: isRight ? 0 : null,
+      left: isRight ? null : 0,
+      top: 0,
+      bottom: 0,
+      width: 36,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onHorizontalDragEnd: (details) {
+          final velocity = details.primaryVelocity ?? 0;
+          if (isRight && velocity < -300) {
+            ref.read(selectedTabProvider.notifier).goTo(currentIndex + 1);
+          } else if (!isRight && velocity > 300) {
+            ref.read(selectedTabProvider.notifier).goTo(currentIndex - 1);
+          }
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final currentIndex = ref.watch(selectedTabProvider);
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
     final colorScheme = Theme.of(context).colorScheme;
     final isDark = colorScheme.brightness == Brightness.dark;
 
-    return Consumer(
-      builder: (context, ref, _) {
-        ref.listen<int>(selectedTabProvider, (_, next) {
-          if (next != _currentIndex) _goToTab(next);
-        });
+    ref.listen<int>(selectedTabProvider, (_, next) => _goToTab(next));
 
-        return Stack(
-          children: [
-            PageView(
-              controller: _pageController,
-              physics: const NeverScrollableScrollPhysics(),
-              onPageChanged: (index) => setState(() => _currentIndex = index),
-              children: const [
-                MapScreen(),
-                ChatbotScreen(),
+    return Stack(
+      children: [
+        PageView(
+          controller: _pageController,
+          physics: const NeverScrollableScrollPhysics(),
+          onPageChanged: (index) => ref.read(selectedTabProvider.notifier).goTo(index),
+          children: const [
+            MapScreen(),
+            ChatbotScreen(),
+          ],
+        ),
+        if (currentIndex < _tabs.length - 1)
+          _edgeSwipeZone(isRight: true, currentIndex: currentIndex),
+        if (currentIndex > 0)
+          _edgeSwipeZone(isRight: false, currentIndex: currentIndex),
+        Positioned(
+          bottom: bottomPadding + 4,
+          left: 24,
+          right: 24,
+          child: Container(
+            height: 64,
+            decoration: BoxDecoration(
+              color: colorScheme.surface,
+              borderRadius: BorderRadius.circular(32),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: isDark ? 0.45 : 0.12),
+                  blurRadius: 24,
+                  offset: const Offset(0, 8),
+                ),
               ],
             ),
-            if (_currentIndex < _tabs.length - 1)
-              Positioned(
-                right: 0,
-                top: 0,
-                bottom: 0,
-                width: 36,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onHorizontalDragEnd: (details) {
-                    if ((details.primaryVelocity ?? 0) < -300) _goToTab(_currentIndex + 1);
-                  },
-                ),
-              ),
-            if (_currentIndex > 0)
-              Positioned(
-                left: 0,
-                top: 0,
-                bottom: 0,
-                width: 36,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onHorizontalDragEnd: (details) {
-                    if ((details.primaryVelocity ?? 0) > 300) _goToTab(_currentIndex - 1);
-                  },
-                ),
-              ),
-            Positioned(
-              bottom: bottomPadding + 4,
-              left: 24,
-              right: 24,
-              child: Container(
-                height: 64,
-                decoration: BoxDecoration(
-                  color: colorScheme.surface,
-                  borderRadius: BorderRadius.circular(32),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: isDark ? 0.45 : 0.12),
-                      blurRadius: 24,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    for (int i = 0; i < _tabs.length; i++)
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => _goToTab(i),
-                          behavior: HitTestBehavior.opaque,
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            margin: const EdgeInsets.all(8),
-                            child: Icon(
-                              _currentIndex == i
-                                  ? _tabs[i].activeIcon
-                                  : _tabs[i].icon,
-                              size: 24,
-                              color: _currentIndex == i
-                                  ? colorScheme.accentColor
-                                  : colorScheme.onSurfaceVariant,
-                            ),
-                          ),
+            child: Row(
+              children: [
+                for (int i = 0; i < _tabs.length; i++)
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => ref.read(selectedTabProvider.notifier).goTo(i),
+                      behavior: HitTestBehavior.opaque,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        margin: const EdgeInsets.all(8),
+                        child: Icon(
+                          currentIndex == i
+                              ? _tabs[i].activeIcon
+                              : _tabs[i].icon,
+                          size: 24,
+                          color: currentIndex == i
+                              ? colorScheme.accentColor
+                              : colorScheme.onSurfaceVariant,
                         ),
                       ),
-                  ],
-                ),
-              ),
+                    ),
+                  ),
+              ],
             ),
-          ],
-        );
-      },
+          ),
+        ),
+      ],
     );
   }
 }

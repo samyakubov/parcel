@@ -69,7 +69,7 @@ class ChatbotViewModel extends Notifier<ChatbotState> {
         propertyData: aiResponse.propertyData,
       );
       state = state.copyWith(
-        messages: [...state.messages.where((m) => !m.isLoading), botMsg],
+        messages: [...state.messages.sublist(0, state.messages.length - 1), botMsg],
         isSending: false,
       );
     } catch (e) {
@@ -79,7 +79,7 @@ class ChatbotViewModel extends Notifier<ChatbotState> {
         timestamp: DateTime.now(),
       );
       state = state.copyWith(
-        messages: [...state.messages.where((m) => !m.isLoading), errMsg],
+        messages: [...state.messages.sublist(0, state.messages.length - 1), errMsg],
         isSending: false,
       );
     }
