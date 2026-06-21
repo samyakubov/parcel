@@ -81,8 +81,15 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           SnackBar(
             content: Text(formatNetworkError(next.error)),
             duration: const Duration(seconds: 4),
+            behavior: SnackBarBehavior.floating,
+            margin: EdgeInsets.only(
+              left: 16,
+              right: 16,
+              bottom: MediaQuery.of(context).padding.bottom + AppConstants.bottomNavBarHeight - 8,
+            ),
           ),
         );
+        _skipNextPropertyFlyTo = false;
         return;
       }
 
@@ -93,10 +100,18 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           final position = Position(coords.longitude!, coords.latitude!);
 
           if (!_skipNextPropertyFlyTo) {
+            final screenHeight = MediaQuery.of(context).size.height;
+            final cardHeight = screenHeight * 0.4;
             mapboxMap!.flyTo(
               CameraOptions(
                 center: Point(coordinates: position),
                 zoom: 16.0,
+                padding: MbxEdgeInsets(
+                  top: 0,
+                  left: 0,
+                  bottom: cardHeight,
+                  right: 0,
+                ),
               ),
               MapAnimationOptions(duration: 1500),
             );

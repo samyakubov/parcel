@@ -38,18 +38,21 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet>
   void initState() {
     super.initState();
     _tabController = TabController(length: 5, vsync: this);
-    _tabController.addListener(_onTabChanged);
+    _tabController.addListener(_onTabSettled);
   }
 
-  void _onTabChanged() {
+  void _onTabSettled() {
     if (!_tabController.indexIsChanging) setState(() {});
   }
+
+  ScrollController _controllerFor(int i, ScrollController sheetController) =>
+      _tabController.index == i ? sheetController : _tabScrollControllers[i];
 
   @override
   void dispose() {
     _sheetController.dispose();
     _tabController
-      ..removeListener(_onTabChanged)
+      ..removeListener(_onTabSettled)
       ..dispose();
     for (final c in _tabScrollControllers) {
       c.dispose();
@@ -160,25 +163,25 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet>
                     if (imageUrl != null)
                       Image.network(
                         imageUrl,
-                        height: 200,
+                        height: 160,
                         width: double.infinity,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) => Container(
-                          height: 200,
+                          height: 160,
                           color: theme.brightness == Brightness.light ? Colors.grey.shade100 : theme.cardColor,
                           child: Center(child: Icon(Icons.broken_image_rounded, size: 48, color: theme.colorScheme.secondary)),
                         ),
                         loadingBuilder: (context, child, loadingProgress) {
                           if (loadingProgress == null) return child;
                           return Container(
-                            height: 200,
+                            height: 160,
                             color: theme.brightness == Brightness.light ? Colors.grey.shade50 : theme.cardColor,
                             child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
                           );
                         },
                       )
                     else
-                      Container(height: 200, color: theme.brightness == Brightness.light ? Colors.grey.shade100 : theme.cardColor),
+                      Container(height: 160, color: theme.brightness == Brightness.light ? Colors.grey.shade100 : theme.cardColor),
 
                     // Drag handle
                     Positioned(
@@ -278,6 +281,9 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet>
                 // Stats strip
                 _buildStatsStrip(property, theme),
 
+                // Property info + zoning strip
+                _buildInfoStrip(property, theme),
+
                 // Tab bar
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -327,11 +333,11 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet>
             child: TabBarView(
               controller: _tabController,
               children: [
-                ActivityTab(property: property, controller: _tabController.index == 0 ? scrollController : _tabScrollControllers[0]),
-                OwnersTab(property: property, controller: _tabController.index == 1 ? scrollController : _tabScrollControllers[1]),
-                MortgageTab(property: property, controller: _tabController.index == 2 ? scrollController : _tabScrollControllers[2]),
-                JobsTab(property: property, controller: _tabController.index == 3 ? scrollController : _tabScrollControllers[3]),
-                IssuesTab(property: property, controller: _tabController.index == 4 ? scrollController : _tabScrollControllers[4]),
+                ActivityTab(property: property, controller: _controllerFor(0, scrollController)),
+                OwnersTab(property: property, controller: _controllerFor(1, scrollController)),
+                MortgageTab(property: property, controller: _controllerFor(2, scrollController)),
+                JobsTab(property: property, controller: _controllerFor(3, scrollController)),
+                IssuesTab(property: property, controller: _controllerFor(4, scrollController)),
               ],
             ),
           ),
@@ -359,8 +365,8 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet>
     }
 
     final info = property.propertyInfo;
-    final grossSqft = _fmtSqft(lastSold?.grossSqft, info?.bldgFront, info?.bldgDepth);
-    final landSqft = _fmtSqft(lastSold?.landSqft, info?.lotFront, info?.lotDepth);
+    final grossSqft = fmtSqft(lastSold?.grossSqft, info?.bldgFront, info?.bldgDepth, inline: true);
+    final landSqft = fmtSqft(lastSold?.landSqft, info?.lotFront, info?.lotDepth, inline: true);
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -376,6 +382,88 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet>
           _vertDivider(theme),
           _statItem('Land Area', landSqft, theme),
         ],
+      ),
+    );
+  }
+
+  Widget _buildInfoStrip(Property property, ThemeData theme) {
+    final info = property.propertyInfo;
+    final zoning = property.zoning;
+
+    final statItems = <MapEntry<String, String>>[
+      if (info?.propertyType != null) MapEntry('Type', info!.propertyType!),
+      if (info?.floors != null) MapEntry('Floors', info!.floors!.toStringAsFixed(info.floors! % 1 == 0 ? 0 : 1)),
+      if (info?.resUnits != null) MapEntry('Res Units', info!.resUnits!.toString()),
+      if (info?.totalUnits != null) MapEntry('Total Units', info!.totalUnits!.toString()),
+    ];
+
+    final zoningGroups = <({String label, List<String> codes, Color color})>[
+      if (zoning != null && zoning.zoningDistricts.isNotEmpty)
+        (label: 'Districts', codes: zoning.zoningDistricts, color: theme.colorScheme.accentColor),
+      if (zoning != null && zoning.commercialOverlays.isNotEmpty)
+        (label: 'Commercial', codes: zoning.commercialOverlays, color: const Color(0xFF7C5CBF)),
+      if (zoning != null && zoning.specialDistricts.isNotEmpty)
+        (label: 'Special', codes: zoning.specialDistricts, color: const Color(0xFF1A8A5A)),
+      if (zoning?.limitedHeightDistrict?.isNotEmpty ?? false)
+        (label: 'Ltd. Height', codes: [zoning!.limitedHeightDistrict!], color: const Color(0xFFD97706)),
+    ];
+
+    if (statItems.isEmpty && zoningGroups.isEmpty) return const SizedBox.shrink();
+
+    final children = <Widget>[];
+
+    for (int i = 0; i < statItems.length; i++) {
+      children.add(_statItem(statItems[i].key, statItems[i].value, theme));
+      if (i < statItems.length - 1 || zoningGroups.isNotEmpty) children.add(_vertDivider(theme));
+    }
+
+    for (int i = 0; i < zoningGroups.length; i++) {
+      final g = zoningGroups[i];
+      children.add(Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            g.label,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              color: theme.colorScheme.secondary,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Row(
+            children: g.codes.map((code) => Padding(
+              padding: const EdgeInsets.only(right: 4),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                decoration: BoxDecoration(
+                  color: g.color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(5),
+                  border: Border.all(color: g.color.withValues(alpha: 0.25)),
+                ),
+                child: Text(
+                  code,
+                  style: TextStyle(
+                    color: g.color,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            )).toList(),
+          ),
+        ],
+      ));
+      if (i < zoningGroups.length - 1) children.add(_vertDivider(theme));
+    }
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: children,
       ),
     );
   }
@@ -417,12 +505,6 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet>
     );
   }
 
-  String _fmtSqft(double? sqft, double? front, double? depth) {
-    if (sqft == null) return 'N/A';
-    final base = '${numberFmt.format(sqft.round())} ft²';
-    if (front != null && depth != null) return '$base (${fmtDim(front)}×${fmtDim(depth)})';
-    return base;
-  }
 
   Widget _vertDivider(ThemeData theme) {
     return Container(
@@ -444,7 +526,7 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Container(height: 200, color: Colors.white),
+          Container(height: 160, color: Colors.white),
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 20, 24, 12),
             child: Column(

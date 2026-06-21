@@ -45,8 +45,15 @@ class ChatbotState {
 }
 
 class ChatbotViewModel extends Notifier<ChatbotState> {
+  int _generation = 0;
+
   @override
   ChatbotState build() => const ChatbotState();
+
+  List<ChatMessage> _replaceTyping(ChatMessage replacement) => [
+    ...state.messages.sublist(0, state.messages.length - 1),
+    replacement,
+  ];
 
   Future<void> sendMessage(String text) async {
     final trimmed = text.trim();
@@ -70,10 +77,12 @@ class ChatbotViewModel extends Notifier<ChatbotState> {
       isSending: true,
     );
 
+    final gen = _generation;
     try {
       final aiResponse = await ref
           .read(aiRepositoryProvider)
           .ask(trimmed, state.conversationHistory);
+      if (_generation != gen) return;
       final botMsg = ChatMessage(
         text: aiResponse.response,
         sender: MessageSender.bot,
@@ -81,30 +90,26 @@ class ChatbotViewModel extends Notifier<ChatbotState> {
         propertyData: aiResponse.propertyData,
       );
       state = state.copyWith(
-        messages: [
-          if (state.messages.isNotEmpty) ...state.messages.take(state.messages.length - 1),
-          botMsg,
-        ],
+        messages: _replaceTyping(botMsg),
         isSending: false,
         conversationHistory: aiResponse.updatedHistory,
       );
     } catch (e) {
+      if (_generation != gen) return;
       final errMsg = ChatMessage(
         text: 'Something went wrong. Please try again.',
         sender: MessageSender.bot,
         timestamp: DateTime.now(),
       );
       state = state.copyWith(
-        messages: [
-          if (state.messages.isNotEmpty) ...state.messages.take(state.messages.length - 1),
-          errMsg,
-        ],
+        messages: _replaceTyping(errMsg),
         isSending: false,
       );
     }
   }
 
   void clearConversation() {
+    _generation++;
     state = const ChatbotState();
   }
 }

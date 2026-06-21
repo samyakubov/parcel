@@ -30,9 +30,10 @@ class _OwnersTabState extends ConsumerState<OwnersTab> {
     super.dispose();
   }
 
-  List<String> _filterOwners(List<String> owners) => owners
-      .where((o) => o.toLowerCase().contains(_searchQuery.toLowerCase()))
-      .toList();
+  List<String> _filterOwners(List<String> owners) {
+    final q = _searchQuery.toLowerCase();
+    return owners.where((o) => o.toLowerCase().contains(q)).toList();
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -46,7 +46,9 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     ref.listen(chatbotViewModelProvider, (prev, next) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+      if (prev?.messages.length != next.messages.length) {
+        WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+      }
     });
 
     return Scaffold(
@@ -211,9 +213,6 @@ class _BotMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -296,14 +295,6 @@ class _PropertyCard extends StatelessWidget {
   final Property property;
   const _PropertyCard({required this.property});
 
-  String _fmtSqft(double? sqft, double? front, double? depth) {
-    if (sqft == null) return 'N/A';
-    final base = '${numberFmt.format(sqft.round())} ft²';
-    if (front != null && depth != null) {
-      return '$base\n${fmtDim(front)}×${fmtDim(depth)}';
-    }
-    return base;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -333,8 +324,8 @@ class _PropertyCard extends StatelessWidget {
     }
 
     final year = lastSold?.yearBuilt?.toString() ?? 'N/A';
-    final grossSqft = _fmtSqft(lastSold?.grossSqft, info?.bldgFront, info?.bldgDepth);
-    final landSqft = _fmtSqft(lastSold?.landSqft, info?.lotFront, info?.lotDepth);
+    final grossSqft = fmtSqft(lastSold?.grossSqft, info?.bldgFront, info?.bldgDepth);
+    final landSqft = fmtSqft(lastSold?.landSqft, info?.lotFront, info?.lotDepth);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(14),
