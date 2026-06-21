@@ -86,7 +86,7 @@ class _MainShellState extends ConsumerState<MainShell> {
         if (currentIndex > 0)
           _edgeSwipeZone(isRight: false, currentIndex: currentIndex),
         Positioned(
-          bottom: bottomPadding + 4,
+          bottom: bottomPadding - 8,
           left: 24,
           right: 24,
           child: Container(
