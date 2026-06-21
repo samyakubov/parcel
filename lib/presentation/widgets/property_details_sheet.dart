@@ -21,16 +21,39 @@ class PropertyDetailsSheet extends ConsumerStatefulWidget {
   ConsumerState<PropertyDetailsSheet> createState() => _PropertyDetailsSheetState();
 }
 
-class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
+class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet>
+    with SingleTickerProviderStateMixin {
   final _sheetController = DraggableScrollableController();
-
+  late final TabController _tabController;
+  // One dedicated controller per tab so only the active tab uses the sheet's
+  // scrollController. TabBarView keeps adjacent tabs alive, causing the sheet
+  // controller to be attached to multiple scroll views if all tabs share it.
+  final List<ScrollController> _tabScrollControllers =
+      List.generate(5, (_) => ScrollController());
 
   static const double _minSize = 0.5;
   static const double _maxSize = 0.95;
 
   @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 5, vsync: this);
+    _tabController.addListener(_onTabChanged);
+  }
+
+  void _onTabChanged() {
+    if (!_tabController.indexIsChanging) setState(() {});
+  }
+
+  @override
   void dispose() {
     _sheetController.dispose();
+    _tabController
+      ..removeListener(_onTabChanged)
+      ..dispose();
+    for (final c in _tabScrollControllers) {
+      c.dispose();
+    }
     super.dispose();
   }
 
@@ -120,9 +143,7 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
         ? 'https://maps.googleapis.com/maps/api/streetview?size=800x600&scale=2&fov=90&pitch=10&location=${coords.latitude},${coords.longitude}&key=${AppConstants.streetViewApiKey}'
         : null;
 
-    return DefaultTabController(
-      length: 5,
-      child: Column(
+    return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Header — draggable from anywhere in this block
@@ -266,6 +287,7 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: TabBar(
+                    controller: _tabController,
                     isScrollable: true,
                     tabAlignment: TabAlignment.start,
                     dividerColor: Colors.transparent,
@@ -290,7 +312,7 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
                       Tab(text: 'Owners'),
                       Tab(text: 'Mortgage'),
                       Tab(text: 'Permits'),
-                      Tab(text: 'Issues'),
+                      Tab(text: 'Violations'),
                     ],
                   ),
                 ),
@@ -299,20 +321,21 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
             ),
           ),
 
-          // Tab content — scroll controller drives the sheet
+          // Tab content — only the active tab receives the sheet's
+          // scrollController; others use their own dedicated controllers.
           Expanded(
             child: TabBarView(
+              controller: _tabController,
               children: [
-                ActivityTab(property: property, controller: scrollController),
-                OwnersTab(property: property, controller: scrollController),
-                MortgageTab(property: property, controller: scrollController),
-                JobsTab(property: property, controller: scrollController),
-                IssuesTab(property: property, controller: scrollController),
+                ActivityTab(property: property, controller: _tabController.index == 0 ? scrollController : _tabScrollControllers[0]),
+                OwnersTab(property: property, controller: _tabController.index == 1 ? scrollController : _tabScrollControllers[1]),
+                MortgageTab(property: property, controller: _tabController.index == 2 ? scrollController : _tabScrollControllers[2]),
+                JobsTab(property: property, controller: _tabController.index == 3 ? scrollController : _tabScrollControllers[3]),
+                IssuesTab(property: property, controller: _tabController.index == 4 ? scrollController : _tabScrollControllers[4]),
               ],
             ),
           ),
         ],
-      ),
     );
   }
 

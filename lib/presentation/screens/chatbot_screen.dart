@@ -217,28 +217,10 @@ class _BotMessage extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          width: 28,
-          height: 28,
-          decoration: BoxDecoration(
-            color: colorScheme.accentColor,
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(Icons.apartment_rounded, color: Colors.white, size: 16),
-        ),
-        const SizedBox(width: 10),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Parcel',
-                style: textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: colorScheme.onSurface,
-                ),
-              ),
-              const SizedBox(height: 4),
               if (message.isLoading)
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
