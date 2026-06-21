@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../viewmodels/chatbot_viewmodel.dart';
 import '../../domain/entities/property.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/constants.dart';
 
 class ChatbotScreen extends ConsumerStatefulWidget {
   const ChatbotScreen({super.key});
@@ -147,7 +149,6 @@ class _UserBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final isDark = colorScheme.brightness == Brightness.dark;
 
     return Align(
       alignment: Alignment.centerRight,
@@ -155,26 +156,13 @@ class _UserBubble extends StatelessWidget {
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width * 0.78,
         ),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: isDark
-                ? const Color(0xFF2C2C2E)
-                : const Color(0xFFEFEFF0),
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-              bottomLeft: Radius.circular(20),
-              bottomRight: Radius.circular(6),
-            ),
-          ),
-          child: Text(
-            message.text,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurface,
-                  height: 1.45,
-                ),
-          ),
+        child: Text(
+          message.text,
+          textAlign: TextAlign.right,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurface,
+                height: 1.45,
+              ),
         ),
       ),
     );
@@ -221,17 +209,62 @@ class _BotMessage extends StatelessWidget {
                   child: _TypingDots(),
                 )
               else ...[
-                Text(
-                  message.text,
-                  style: textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurface,
-                    height: 1.6,
+                if (message.propertyData != null) ...[
+                  _PropertyCard(property: message.propertyData!),
+                  const SizedBox(height: 12),
+                ],
+                MarkdownBody(
+                  data: message.text,
+                  styleSheet: MarkdownStyleSheet(
+                    p: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurface,
+                      height: 1.6,
+                    ),
+                    strong: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurface,
+                      fontWeight: FontWeight.w700,
+                      height: 1.6,
+                    ),
+                    em: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurface,
+                      fontStyle: FontStyle.italic,
+                      height: 1.6,
+                    ),
+                    code: textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurface,
+                      backgroundColor: colorScheme.surfaceContainerHighest,
+                      fontFamily: 'monospace',
+                    ),
+                    codeblockDecoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    blockquoteDecoration: BoxDecoration(
+                      border: Border(
+                        left: BorderSide(
+                          color: colorScheme.outlineVariant,
+                          width: 3,
+                        ),
+                      ),
+                    ),
+                    listBullet: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurface,
+                      height: 1.6,
+                    ),
+                    h1: textTheme.titleLarge?.copyWith(
+                      color: colorScheme.onSurface,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    h2: textTheme.titleMedium?.copyWith(
+                      color: colorScheme.onSurface,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    h3: textTheme.titleSmall?.copyWith(
+                      color: colorScheme.onSurface,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
-                if (message.propertyData != null) ...[
-                  const SizedBox(height: 12),
-                  _PropertyCard(property: message.propertyData!),
-                ],
               ],
             ],
           ),
@@ -251,14 +284,18 @@ class _TypingDots extends StatefulWidget {
 class _TypingDotsState extends State<_TypingDots>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
+  late final Animation<double> _opacity;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 900),
-    )..repeat();
+      duration: const Duration(milliseconds: 1000),
+    )..repeat(reverse: true);
+    _opacity = Tween<double>(begin: 0.3, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
   }
 
   @override
@@ -270,28 +307,17 @@ class _TypingDotsState extends State<_TypingDots>
   @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme.onSurfaceVariant;
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, _) {
-        return Row(
-          children: List.generate(3, (i) {
-            final delay = i / 3;
-            final t = ((_controller.value - delay) % 1.0).clamp(0.0, 1.0);
-            final opacity = (t < 0.5 ? t * 2 : (1 - t) * 2).clamp(0.3, 1.0);
-            return Padding(
-              padding: const EdgeInsets.only(right: 4),
-              child: Opacity(
-                opacity: opacity,
-                child: Container(
-                  width: 6,
-                  height: 6,
-                  decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-                ),
-              ),
-            );
-          }),
-        );
-      },
+    return FadeTransition(
+      opacity: _opacity,
+      child: Text(
+        'Thinking...',
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: color,
+          fontStyle: FontStyle.italic,
+        ),
+      ),
     );
   }
 }
@@ -300,87 +326,176 @@ class _PropertyCard extends StatelessWidget {
   final Property property;
   const _PropertyCard({required this.property});
 
+  static final _numberFmt = NumberFormat('#,###');
+  static final _dateFmt = DateFormat('MM/dd/yyyy');
+
+  String _fmtPrice(double p) => p >= 1000000
+      ? '\$${(p / 1000000).toStringAsFixed(1)}M'
+      : '\$${(p / 1000).round()}K';
+
+  String _fmtDim(double v) =>
+      v % 1 == 0 ? v.toInt().toString() : v.toStringAsFixed(1);
+
+  String _fmtSqft(double? sqft, double? front, double? depth) {
+    if (sqft == null) return 'N/A';
+    final base = '${_numberFmt.format(sqft.round())} ft²';
+    if (front != null && depth != null) {
+      return '$base\n${_fmtDim(front)}×${_fmtDim(depth)}';
+    }
+    return base;
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final currencyFmt = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
+    final lastSold = property.lastSold;
+    final info = property.propertyInfo;
+    final coords = property.coordinates;
 
-    final owners = property.owners?.currentOwners ?? [];
-    final lastSoldPrice = property.lastSold?.lastSoldPrice;
-    final lastSoldDate = property.lastSold?.lastSoldDate;
-    final violationsCount = property.violations.length;
-    final complaintsCount = property.complaints.length;
-    final zoning = property.zoning?.zoningDistricts.join(', ');
+    final imageUrl = (coords?.latitude != null && coords?.longitude != null)
+        ? 'https://maps.googleapis.com/maps/api/streetview?size=800x400&scale=2&fov=90&pitch=10'
+          '&location=${coords!.latitude},${coords.longitude}'
+          '&key=${AppConstants.streetViewApiKey}'
+        : null;
 
-    final stats = <({String label, String value})>[
-      if (owners.isNotEmpty) (label: 'Owner', value: owners.first),
-      if (lastSoldPrice != null)
-        (label: 'Last sold', value: currencyFmt.format(lastSoldPrice)),
-      if (lastSoldDate != null) (label: 'Date', value: lastSoldDate),
-      if (zoning != null && zoning.isNotEmpty) (label: 'Zoning', value: zoning),
-      if (violationsCount > 0)
-        (label: 'Violations', value: violationsCount.toString()),
-      if (complaintsCount > 0)
-        (label: 'Complaints', value: complaintsCount.toString()),
-    ];
+    String price = 'N/A';
+    String soldDate = '';
+    if (lastSold?.lastSoldPrice != null) {
+      price = _fmtPrice(lastSold!.lastSoldPrice!);
+    }
+    if (lastSold?.lastSoldDate != null) {
+      try {
+        soldDate = _dateFmt.format(DateTime.parse(lastSold!.lastSoldDate!));
+      } catch (_) {
+        soldDate = lastSold!.lastSoldDate!;
+      }
+    }
 
-    if (stats.isEmpty) return const SizedBox.shrink();
+    final year = lastSold?.yearBuilt?.toString() ?? 'N/A';
+    final grossSqft = _fmtSqft(lastSold?.grossSqft, info?.bldgFront, info?.bldgDepth);
+    final landSqft = _fmtSqft(lastSold?.landSqft, info?.lotFront, info?.lotDepth);
 
-    return Container(
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        decoration: BoxDecoration(
+          color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+          border: Border.all(color: colorScheme.outlineVariant.withValues(alpha: 0.5)),
+          borderRadius: BorderRadius.circular(14),
         ),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'PROPERTY DATA',
-            style: textTheme.labelSmall?.copyWith(
-              fontSize: 9,
-              letterSpacing: 1.2,
-              fontWeight: FontWeight.w700,
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: 8),
-          ...stats.map(
-            (s) => Padding(
-              padding: const EdgeInsets.only(bottom: 5),
-              child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Street view photo
+            if (imageUrl != null)
+              Image.network(
+                imageUrl,
+                height: 140,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  height: 140,
+                  color: colorScheme.surfaceContainerHighest,
+                  child: Icon(Icons.broken_image_rounded, size: 32, color: colorScheme.onSurfaceVariant),
+                ),
+                loadingBuilder: (_, child, progress) => progress == null
+                    ? child
+                    : Container(
+                        height: 140,
+                        color: colorScheme.surfaceContainerHighest,
+                        child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                      ),
+              ),
+
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    width: 80,
-                    child: Text(
-                      s.label,
-                      style: textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                        fontSize: 12,
+                  // BBL
+                  if (info?.bbl != null)
+                    Text(
+                      'BBL ${info!.bbl!}',
+                      style: textTheme.labelSmall?.copyWith(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5,
+                        color: colorScheme.accentColor,
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      s.value,
-                      style: textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurface,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
+
+                  const SizedBox(height: 10),
+
+                  // Stats strip
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _statItem(context, 'Last Sale', price, sub: soldDate),
+                        _divider(colorScheme),
+                        _statItem(context, 'Year Built', year),
+                        _divider(colorScheme),
+                        _statItem(context, 'Gross Area', grossSqft),
+                        _divider(colorScheme),
+                        _statItem(context, 'Land Area', landSqft),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _statItem(BuildContext context, String label, String value, {String? sub}) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 9,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.5,
+            color: colorScheme.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: colorScheme.onSurface,
+          ),
+        ),
+        if (sub != null && sub.isNotEmpty) ...[
+          const SizedBox(height: 1),
+          Text(
+            sub,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w500,
+              color: colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
-      ),
+      ],
+    );
+  }
+
+  Widget _divider(ColorScheme colorScheme) {
+    return Container(
+      width: 1,
+      height: 32,
+      color: colorScheme.outlineVariant,
+      margin: const EdgeInsets.symmetric(horizontal: 12),
     );
   }
 }
@@ -413,13 +528,7 @@ class _InputBar extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
         child: Row(
           children: [
-            const SizedBox(width: 4),
-            Icon(
-              Icons.add,
-              color: colorScheme.onSurfaceVariant,
-              size: 24,
-            ),
-            const SizedBox(width: 6),
+            const SizedBox(width: 12),
             Expanded(
               child: TextField(
                 controller: controller,

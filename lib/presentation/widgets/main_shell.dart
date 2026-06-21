@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../screens/map_screen.dart';
 import '../screens/chatbot_screen.dart';
+import '../viewmodels/navigation_viewmodel.dart';
+import '../../core/theme/app_theme.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -44,114 +47,95 @@ class _MainShellState extends State<MainShell> {
     final colorScheme = Theme.of(context).colorScheme;
     final isDark = colorScheme.brightness == Brightness.dark;
 
-    return Stack(
-      children: [
-        PageView(
-          controller: _pageController,
-          physics: const NeverScrollableScrollPhysics(),
-          onPageChanged: (index) => setState(() => _currentIndex = index),
-          children: const [
-            MapScreen(),
-            ChatbotScreen(),
-          ],
-        ),
-        // Edge swipe zones: narrow strips that capture horizontal swipes
-        // without interfering with map pan/zoom gestures in the center.
-        if (_currentIndex < _tabs.length - 1)
-          Positioned(
-            right: 0,
-            top: 0,
-            bottom: 0,
-            width: 36,
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onHorizontalDragEnd: (details) {
-                if ((details.primaryVelocity ?? 0) < -300) _goToTab(_currentIndex + 1);
-              },
-            ),
-          ),
-        if (_currentIndex > 0)
-          Positioned(
-            left: 0,
-            top: 0,
-            bottom: 0,
-            width: 36,
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onHorizontalDragEnd: (details) {
-                if ((details.primaryVelocity ?? 0) > 300) _goToTab(_currentIndex - 1);
-              },
-            ),
-          ),
-        Positioned(
-          bottom: bottomPadding + 4,
-          left: 24,
-          right: 24,
-          child: Container(
-            height: 64,
-            decoration: BoxDecoration(
-              color: colorScheme.surface,
-              borderRadius: BorderRadius.circular(32),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: isDark ? 0.45 : 0.12),
-                  blurRadius: 24,
-                  offset: const Offset(0, 8),
-                ),
+    return Consumer(
+      builder: (context, ref, _) {
+        ref.listen<int>(selectedTabProvider, (_, next) {
+          if (next != _currentIndex) _goToTab(next);
+        });
+
+        return Stack(
+          children: [
+            PageView(
+              controller: _pageController,
+              physics: const NeverScrollableScrollPhysics(),
+              onPageChanged: (index) => setState(() => _currentIndex = index),
+              children: const [
+                MapScreen(),
+                ChatbotScreen(),
               ],
             ),
-            child: Row(
-              children: [
-                for (int i = 0; i < _tabs.length; i++)
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () => _goToTab(i),
-                      behavior: HitTestBehavior.opaque,
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        margin: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: _currentIndex == i
-                              ? colorScheme.primaryContainer
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
+            if (_currentIndex < _tabs.length - 1)
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                width: 36,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onHorizontalDragEnd: (details) {
+                    if ((details.primaryVelocity ?? 0) < -300) _goToTab(_currentIndex + 1);
+                  },
+                ),
+              ),
+            if (_currentIndex > 0)
+              Positioned(
+                left: 0,
+                top: 0,
+                bottom: 0,
+                width: 36,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onHorizontalDragEnd: (details) {
+                    if ((details.primaryVelocity ?? 0) > 300) _goToTab(_currentIndex - 1);
+                  },
+                ),
+              ),
+            Positioned(
+              bottom: bottomPadding + 4,
+              left: 24,
+              right: 24,
+              child: Container(
+                height: 64,
+                decoration: BoxDecoration(
+                  color: colorScheme.surface,
+                  borderRadius: BorderRadius.circular(32),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: isDark ? 0.45 : 0.12),
+                      blurRadius: 24,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    for (int i = 0; i < _tabs.length; i++)
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => _goToTab(i),
+                          behavior: HitTestBehavior.opaque,
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            margin: const EdgeInsets.all(8),
+                            child: Icon(
                               _currentIndex == i
                                   ? _tabs[i].activeIcon
                                   : _tabs[i].icon,
-                              size: 22,
+                              size: 24,
                               color: _currentIndex == i
-                                  ? colorScheme.primary
+                                  ? colorScheme.accentColor
                                   : colorScheme.onSurfaceVariant,
                             ),
-                            const SizedBox(height: 2),
-                            Text(
-                              _tabs[i].label,
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: _currentIndex == i
-                                    ? FontWeight.w600
-                                    : FontWeight.w400,
-                                color: _currentIndex == i
-                                    ? colorScheme.primary
-                                    : colorScheme.onSurfaceVariant,
-                                decoration: TextDecoration.none,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-              ],
+                  ],
+                ),
+              ),
             ),
-          ),
-        ),
-      ],
+          ],
+        );
+      },
     );
   }
 }

@@ -34,6 +34,10 @@ class PropertySearchViewModel extends Notifier<AsyncValue<Property?>> {
     await _performSearch((repo) => repo.searchByFuzzyCoords(lat, lng));
   }
 
+  void setProperty(Property property) {
+    state = AsyncValue.data(property);
+  }
+
   void clearSearch() {
     state = const AsyncValue.data(null);
   }
