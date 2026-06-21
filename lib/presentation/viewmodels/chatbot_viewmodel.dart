@@ -81,7 +81,10 @@ class ChatbotViewModel extends Notifier<ChatbotState> {
         propertyData: aiResponse.propertyData,
       );
       state = state.copyWith(
-        messages: [...state.messages.sublist(0, state.messages.length - 1), botMsg],
+        messages: [
+          if (state.messages.isNotEmpty) ...state.messages.take(state.messages.length - 1),
+          botMsg,
+        ],
         isSending: false,
         conversationHistory: aiResponse.updatedHistory,
       );
@@ -92,7 +95,10 @@ class ChatbotViewModel extends Notifier<ChatbotState> {
         timestamp: DateTime.now(),
       );
       state = state.copyWith(
-        messages: [...state.messages.sublist(0, state.messages.length - 1), errMsg],
+        messages: [
+          if (state.messages.isNotEmpty) ...state.messages.take(state.messages.length - 1),
+          errMsg,
+        ],
         isSending: false,
       );
     }
