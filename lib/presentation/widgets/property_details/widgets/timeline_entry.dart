@@ -22,7 +22,7 @@ class TimelineEntry extends StatelessWidget {
     final theme = Theme.of(context);
     
     final accent = theme.colorScheme.accentColor;
-    final activeBg = accent.withOpacity(0.12);
+    final activeBg = accent.withValues(alpha: 0.12);
     
     // Strip phone number from name if present
     final displayName = name.replaceAll(RegExp(r'\s*\(.*?\)\s*'), '').trim();
@@ -47,13 +47,13 @@ class TimelineEntry extends StatelessWidget {
                     shape: BoxShape.circle,
                     color: isCurrent ? accent : theme.cardColor,
                     border: Border.all(
-                      color: isCurrent ? accent.withOpacity(0.5) : theme.colorScheme.secondary.withOpacity(0.3),
+                      color: isCurrent ? accent.withValues(alpha: 0.5) : theme.colorScheme.secondary.withValues(alpha: 0.3),
                       width: 2,
                     ),
                     boxShadow: [
                       if (isCurrent)
                         BoxShadow(
-                          color: accent.withOpacity(0.2),
+                          color: accent.withValues(alpha: 0.2),
                           blurRadius: 4,
                           spreadRadius: 1,
                         )

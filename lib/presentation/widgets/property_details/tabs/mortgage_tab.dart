@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../../../../domain/entities/property.dart';
+import '../../../../core/utils/property_formatters.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../widgets/standard_row.dart';
 import '../widgets/empty_state.dart';
@@ -20,7 +20,6 @@ class MortgageTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mortgage = property.mortgage;
-    final currencyFormatter = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
 
     if (mortgage == null) {
       return EmptyState(controller: controller, icon: Icons.account_balance_outlined, message: 'No mortgage information available.');
@@ -50,7 +49,7 @@ class MortgageTab extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                mortgage.amount != null ? currencyFormatter.format(mortgage.amount) : 'N/A',
+                mortgage.amount != null ? currencyFmt.format(mortgage.amount) : 'N/A',
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.w900,

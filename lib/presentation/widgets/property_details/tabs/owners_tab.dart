@@ -30,10 +30,14 @@ class _OwnersTabState extends ConsumerState<OwnersTab> {
     super.dispose();
   }
 
+  List<String> _filterOwners(List<String> owners) => owners
+      .where((o) => o.toLowerCase().contains(_searchQuery.toLowerCase()))
+      .toList();
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     final allCurrentOwners = widget.property.owners?.currentOwners ?? [];
     final allPreviousOwners = widget.property.owners?.previousOwners ?? [];
 
@@ -45,13 +49,8 @@ class _OwnersTabState extends ConsumerState<OwnersTab> {
       );
     }
 
-    // Filtering logic
-    final filteredCurrentOwners = allCurrentOwners
-        .where((o) => o.toLowerCase().contains(_searchQuery.toLowerCase()))
-        .toList();
-    final filteredPreviousOwners = allPreviousOwners
-        .where((o) => o.toLowerCase().contains(_searchQuery.toLowerCase()))
-        .toList();
+    final filteredCurrentOwners = _filterOwners(allCurrentOwners);
+    final filteredPreviousOwners = _filterOwners(allPreviousOwners);
 
     final hasNoResults = _searchQuery.isNotEmpty && 
                          filteredCurrentOwners.isEmpty && 
@@ -70,10 +69,10 @@ class _OwnersTabState extends ConsumerState<OwnersTab> {
         Container(
           margin: const EdgeInsets.only(bottom: 24),
           decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(30),
             border: Border.all(
-              color: theme.colorScheme.outlineVariant.withOpacity(0.5),
+              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
             ),
           ),
           child: TextField(
@@ -83,7 +82,7 @@ class _OwnersTabState extends ConsumerState<OwnersTab> {
             decoration: InputDecoration(
               hintText: 'Search through owners...',
               hintStyle: TextStyle(
-                color: theme.colorScheme.onSurface.withOpacity(0.5),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                 fontSize: 14,
               ),
               prefixIcon: Icon(
@@ -111,15 +110,15 @@ class _OwnersTabState extends ConsumerState<OwnersTab> {
             padding: const EdgeInsets.symmetric(vertical: 40),
             child: Column(
               children: [
-                Icon(Icons.person_search_rounded, 
-                  size: 48, 
-                  color: theme.colorScheme.onSurface.withOpacity(0.2),
+                Icon(Icons.person_search_rounded,
+                  size: 48,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
                 ),
                 const SizedBox(height: 16),
                 Text(
                   'No owners match "$_searchQuery"',
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
               ],

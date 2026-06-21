@@ -2,6 +2,7 @@ import 'package:intl/intl.dart';
 
 final numberFmt = NumberFormat('#,###');
 final dateFmt = DateFormat('MM/dd/yyyy');
+final currencyFmt = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
 
 String fmtPrice(double p) => p >= 1000000
     ? '\$${(p / 1000000).toStringAsFixed(1)}M'

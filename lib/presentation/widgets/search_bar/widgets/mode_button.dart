@@ -21,13 +21,13 @@ class ModeButton extends StatelessWidget {
         curve: Curves.easeOutCubic,
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: isActive ? Colors.white.withOpacity(0.4) : Colors.transparent,
+          color: isActive ? Colors.white.withValues(alpha: 0.4) : Colors.transparent,
           shape: BoxShape.circle,
         ),
         child: Icon(
           icon,
           size: 18,
-          color: isActive ? Colors.white : Colors.white.withOpacity(0.6),
+          color: isActive ? Colors.white : Colors.white.withValues(alpha: 0.6),
         ),
       ),
     );

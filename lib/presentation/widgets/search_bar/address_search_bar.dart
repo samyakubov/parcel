@@ -100,7 +100,7 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
                     BoxShadow(
                       color: theme.brightness == Brightness.light
                           ? Colors.black12
-                          : Colors.black.withOpacity(0.3),
+                          : Colors.black.withValues(alpha: 0.3),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -121,7 +121,7 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
                   decoration: InputDecoration(
                     hintText: _isBblMode ? 'BBL...' : 'Search address...',
                     hintStyle: TextStyle(
-                      color: theme.colorScheme.onSurface.withOpacity(0.5),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                       fontSize: 14,
                     ),
                     prefixIcon: Icon(
@@ -143,7 +143,7 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
               borderRadius: BorderRadius.circular(30),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.15),
+                  color: Colors.black.withValues(alpha: 0.15),
                   blurRadius: 10,
                   offset: const Offset(0, 3),
                 ),
@@ -176,7 +176,7 @@ class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
               elevation: 6,
               borderRadius: BorderRadius.circular(16),
               color: theme.colorScheme.surface,
-              shadowColor: Colors.black.withOpacity(0.15),
+              shadowColor: Colors.black.withValues(alpha: 0.15),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: SingleChildScrollView(

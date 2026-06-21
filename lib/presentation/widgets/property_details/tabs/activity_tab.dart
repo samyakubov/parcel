@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../../../../domain/entities/property.dart';
 import '../../../../core/utils/date_formatter.dart';
+import '../../../../core/utils/property_formatters.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../widgets/list_item_card.dart';
 import '../widgets/section_header.dart';
@@ -13,8 +13,6 @@ class ActivityTab extends StatelessWidget {
   final ScrollController controller;
 
   const ActivityTab({super.key, required this.property, required this.controller});
-
-  static final _currencyFmt = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
 
   @override
   Widget build(BuildContext context) {
@@ -135,7 +133,7 @@ class ActivityTab extends StatelessWidget {
         title: type,
         subtitle: partyName,
         date: DateFormatter.format(date),
-        amount: amount > 0 ? _currencyFmt.format(amount) : null,
+        amount: amount > 0 ? currencyFmt.format(amount) : null,
         color: Theme.of(context).colorScheme.accentColor,
       );
     }

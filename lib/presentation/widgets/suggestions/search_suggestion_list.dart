@@ -43,7 +43,7 @@ class SearchSuggestionList extends StatelessWidget {
             const SizedBox(height: 8),
             for (int i = 0; i < itemCount; i++) ...[
               if (i > 0)
-                Divider(height: 1, indent: 64, color: theme.colorScheme.outlineVariant.withOpacity(0.5)),
+                Divider(height: 1, indent: 64, color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5)),
               SearchSuggestionTile(suggestion: suggestions[i], onTap: onSuggestionTap),
             ],
             const SizedBox(height: 8),
