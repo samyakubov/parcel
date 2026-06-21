@@ -29,7 +29,7 @@ class AiRepositoryImpl implements AiRepository {
         ? rawHistory.whereType<Map<String, dynamic>>().toList()
         : <Map<String, dynamic>>[];
     return AiResponse(
-      response: data['response'] as String,
+      response: (data['response'] as String?) ?? 'No response received.',
       propertyData: property,
       updatedHistory: updatedHistory,
     );

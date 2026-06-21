@@ -573,7 +573,7 @@ class _SendButtonState extends State<_SendButton>
 
   void _onTap() {
     if (!widget.enabled) return;
-    _anim.forward().then((_) => _anim.reverse());
+    _anim.forward().then((_) { if (mounted) _anim.reverse(); });
     widget.onSend();
   }
 
@@ -581,26 +581,31 @@ class _SendButtonState extends State<_SendButton>
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return ScaleTransition(
-      scale: _scale,
-      child: GestureDetector(
-        onTap: _onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            color: widget.enabled
-                ? colorScheme.accentColor
-                : colorScheme.onSurface.withValues(alpha: 0.15),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            Icons.arrow_upward_rounded,
-            color: widget.enabled
-                ? Colors.white
-                : colorScheme.onSurfaceVariant,
-            size: 18,
+    return Semantics(
+      button: true,
+      enabled: widget.enabled,
+      label: 'Send message',
+      child: ScaleTransition(
+        scale: _scale,
+        child: GestureDetector(
+          onTap: _onTap,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: widget.enabled
+                  ? colorScheme.accentColor
+                  : colorScheme.onSurface.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.arrow_upward_rounded,
+              color: widget.enabled
+                  ? Colors.white
+                  : colorScheme.onSurfaceVariant,
+              size: 18,
+            ),
           ),
         ),
       ),

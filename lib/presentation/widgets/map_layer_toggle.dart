@@ -25,17 +25,21 @@ class MapLayerToggle extends ConsumerWidget {
           ),
         ],
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => ref.read(mapStyleProvider.notifier).toggleStyle(),
-          borderRadius: BorderRadius.circular(14),
-          child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Icon(
-              isSatellite ? Icons.satellite_alt_rounded : Icons.layers_rounded,
-              size: 20,
-              color: Colors.white,
+      child: Semantics(
+        button: true,
+        label: isSatellite ? 'Switch to standard map' : 'Switch to satellite view',
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => ref.read(mapStyleProvider.notifier).toggleStyle(),
+            borderRadius: BorderRadius.circular(14),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Icon(
+                isSatellite ? Icons.satellite_alt_rounded : Icons.layers_rounded,
+                size: 20,
+                color: Colors.white,
+              ),
             ),
           ),
         ),

@@ -8,6 +8,7 @@ import '../viewmodels/property_search_viewmodel.dart';
 import '../viewmodels/map_style_viewmodel.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/constants.dart';
+import '../../core/utils/error_formatter.dart';
 
 class MapScreen extends ConsumerStatefulWidget {
   const MapScreen({super.key});
@@ -66,7 +67,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     
     final targetStyle = _getEffectiveStyle(mapPreference, brightness);
 
-    // Update map style if it change
+    // Update map style when preference changes (guarded to avoid calling in every build)
     if (mapboxMap != null && _currentStyle != targetStyle) {
       _currentStyle = targetStyle;
       mapboxMap!.loadStyleURI(targetStyle);
@@ -75,6 +76,16 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     }
 
     ref.listen(propertySearchViewModelProvider, (previous, next) {
+      if (next.hasError && !(previous?.hasError ?? false)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(formatNetworkError(next.error)),
+            duration: const Duration(seconds: 4),
+          ),
+        );
+        return;
+      }
+
       final property = next.value;
       if (property != null && property.coordinates != null && mapboxMap != null) {
         final coords = property.coordinates!;

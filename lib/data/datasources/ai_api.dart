@@ -19,6 +19,6 @@ class AiApi {
         'conversation_history': conversationHistory,
       },
     );
-    return response.data!;
+    return response.data ?? {};
   }
 }

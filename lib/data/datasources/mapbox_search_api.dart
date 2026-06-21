@@ -49,7 +49,8 @@ class MapboxSearchApi {
       final features = (response.data?['features'] as List<dynamic>?) ?? [];
       final suggestions = features
           .take(AppConstants.autocompleteMaxResults)
-          .map((f) => _featureToSuggestion(f as Map<String, dynamic>))
+          .whereType<Map<String, dynamic>>()
+          .map(_featureToSuggestion)
           .toList();
 
       return suggestions;
