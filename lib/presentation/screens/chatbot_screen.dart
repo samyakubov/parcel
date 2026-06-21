@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -252,24 +254,43 @@ class _TypingDots extends StatefulWidget {
 
 class _TypingDotsState extends State<_TypingDots>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<double> _opacity;
+  static const _messages = [
+    'Thinking...',
+    'Gathering property details...',
+    'Gathering ownership information...',
+    'Gathering permits/violations...',
+  ];
+
+  late final AnimationController _fadeController;
+  late final Animation<double> _fadeAnimation;
+  int _messageIndex = 0;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
+    _fadeController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1000),
-    )..repeat(reverse: true);
-    _opacity = Tween<double>(begin: 0.3, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+      duration: const Duration(milliseconds: 350),
     );
+    _fadeAnimation = CurvedAnimation(
+      parent: _fadeController,
+      curve: Curves.easeInOut,
+    );
+    _fadeController.value = 1.0;
+
+    _timer = Timer.periodic(const Duration(milliseconds: 3500), (_) async {
+      await _fadeController.reverse();
+      if (!mounted) return;
+      setState(() => _messageIndex = (_messageIndex + 1) % _messages.length);
+      _fadeController.forward();
+    });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _timer?.cancel();
+    _fadeController.dispose();
     super.dispose();
   }
 
@@ -277,9 +298,9 @@ class _TypingDotsState extends State<_TypingDots>
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme.onSurfaceVariant;
     return FadeTransition(
-      opacity: _opacity,
+      opacity: _fadeAnimation,
       child: Text(
-        'Thinking...',
+        _messages[_messageIndex],
         style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w500,
