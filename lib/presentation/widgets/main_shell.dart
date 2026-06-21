@@ -66,7 +66,6 @@ class _MainShellState extends ConsumerState<MainShell> {
     final currentIndex = ref.watch(selectedTabProvider);
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
     final colorScheme = Theme.of(context).colorScheme;
-    final isDark = colorScheme.brightness == Brightness.dark;
 
     ref.listen<int>(selectedTabProvider, (_, next) => _goToTab(next));
 
@@ -92,15 +91,8 @@ class _MainShellState extends ConsumerState<MainShell> {
           child: Container(
             height: 64,
             decoration: BoxDecoration(
-              color: colorScheme.surface,
+              color: colorScheme.surfaceContainerHigh,
               borderRadius: BorderRadius.circular(32),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: isDark ? 0.45 : 0.12),
-                  blurRadius: 24,
-                  offset: const Offset(0, 8),
-                ),
-              ],
             ),
             child: Row(
               children: [

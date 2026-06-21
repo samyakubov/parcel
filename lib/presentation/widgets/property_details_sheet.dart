@@ -349,8 +349,8 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet>
     final lastSold = property.lastSold;
 
     String price = 'N/A';
-    if (lastSold?.lastSoldPrice != null) {
-      price = fmtPrice(lastSold!.lastSoldPrice!);
+    if (lastSold?.lastSoldPrice != null && lastSold!.lastSoldPrice! > 0) {
+      price = fmtPrice(lastSold.lastSoldPrice!);
     }
 
     final year = lastSold?.yearBuilt?.toString() ?? 'N/A';
