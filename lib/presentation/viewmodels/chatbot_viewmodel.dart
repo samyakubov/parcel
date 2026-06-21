@@ -26,7 +26,7 @@ class ChatbotState {
   final List<Map<String, dynamic>> conversationHistory;
 
   const ChatbotState({
-    required this.messages,
+    this.messages = const [],
     this.isSending = false,
     this.conversationHistory = const [],
   });
@@ -46,7 +46,7 @@ class ChatbotState {
 
 class ChatbotViewModel extends Notifier<ChatbotState> {
   @override
-  ChatbotState build() => const ChatbotState(messages: []);
+  ChatbotState build() => const ChatbotState();
 
   Future<void> sendMessage(String text) async {
     final trimmed = text.trim();
@@ -99,7 +99,7 @@ class ChatbotViewModel extends Notifier<ChatbotState> {
   }
 
   void clearConversation() {
-    state = const ChatbotState(messages: [], conversationHistory: []);
+    state = const ChatbotState();
   }
 }
 

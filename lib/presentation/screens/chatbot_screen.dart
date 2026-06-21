@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import '../viewmodels/chatbot_viewmodel.dart';
 import '../../domain/entities/property.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/constants.dart';
+import '../../core/utils/property_formatters.dart';
 
 class ChatbotScreen extends ConsumerStatefulWidget {
   const ChatbotScreen({super.key});
@@ -46,7 +46,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     ref.listen(chatbotViewModelProvider, (prev, next) {
-      Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
+      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
     });
 
     return Scaffold(
@@ -92,8 +92,15 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
                     controller: _scrollController,
                     padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
                     itemCount: chatState.messages.length,
-                    itemBuilder: (context, index) =>
-                        _MessageRow(message: chatState.messages[index]),
+                    itemBuilder: (context, index) {
+                      final msg = chatState.messages[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 20),
+                        child: msg.sender == MessageSender.user
+                            ? _UserBubble(message: msg)
+                            : _BotMessage(message: msg),
+                      );
+                    },
                   ),
           ),
           _InputBar(
@@ -140,20 +147,6 @@ class _EmptyState extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _MessageRow extends StatelessWidget {
-  final ChatMessage message;
-  const _MessageRow({required this.message});
-
-  @override
-  Widget build(BuildContext context) {
-    final isUser = message.sender == MessageSender.user;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
-      child: isUser ? _UserBubble(message: message) : _BotMessage(message: message),
     );
   }
 }
@@ -321,21 +314,11 @@ class _PropertyCard extends StatelessWidget {
   final Property property;
   const _PropertyCard({required this.property});
 
-  static final _numberFmt = NumberFormat('#,###');
-  static final _dateFmt = DateFormat('MM/dd/yyyy');
-
-  String _fmtPrice(double p) => p >= 1000000
-      ? '\$${(p / 1000000).toStringAsFixed(1)}M'
-      : '\$${(p / 1000).round()}K';
-
-  String _fmtDim(double v) =>
-      v % 1 == 0 ? v.toInt().toString() : v.toStringAsFixed(1);
-
   String _fmtSqft(double? sqft, double? front, double? depth) {
     if (sqft == null) return 'N/A';
-    final base = '${_numberFmt.format(sqft.round())} ft²';
+    final base = '${numberFmt.format(sqft.round())} ft²';
     if (front != null && depth != null) {
-      return '$base\n${_fmtDim(front)}×${_fmtDim(depth)}';
+      return '$base\n${fmtDim(front)}×${fmtDim(depth)}';
     }
     return base;
   }
@@ -357,11 +340,11 @@ class _PropertyCard extends StatelessWidget {
     String price = 'N/A';
     String soldDate = '';
     if (lastSold?.lastSoldPrice != null) {
-      price = _fmtPrice(lastSold!.lastSoldPrice!);
+      price = fmtPrice(lastSold!.lastSoldPrice!);
     }
     if (lastSold?.lastSoldDate != null) {
       try {
-        soldDate = _dateFmt.format(DateTime.parse(lastSold!.lastSoldDate!));
+        soldDate = dateFmt.format(DateTime.parse(lastSold!.lastSoldDate!));
       } catch (_) {
         soldDate = lastSold!.lastSoldDate!;
       }
@@ -514,7 +497,7 @@ class _InputBar extends StatelessWidget {
 
     return Container(
       color: colorScheme.surface,
-      padding: EdgeInsets.fromLTRB(12, 8, 12, bottomPadding + 80),
+      padding: EdgeInsets.fromLTRB(12, 8, 12, bottomPadding + AppConstants.bottomNavBarHeight + 16),
       child: Container(
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF1C1C1E) : const Color(0xFFF2F2F7),

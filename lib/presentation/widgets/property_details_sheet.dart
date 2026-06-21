@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../core/utils/property_formatters.dart';
 import '../viewmodels/property_search_viewmodel.dart';
 import '../../core/constants.dart';
 import '../../domain/entities/property.dart';
@@ -24,8 +24,6 @@ class PropertyDetailsSheet extends ConsumerStatefulWidget {
 class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
   final _sheetController = DraggableScrollableController();
 
-  static final _numberFmt = NumberFormat('#,###');
-  static final _dateFmt = DateFormat('MM/dd/yyyy');
 
   static const double _minSize = 0.5;
   static const double _maxSize = 0.95;
@@ -323,10 +321,7 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
 
     String price = 'N/A';
     if (lastSold?.lastSoldPrice != null) {
-      final p = lastSold!.lastSoldPrice!;
-      price = p >= 1000000
-          ? '\$${(p / 1000000).toStringAsFixed(1)}M'
-          : '\$${(p / 1000).round()}K';
+      price = fmtPrice(lastSold!.lastSoldPrice!);
     }
 
     final year = lastSold?.yearBuilt?.toString() ?? 'N/A';
@@ -334,7 +329,7 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
     String soldDate = '';
     if (lastSold?.lastSoldDate != null) {
       try {
-        soldDate = _dateFmt.format(DateTime.parse(lastSold!.lastSoldDate!));
+        soldDate = dateFmt.format(DateTime.parse(lastSold!.lastSoldDate!));
       } catch (_) {
         soldDate = lastSold!.lastSoldDate!;
       }
@@ -399,12 +394,10 @@ class _PropertyDetailsSheetState extends ConsumerState<PropertyDetailsSheet> {
     );
   }
 
-  String _fmtDim(double v) => v % 1 == 0 ? v.toInt().toString() : v.toStringAsFixed(1);
-
   String _fmtSqft(double? sqft, double? front, double? depth) {
     if (sqft == null) return 'N/A';
-    final base = '${_numberFmt.format(sqft.round())} ft²';
-    if (front != null && depth != null) return '$base (${_fmtDim(front)}×${_fmtDim(depth)})';
+    final base = '${numberFmt.format(sqft.round())} ft²';
+    if (front != null && depth != null) return '$base (${fmtDim(front)}×${fmtDim(depth)})';
     return base;
   }
 

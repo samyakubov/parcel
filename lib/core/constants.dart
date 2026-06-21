@@ -9,4 +9,6 @@ class AppConstants {
   static const int autocompleteDebounceMs = 350;
   static const int autocompleteMinChars = 2;
   static const int autocompleteMaxResults = 5;
+
+  static const double bottomNavBarHeight = 64.0;
 }

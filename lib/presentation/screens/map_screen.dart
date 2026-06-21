@@ -7,6 +7,7 @@ import '../widgets/map_layer_toggle.dart';
 import '../viewmodels/property_search_viewmodel.dart';
 import '../viewmodels/map_style_viewmodel.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/constants.dart';
 
 class MapScreen extends ConsumerStatefulWidget {
   const MapScreen({super.key});
@@ -133,7 +134,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             curve: Curves.easeInOut,
             bottom: (searchState.value != null || searchState.isLoading)
                 ? (screenHeight * 0.5) + 16
-                : MediaQuery.of(context).padding.bottom + 68 + 12,
+                : MediaQuery.of(context).padding.bottom + AppConstants.bottomNavBarHeight + 16,
             right: 16,
             child: const MapLayerToggle(),
           ),
