@@ -28,18 +28,20 @@ class PropertyRepositoryImpl implements PropertyRepository {
 
   Property _build(Map<String, dynamic> data) {
     final property = Property.fromJson(data);
-    if (property.records.isEmpty) return property;
-    final r = property.records.first;
+    final bc = property.buildingCharacteristics;
+    if (bc == null && property.records.isEmpty) return property;
+
+    final r = property.records.isNotEmpty ? property.records.first : null;
     final info = PropertyInfo(
-      propertyType: r['prop_type'] as String?,
-      bbl: r['bbl'] as String?,
-      floors: (r['num_floors'] as num?)?.toDouble(),
-      resUnits: (r['units_res'] as num?)?.toInt(),
-      totalUnits: (r['units_total'] as num?)?.toInt(),
-      lotFront: (r['lot_front'] as num?)?.toDouble(),
-      lotDepth: (r['lot_depth'] as num?)?.toDouble(),
-      bldgFront: (r['bldg_front'] as num?)?.toDouble(),
-      bldgDepth: (r['bldg_depth'] as num?)?.toDouble(),
+      propertyType: r?['prop_type'] as String?,
+      bbl: r?['bbl'] as String?,
+      floors: bc?.numFloors,
+      resUnits: bc?.unitsRes,
+      totalUnits: bc?.unitsTotal,
+      lotFront: bc?.lotFront,
+      lotDepth: bc?.lotDepth,
+      bldgFront: bc?.bldgFront,
+      bldgDepth: bc?.bldgDepth,
     );
     return property.copyWith(propertyInfo: info);
   }

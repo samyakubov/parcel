@@ -10,6 +10,7 @@ abstract class Property with _$Property {
     LastSold? lastSold,
     Mortgage? mortgage,
     Owners? owners,
+    BuildingCharacteristics? buildingCharacteristics,
     @Default([]) List<Map<String, dynamic>> records,
     @Default([]) List<Map<String, dynamic>> jobFilings,
     @Default([]) List<Map<String, dynamic>> violations,
@@ -71,6 +72,50 @@ abstract class Owners with _$Owners {
   }) = _Owners;
 
   factory Owners.fromJson(Map<String, Object?> json) => _$OwnersFromJson(json);
+}
+
+@freezed
+abstract class BuildingCharacteristics with _$BuildingCharacteristics {
+  const factory BuildingCharacteristics({
+    int? propBlock,
+    int? propLot,
+    String? address,
+    int? schoolDist,
+    int? council,
+    String? zipcode,
+    String? policePrct,
+    int? landUse,
+    double? lotArea,
+    double? bldgArea,
+    double? comArea,
+    double? resArea,
+    double? officeArea,
+    double? retailArea,
+    double? garageArea,
+    double? strgeArea,
+    double? factryArea,
+    double? otherArea,
+    String? areaSource,
+    int? numBldgs,
+    double? numFloors,
+    int? unitsRes,
+    int? unitsTotal,
+    double? lotFront,
+    double? lotDepth,
+    double? bldgFront,
+    double? bldgDepth,
+    String? ext,
+    String? proxCode,
+    String? irrLotCode,
+    String? lotType,
+    String? bsmtCode,
+    double? assessLand,
+    double? assessTot,
+    double? exemptTot,
+  }) = _BuildingCharacteristics;
+
+  factory BuildingCharacteristics.fromJson(Map<String, Object?> json) =>
+      _$BuildingCharacteristicsFromJson(json);
 }
 
 @freezed
