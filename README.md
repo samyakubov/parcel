@@ -9,7 +9,11 @@ flutter pub get
 flutter run
 ```
 
-Copy `.env` with `MAPBOX_API_KEY`, `SERVER_URL` (defaults to `http://127.0.0.1:8000`), `BACKEND_API_KEY`, and `STREETVIEW_API_KEY`.
+```bash
+cp .env.example .env
+```
+
+Fill in `MAPBOX_API_KEY`, `BACKEND_API_KEY`, and `STREETVIEW_API_KEY`. `SERVER_URL` defaults to `http://127.0.0.1:8000`.
 
 ## API
 
