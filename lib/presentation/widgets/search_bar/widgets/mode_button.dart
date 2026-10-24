@@ -7,6 +7,7 @@ class ModeButton extends StatelessWidget {
   final VoidCallback onTap;
 
   const ModeButton({
+    super.key,
     required this.icon,
     required this.isActive,
     required this.onTap,

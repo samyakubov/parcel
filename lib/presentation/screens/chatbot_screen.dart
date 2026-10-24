@@ -366,7 +366,7 @@ class _PropertyCard extends StatelessWidget {
                 height: 140,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
+                errorBuilder: (_, _, _) => Container(
                   height: 140,
                   color: colorScheme.surfaceContainerHighest,
                   child: Icon(Icons.broken_image_rounded, size: 32, color: colorScheme.onSurfaceVariant),
