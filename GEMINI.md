@@ -130,6 +130,8 @@ Build applications that are:
 
 # Backend Overview
 
+The API lives in `server/`. It is a FastAPI app over a local DuckDB file built from NYC housing datasets.
+
 ## Property Search API
 
 ### Search by Address
