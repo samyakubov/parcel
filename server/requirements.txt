@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+python-dotenv
+duckdb
+geopy
+certifi
+pandas
+requests
+slowapi
+langchain
+langchain-openai
+openai

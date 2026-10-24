@@ -51,3 +51,14 @@ app.*.map.json
 
 # Graphify
 /graphify-out/
+
+# Python API (server/). The DuckDB file and NYC source datasets stay local.
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
+*.duckdb
+*.duckdb.wal
+*.pem

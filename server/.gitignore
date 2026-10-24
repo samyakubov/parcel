@@ -1,0 +1,24 @@
+# Secrets and local config
+.env
+*.pem
+
+# Local database and raw datasets (too large for git; rebuild with nycdb/)
+*.duckdb
+*.duckdb.wal
+/data/
+nycdb/data/
+
+# Environments, caches, and editor files
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.idea/
+.vscode/
+.kiro/
+.DS_Store
+/logs/
+/graphify-out/
